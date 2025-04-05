@@ -30,7 +30,7 @@ namespace API.Data.Models
         public User Customer { get; set; }
 
         [ForeignKey("ProviderId")]
-        public User Provider { get; set; }
+        public User ServiceProvider { get; set; }
     }
     public enum BookingStatus
     {
