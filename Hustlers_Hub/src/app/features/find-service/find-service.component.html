@@ -1,0 +1,24 @@
+<div class="find-service-container">
+  <div class="search-bar">
+    <mat-form-field appearance="outline">
+      <mat-label>Search by location or service</mat-label>
+      <input matInput placeholder="e.g. Johannesburg, plumber..." [(ngModel)]="searchTerm">
+      <button mat-icon-button matSuffix (click)="search()">
+        <mat-icon>search</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+
+  <div class="results-grid">
+    <div class="service-card" *ngFor="let provider of filteredProviders">
+      <img [src]="provider.image" alt="Profile" class="profile-pic" />
+      <h3>{{ provider.name }}</h3>
+      <p class="service">{{ provider.service }}</p>
+      <p class="location">
+        <mat-icon>location_on</mat-icon> {{ provider.location }}
+      </p>
+      <p class="bio">{{ provider.description }}</p>
+    </div>
+  </div>
+</div>
+

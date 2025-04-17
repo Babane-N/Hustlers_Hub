@@ -1,0 +1,41 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #sidenav mode="side" [(opened)]="isOpened" class="sidenav">
+    <mat-toolbar color="primary">Menu</mat-toolbar>
+    <mat-nav-list>
+      <mat-list-item (click)="toggleSubmenu('dashboard')">
+        <mat-icon>dashboard</mat-icon>
+        <span>Dashboard</span>
+        <mat-icon class="arrow" *ngIf="submenu.dashboard">expand_less</mat-icon>
+        <mat-icon class="arrow" *ngIf="!submenu.dashboard">expand_more</mat-icon>
+      </mat-list-item>
+      <div *ngIf="submenu.dashboard" class="submenu">
+        <a mat-list-item href="#">Overview</a>
+        <a mat-list-item href="#">Stats</a>
+      </div>
+
+      <mat-list-item (click)="toggleSubmenu('settings')">
+        <mat-icon>settings</mat-icon>
+        <span>Settings</span>
+        <mat-icon class="arrow" *ngIf="submenu.settings">expand_less</mat-icon>
+        <mat-icon class="arrow" *ngIf="!submenu.settings">expand_more</mat-icon>
+      </mat-list-item>
+      <div *ngIf="submenu.settings" class="submenu">
+        <a mat-list-item href="#">Profile</a>
+        <a mat-list-item href="#">Security</a>
+      </div>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar color="primary">
+      <button mat-icon-button (click)="sidenav.toggle()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span>My App</span>
+    </mat-toolbar>
+    <div class="main-content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
