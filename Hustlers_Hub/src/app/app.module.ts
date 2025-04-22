@@ -12,7 +12,8 @@ import { AdminComponent } from './admin/admin.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { SideBarComponent } from './features/side-bar/side-bar.component';
-import { FindServiceComponent } from './features/find-service/find-service.component'; // ✅ FIXED path
+import { FindServiceComponent } from './features/find-service/find-service.component';
+import { ServiceDetailComponent } from './features/service-detail/service-detail.component';
 
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
@@ -26,6 +27,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 
 
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -37,7 +39,8 @@ import { FormsModule } from '@angular/forms';
     LoginComponent,
     RegisterComponent,
     SideBarComponent,
-    FindServiceComponent
+    FindServiceComponent,
+    ServiceDetailComponent
   ],
   imports: [
     BrowserModule,

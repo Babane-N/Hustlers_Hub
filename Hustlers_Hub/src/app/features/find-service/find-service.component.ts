@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-find-service',
@@ -6,6 +7,8 @@ import { Component } from '@angular/core';
   styleUrls: ['./find-service.component.scss']
 })
 export class FindServiceComponent {
+  constructor(private router: Router) { }
+
   searchTerm = '';
 
   serviceProviders = [
@@ -46,5 +49,9 @@ export class FindServiceComponent {
   search() {
     // You could trigger a real API call here later
     console.log('Searching for:', this.searchTerm);
+  }
+
+  goFindServiceDetail() {
+    this.router.navigate(['./service-detail'])
   }
 }
