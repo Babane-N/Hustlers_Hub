@@ -14,6 +14,8 @@ import { RegisterComponent } from './register/register.component';
 import { SideBarComponent } from './features/side-bar/side-bar.component';
 import { FindServiceComponent } from './features/find-service/find-service.component';
 import { ServiceDetailComponent } from './features/service-detail/service-detail.component';
+import { DashboardComponent } from './features/dashboard/dashboard.component';
+import { BookingDialogComponent } from './features/booking-dialog/booking-dialog.component';
 
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
@@ -25,6 +27,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatCardModule } from '@angular/material/card';
+import { MatDialogModule } from '@angular/material/dialog';
+
+
 
 
 
@@ -40,7 +48,9 @@ import { FormsModule } from '@angular/forms';
     RegisterComponent,
     SideBarComponent,
     FindServiceComponent,
-    ServiceDetailComponent
+    ServiceDetailComponent,
+    DashboardComponent,
+    BookingDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -53,7 +63,11 @@ import { FormsModule } from '@angular/forms';
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    FormsModule
+    FormsModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatCardModule,
+    MatDialogModule
   ],
   providers: [
     provideAnimationsAsync()

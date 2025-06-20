@@ -1,0 +1,55 @@
+:host {
+  display: block;
+  background-color: transparent !important;
+  color: #fff;
+  padding: 2rem;
+}
+
+.dashboard-container {
+  max-width: 1200px;
+  margin: auto;
+
+  .welcome {
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+  }
+
+  .dashboard-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+
+  .dashboard-card {
+    border-radius: 16px;
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.05); // semi-transparent card
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(4px); // subtle glassmorphism
+
+    h3 {
+      margin: 0.5rem 0 0;
+      color: #ffcc80; // light orange text
+    }
+
+    ul {
+      margin: 0.5rem 0 0;
+      padding-left: 1rem;
+      list-style: disc;
+    }
+
+    p {
+      margin: 0.25rem 0;
+    }
+
+    &.clickable {
+      cursor: pointer;
+      transition: transform 0.2s ease;
+
+      &:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      }
+    }
+  }
+}

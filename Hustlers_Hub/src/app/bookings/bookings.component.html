@@ -1,1 +1,19 @@
-<p>bookings works!</p>
+<div class="bookings-container">
+  <h2 class="page-title">📋 Service Bookings Received</h2>
+
+  <div class="bookings-grid">
+    <mat-card class="booking-card" *ngFor="let booking of bookings">
+      <mat-card-header>
+        <div mat-card-avatar class="avatar" [ngStyle]="{ 'background-image': 'url(' + booking.clientImage + ')' }"></div>
+        <mat-card-title>{{ booking.clientName }}</mat-card-title>
+        <mat-card-subtitle>{{ booking.service }}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <p><strong>Date:</strong> {{ booking.date | date:'mediumDate' }}</p>
+        <p><strong>Location:</strong> {{ booking.location }}</p>
+        <p><strong>Details:</strong> {{ booking.details }}</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

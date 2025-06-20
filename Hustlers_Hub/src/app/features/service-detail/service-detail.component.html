@@ -6,7 +6,8 @@
     <p class="location">{{ provider.location }}</p>
     <p class="description">{{ provider.description }}</p>
 
-    <button mat-raised-button color="primary">Book Now</button>
+    <button mat-raised-button color="primary" (click)="openBookingDialog()">Book Now</button>
+
   </div>
 
   <!-- Gallery -->

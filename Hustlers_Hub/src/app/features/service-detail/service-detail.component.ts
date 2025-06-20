@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { BookingDialogComponent } from '../booking-dialog/booking-dialog.component'; // Adjust the path if needed
 
 @Component({
   selector: 'app-service-detail',
   templateUrl: './service-detail.component.html',
-  styleUrl: './service-detail.component.scss'
+  styleUrls: ['./service-detail.component.scss']
 })
-export class ServiceDetailComponent {
+export class ServiceDetailComponent implements OnInit {
   provider: any;
 
   providers = [
@@ -26,43 +27,25 @@ export class ServiceDetailComponent {
         'https://source.unsplash.com/400x300/?tools'
       ]
     },
-    {
-      name: 'Thandi Mokoena',
-      service: 'House Cleaner',
-      location: 'Pretoria',
-      image: 'https://randomuser.me/api/portraits/women/44.jpg',
-      description: 'Reliable and efficient cleaning for homes and offices.',
-      reviews: [
-        { user: 'John', comment: 'My place was sparkling clean!', rating: 5 }
-      ],
-      gallery: [
-        'https://source.unsplash.com/400x300/?cleaning',
-        'https://source.unsplash.com/400x300/?vacuum',
-        'https://source.unsplash.com/400x300/?mop'
-      ]
-    },
-    {
-      name: 'Sbu Khumalo',
-      service: 'Fitness Trainer',
-      location: 'Durban',
-      image: 'https://randomuser.me/api/portraits/men/55.jpg',
-      description: 'Helping clients stay fit with custom workout plans.',
-      reviews: [
-        { user: 'Zanele', comment: 'Lost 5kg in 2 months. Thanks Coach!', rating: 5 },
-        { user: 'Brian', comment: 'Motivating and great workouts!', rating: 4 }
-      ],
-      gallery: [
-        'https://source.unsplash.com/400x300/?gym',
-        'https://source.unsplash.com/400x300/?fitness',
-        'https://source.unsplash.com/400x300/?personaltrainer'
-      ]
-    }
+    // More provider data here...
   ];
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(private dialog: MatDialog) { }
 
   ngOnInit(): void {
-    const id = +this.route.snapshot.paramMap.get('id')!;
+    // Your logic to initialize the provider data
+    const id = 0; // Example, change to dynamic fetching if necessary
     this.provider = this.providers[id];
+  }
+
+  openBookingDialog(): void {
+    const dialogRef = this.dialog.open(BookingDialogComponent, {
+      width: '400px',
+      data: { provider: this.provider }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('Dialog closed', result);
+    });
   }
 }

@@ -1,0 +1,19 @@
+<h2 mat-dialog-title>Make a Booking</h2>
+<mat-dialog-content>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Booking Date</mat-label>
+    <input matInput [matDatepicker]="picker" [(ngModel)]="bookingDate" />
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Notes</mat-label>
+    <textarea matInput rows="3" [(ngModel)]="notes"></textarea>
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="closeDialog()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="submitBooking()">Book</button>
+</mat-dialog-actions>
