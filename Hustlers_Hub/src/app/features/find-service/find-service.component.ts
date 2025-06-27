@@ -10,6 +10,8 @@ export class FindServiceComponent {
   constructor(private router: Router) { }
 
   searchTerm = '';
+  selectedService = '';
+  sortBy = 'name';
 
   serviceProviders = [
     {
@@ -35,23 +37,42 @@ export class FindServiceComponent {
     }
   ];
 
-  get filteredProviders() {
-    if (!this.searchTerm) return this.serviceProviders;
-
-    const term = this.searchTerm.toLowerCase();
-    return this.serviceProviders.filter(p =>
-      p.name.toLowerCase().includes(term) ||
-      p.service.toLowerCase().includes(term) ||
-      p.location.toLowerCase().includes(term)
-    );
+  get uniqueServices(): string[] {
+    return [...new Set(this.serviceProviders.map(p => p.service))];
   }
 
-  search() {
-    // You could trigger a real API call here later
-    console.log('Searching for:', this.searchTerm);
+  get filteredProviders() {
+    let result = [...this.serviceProviders];
+
+    // Search
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.toLowerCase();
+      result = result.filter(p =>
+        p.name.toLowerCase().includes(term) ||
+        p.service.toLowerCase().includes(term) ||
+        p.location.toLowerCase().includes(term)
+      );
+    }
+
+    // Filter by service
+    if (this.selectedService) {
+      result = result.filter(p => p.service === this.selectedService);
+    }
+
+    // Sort
+    result.sort((a, b) => {
+      if (this.sortBy === 'name') {
+        return a.name.localeCompare(b.name);
+      } else if (this.sortBy === 'location') {
+        return a.location.localeCompare(b.location);
+      }
+      return 0;
+    });
+
+    return result;
   }
 
   goFindServiceDetail() {
-    this.router.navigate(['./service-detail'])
+    this.router.navigate(['./service-detail']);
   }
 }

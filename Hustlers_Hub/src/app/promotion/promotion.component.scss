@@ -44,6 +44,34 @@
       }
     }
   }
+  // Search, filter, sort controls styling
+  .search-sort-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+
+    input,
+    select {
+      padding: 0.6rem 1rem;
+      font-size: 1rem;
+      border: 1px solid #a87450;
+      border-radius: 8px;
+      background-color: #fff8f0;
+      color: #5d2c15;
+      font-family: 'Segoe UI', sans-serif;
+      min-width: 200px;
+      box-shadow: 0 2px 6px rgba(168, 116, 80, 0.15);
+      transition: border 0.2s ease, box-shadow 0.2s ease;
+
+      &:focus {
+        outline: none;
+        border-color: #8b4000;
+        box-shadow: 0 0 0 2px rgba(139, 64, 0, 0.2);
+      }
+    }
+  }
 
   .promo-list {
     display: grid;

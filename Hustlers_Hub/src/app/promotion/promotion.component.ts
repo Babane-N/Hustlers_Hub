@@ -34,6 +34,11 @@ export class PromotionComponent {
     }
   ];
 
+  // Controls for search, filter and sort
+  searchTerm: string = '';
+  filterCategory: string = '';
+  sortBy: string = 'expires';
+
   showCreateForm = false;
 
   newPromo: Promotion = {
@@ -45,8 +50,43 @@ export class PromotionComponent {
     category: ''
   };
 
+  get uniqueCategories(): string[] {
+    return [...new Set(this.promotions.map(p => p.category))];
+  }
+
+  get filteredPromotions(): Promotion[] {
+    let filtered = [...this.promotions];
+
+    // Search
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.toLowerCase();
+      filtered = filtered.filter(p =>
+        p.title.toLowerCase().includes(term) ||
+        p.description.toLowerCase().includes(term)
+      );
+    }
+
+    // Filter by category
+    if (this.filterCategory) {
+      filtered = filtered.filter(p => p.category === this.filterCategory);
+    }
+
+    // Sort
+    filtered.sort((a, b) => {
+      switch (this.sortBy) {
+        case 'title':
+          return a.title.localeCompare(b.title);
+        case 'postedBy':
+          return a.postedBy.localeCompare(b.postedBy);
+        default: // 'expires'
+          return new Date(a.expires).getTime() - new Date(b.expires).getTime();
+      }
+    });
+
+    return filtered;
+  }
+
   openCreatePromoModal() {
-    // For simplicity, toggle a form inline.
     this.showCreateForm = true;
   }
 
@@ -62,7 +102,6 @@ export class PromotionComponent {
       this.newPromo.imageUrl.trim() &&
       this.newPromo.category.trim()
     ) {
-      // Push new promo to top of list
       this.promotions.unshift({
         ...this.newPromo,
         postedBy: 'You',

@@ -1,6 +1,22 @@
+<div class="search-filter-bar">
+  <input type="text"
+         placeholder="Search by name, service, or location"
+         [(ngModel)]="searchTerm" />
+
+  <select [(ngModel)]="selectedService">
+    <option value="">All Services</option>
+    <option *ngFor="let service of uniqueServices" [value]="service">{{ service }}</option>
+  </select>
+
+  <select [(ngModel)]="sortBy">
+    <option value="name">Sort by Name</option>
+    <option value="location">Sort by Location</option>
+  </select>
+</div>
+
 <div class="results-grid">
   <div class="service-card"
-       *ngFor="let provider of filteredProviders; let i = index"
+       *ngFor="let provider of filteredProviders"
        (click)="goFindServiceDetail()"
        style="cursor: pointer;">
     <img [src]="provider.image" alt="Profile" class="profile-pic" />
