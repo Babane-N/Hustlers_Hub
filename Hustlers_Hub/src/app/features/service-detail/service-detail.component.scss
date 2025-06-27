@@ -1,7 +1,7 @@
 :host {
   display: block;
-  background-color: transparent !important;
-  color: #fff;
+  background-color: #fff3e6; // Dark orange
+  color: #fff3e6; // Light creamy text for contrast
   padding: 2rem;
   min-height: 100vh;
 }
@@ -14,24 +14,23 @@
 
 .profile-card {
   text-align: center;
-  background: rgba(255, 255, 255, 0.08); // soft overlay for contrast
-  color: #fff;
+  background: #fff3e6; // Light peach for contrast
+  color: #5d2c15; // Cocoa brown text
   padding: 2rem;
   border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
   margin-bottom: 2rem;
-  backdrop-filter: blur(8px);
 
   img {
     width: 120px;
     height: 120px;
     border-radius: 50%;
     margin-bottom: 1rem;
-    border: 3px solid #fff;
+    border: 3px solid #ffe0b2; // Soft gold ring
   }
 
   h2 {
-    color: #ffcc80;
+    color: #5d2c15; // Cocoa heading
   }
 }
 
@@ -49,21 +48,20 @@
     width: 100%;
     max-width: 240px;
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
   }
 }
 
 .review {
-  background: rgba(255, 255, 255, 0.05);
+  background: #fff3e6; // Light warm card
   padding: 1rem;
   margin-bottom: 1rem;
-  border-left: 4px solid #ffc107;
+  border-left: 4px solid #ffe0b2; // Gold accent
   border-radius: 8px;
-  backdrop-filter: blur(4px);
-  color: #fff;
+  color: #5d2c15;
 
   .stars {
-    color: #fbc02d;
+    color: #a87450; // Warm muted orange-brown
     margin-left: 0.5rem;
   }
 

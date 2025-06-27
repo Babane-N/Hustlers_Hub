@@ -31,6 +31,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
+import { PromotionComponent } from './promotion/promotion.component';
+import { AdCreatorComponent } from './features/ad-creator/ad-creator.component';
 
 
 
@@ -50,7 +52,9 @@ import { MatDialogModule } from '@angular/material/dialog';
     FindServiceComponent,
     ServiceDetailComponent,
     DashboardComponent,
-    BookingDialogComponent
+    BookingDialogComponent,
+    PromotionComponent,
+    AdCreatorComponent
   ],
   imports: [
     BrowserModule,

@@ -1,25 +1,61 @@
-/* You can add global styles to this file, and also import other style files */
-
-/*body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background-image: url('/assets/bckgrnd.png');
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-position: center;
-}*/
-
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  background-color: #FF8C00; // Dark orange
-  color: #fff;
+  background-color: #8B4000; // Dark orange
+  color: #fff3e6; // Vanilla cream
   font-family: 'Segoe UI', sans-serif;
+  scroll-behavior: smooth;
+}
+
+a {
+  color: #ffe0b2; // Light gold
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+    color: #fff8e1;
+  }
+}
+
+button, .btn {
+  background-color: #fff3e6;
+  color: #8B4000;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #ffe0b2;
+    color: #5d2c15;
+  }
 }
 
 mat-card {
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  color: white !important;
+  background-color: #fff3e6 !important; // Creamy card
+  color: #5d2c15 !important; // Cocoa text
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+input, textarea, select {
+  background-color: #fff3e6;
+  color: #5d2c15;
+  border: 1px solid #a87450;
+  padding: 0.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+
+  &::placeholder {
+    color: #a57c5b;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #ffe0b2;
+    background-color: #fff8f0;
+  }
 }

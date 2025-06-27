@@ -1,9 +1,11 @@
 :host {
   display: block;
-  background-color: transparent !important;
-  color: #fff;
+  background-color: linear-gradient(45deg, #8b4000, #a87450); // Dark orange
+  color: #fff3e6; // Light warm text
   padding: 2rem;
-  min-height: 100vh; // ensures full height
+  min-height: 100vh;
+  background-attachment: fixed;
+  background-size: cover;
 }
 
 .find-service-container {
@@ -22,20 +24,20 @@
 }
 
 .service-card {
-  background: rgba(255, 255, 255, 0.05); // translucent for dark bg
+  background: #fff3e6; // Creamy card
   padding: 20px;
   border-radius: 16px;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.15);
   text-align: center;
   transition: transform 0.2s ease;
   backdrop-filter: blur(6px);
-  color: #fff; // override text color
-}
+  color: #5d2c15; // Cocoa brown text
 
-.service-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1), 0 6px 16px rgba(0, 0, 0, 0.25);
+  }
 }
 
 .profile-pic {
@@ -44,16 +46,16 @@
   object-fit: cover;
   border-radius: 50%;
   margin-bottom: 12px;
-  border: 2px solid #fff;
+  border: 2px solid #ffe0b2; // Soft gold border
 }
 
 .service {
   font-weight: 600;
-  color: #ffcc80; // soft orange-yellow
+  color: #a87450; // Warm muted accent
 }
 
 .location {
-  color: #ddd;
+  color: #5d2c15; // Deep cocoa brown
   font-size: 0.9rem;
   display: flex;
   align-items: center;
@@ -64,5 +66,5 @@
 
 .bio {
   font-size: 0.85rem;
-  color: #eee;
+  color: #4a2e1c; // Cocoa tone
 }

@@ -1,0 +1,96 @@
+.promo-container {
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', sans-serif;
+  color: #5d2c15; // Cocoa brown text
+  background-color: #fff3e6; // Creamy vanilla tone
+  border-radius: 12px;
+
+  h2 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: #a87450; // Light gold/beige
+  }
+
+  .subtitle {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #7a4f25; // Warm muted brown
+    margin-bottom: 1.5rem;
+  }
+
+  .create-promo-btn-container {
+    text-align: center;
+    margin-bottom: 2rem;
+
+    .create-promo-btn {
+      background: linear-gradient(45deg, #8b4000, #a87450);
+      border: none;
+      border-radius: 30px;
+      padding: 0.75rem 2rem;
+      color: #fff3e6;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(139, 64, 0, 0.5);
+      transition: background 0.3s ease, transform 0.2s ease;
+
+      &:hover {
+        background: linear-gradient(45deg, #a87450, #8b4000);
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(168, 116, 80, 0.7);
+      }
+    }
+  }
+
+  .promo-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+
+    .promo-card {
+      background: #fff8f0; // Creamy card background
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      cursor: default;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+      }
+
+      img {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+        border-bottom: 1px solid #a87450;
+      }
+
+      h3 {
+        margin: 1rem;
+        font-size: 1.3rem;
+        color: #5d2c15;
+      }
+
+      p {
+        margin: 0 1rem 1rem;
+        color: #7a4f25;
+        flex-grow: 1;
+      }
+
+      .promo-meta {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 1rem 1rem;
+        font-size: 0.85rem;
+        color: #a57c5b;
+      }
+    }
+  }
+}

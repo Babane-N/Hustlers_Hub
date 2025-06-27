@@ -1,7 +1,7 @@
 :host {
   display: block;
-  background-color: transparent !important;
-  color: #fff;
+  background-color: linear-gradient(45deg, #8b4000, #a87450); // Dark orange
+  color: #fff3e6; // Creamy vanilla text
   padding: 2rem;
 }
 
@@ -12,6 +12,7 @@
   .welcome {
     font-size: 1.8rem;
     margin-bottom: 2rem;
+    color: #7a4f25; // Warm gold heading
   }
 
   .dashboard-grid {
@@ -23,32 +24,35 @@
   .dashboard-card {
     border-radius: 16px;
     padding: 1rem;
-    background-color: rgba(255, 255, 255, 0.05); // semi-transparent card
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(4px); // subtle glassmorphism
+    background-color: #fff3e6; // Light card
+    color: #5d2c15; // Cocoa brown text
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease;
+    backdrop-filter: blur(4px);
 
     h3 {
       margin: 0.5rem 0 0;
-      color: #ffcc80; // light orange text
+      color: #a87450; // Muted gold-brown
     }
 
     ul {
       margin: 0.5rem 0 0;
       padding-left: 1rem;
       list-style: disc;
+      color: #4a2e1c; // Cocoa text
     }
 
     p {
       margin: 0.25rem 0;
+      color: #5d2c15;
     }
 
     &.clickable {
       cursor: pointer;
-      transition: transform 0.2s ease;
 
       &:hover {
         transform: scale(1.02);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
       }
     }
   }

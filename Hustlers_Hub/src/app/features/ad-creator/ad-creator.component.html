@@ -1,0 +1,37 @@
+<div class="promo-container">
+  <h2>Create Ad</h2>
+  <p class="subtitle">Share your latest deals and events with the community!</p>
+
+  <!-- User post form -->
+  <form class="promo-post-form" (ngSubmit)="submitPromotion()">
+    <input type="text"
+           placeholder="Promotion Title"
+           [(ngModel)]="newPromo.title"
+           name="title"
+           required />
+    <textarea placeholder="Description"
+              [(ngModel)]="newPromo.description"
+              name="description"
+              rows="3"
+              required></textarea>
+    <input type="url"
+           placeholder="Image URL"
+           [(ngModel)]="newPromo.imageUrl"
+           name="imageUrl"
+           required />
+    <button type="submit" class="btn primary">Post Promotion</button>
+  </form>
+
+  <!-- List of promotion cards -->
+  <div class="promo-list">
+    <div class="promo-card" *ngFor="let promo of promotions">
+      <img [src]="promo.imageUrl" alt="{{promo.title}}" />
+      <h3>{{ promo.title }}</h3>
+      <p>{{ promo.description }}</p>
+      <div class="promo-meta">
+        <span>Posted by {{ promo.user }}</span>
+        <span>{{ promo.date | date:'mediumDate' }}</span>
+      </div>
+    </div>
+  </div>
+</div>
