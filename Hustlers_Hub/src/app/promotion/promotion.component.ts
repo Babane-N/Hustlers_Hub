@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router'; // ✅ Import Router
 
 interface Promotion {
   title: string;
@@ -15,6 +16,8 @@ interface Promotion {
   styleUrls: ['./promotion.component.scss']
 })
 export class PromotionComponent {
+  constructor(private router: Router) { } // ✅ Inject Router
+
   promotions: Promotion[] = [
     {
       title: 'Summer Sale!',
@@ -50,6 +53,11 @@ export class PromotionComponent {
     category: ''
   };
 
+  // ✅ Navigation method
+  goToAdCreator(): void {
+    this.router.navigate(['/adcreator']);
+  }
+
   get uniqueCategories(): string[] {
     return [...new Set(this.promotions.map(p => p.category))];
   }
@@ -57,7 +65,6 @@ export class PromotionComponent {
   get filteredPromotions(): Promotion[] {
     let filtered = [...this.promotions];
 
-    // Search
     if (this.searchTerm.trim()) {
       const term = this.searchTerm.toLowerCase();
       filtered = filtered.filter(p =>
@@ -66,19 +73,17 @@ export class PromotionComponent {
       );
     }
 
-    // Filter by category
     if (this.filterCategory) {
       filtered = filtered.filter(p => p.category === this.filterCategory);
     }
 
-    // Sort
     filtered.sort((a, b) => {
       switch (this.sortBy) {
         case 'title':
           return a.title.localeCompare(b.title);
         case 'postedBy':
           return a.postedBy.localeCompare(b.postedBy);
-        default: // 'expires'
+        default:
           return new Date(a.expires).getTime() - new Date(b.expires).getTime();
       }
     });

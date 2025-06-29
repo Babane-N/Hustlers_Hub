@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace API.Data.Models
 {
-    public class Service
+    public class Promotion
     {
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
@@ -17,18 +17,19 @@ namespace API.Data.Models
         public string? ImageUrl { get; set; }
 
         [Required]
-        public decimal Price { get; set; }
+        public string Category { get; set; } // "Event", "Deal", "Buy & Sell", "Job", "Announcement"
 
         [Required]
-        public int DurationMinutes { get; set; }
+        public Guid PostedById { get; set; }
 
-        public string Category { get; set; }
+        public bool IsBoosted { get; set; } = false;
 
-        [Required]
-        public Guid BusinessId { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        [ForeignKey("BusinessId")]
-        public Business Business { get; set; }
+        public DateTime ExpiresAt { get; set; }
+
+        [ForeignKey("PostedById")]
+        public User PostedBy { get; set; }
     }
 
 }
