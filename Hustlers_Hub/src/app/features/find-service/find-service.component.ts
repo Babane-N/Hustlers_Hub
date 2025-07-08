@@ -1,41 +1,29 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { ServiceProviderService, ServiceProvider } from './ServiceProvider';
 
 @Component({
   selector: 'app-find-service',
   templateUrl: './find-service.component.html',
   styleUrls: ['./find-service.component.scss']
 })
-export class FindServiceComponent {
-  constructor(private router: Router) { }
+export class FindServiceComponent implements OnInit {
+  constructor(
+    private router: Router,
+    private providerService: ServiceProviderService // ✅ Fixed service injection
+  ) { }
 
   searchTerm = '';
   selectedService = '';
   sortBy = 'name';
 
-  serviceProviders = [
-    {
-      name: 'Lebo Dlamini',
-      service: 'Electrician',
-      location: 'Johannesburg',
-      image: 'https://randomuser.me/api/portraits/men/32.jpg',
-      description: 'Specialist in home wiring and appliance repairs.'
-    },
-    {
-      name: 'Thandi Mokoena',
-      service: 'House Cleaner',
-      location: 'Pretoria',
-      image: 'https://randomuser.me/api/portraits/women/44.jpg',
-      description: 'Reliable and efficient cleaning for homes and offices.'
-    },
-    {
-      name: 'Sbu Khumalo',
-      service: 'Fitness Trainer',
-      location: 'Durban',
-      image: 'https://randomuser.me/api/portraits/men/55.jpg',
-      description: 'Helping clients stay fit with custom workout plans.'
-    }
-  ];
+  serviceProviders: ServiceProvider[] = [];
+
+  ngOnInit(): void {
+    this.providerService.getProviders().subscribe(data => {
+      this.serviceProviders = data;
+    });
+  }
 
   get uniqueServices(): string[] {
     return [...new Set(this.serviceProviders.map(p => p.service))];

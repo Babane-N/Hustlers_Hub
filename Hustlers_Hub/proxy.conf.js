@@ -8,10 +8,11 @@ const target = env.ASPNETCORE_HTTPS_PORT
 
 module.exports = [
   {
-    context: ['/api'],
+    context: [
+      "/api",
+    ],
     target: target,
     secure: false,
-    changeOrigin: true,
-    logLevel: 'debug'
+    changeOrigin: true
   }
 ];

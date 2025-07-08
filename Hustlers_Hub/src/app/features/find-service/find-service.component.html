@@ -19,7 +19,7 @@
        *ngFor="let provider of filteredProviders"
        (click)="goFindServiceDetail()"
        style="cursor: pointer;">
-    <img [src]="provider.image" alt="Profile" class="profile-pic" />
+    <img [src]="provider.imageUrl" alt="Profile" class="profile-pic" />
     <h3>{{ provider.name }}</h3>
     <p class="service">{{ provider.service }}</p>
     <p class="location">

@@ -12,12 +12,16 @@ namespace API.Data
         public DbSet<Service> Services { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Booking> Bookings { get; set; }
-
-        public DbSet<Promotion> Promotions { get; set; }      // 🆕 Added
-        public DbSet<Comment> Comments { get; set; }          // 🆕 Added
+        public DbSet<Promotion> Promotions { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Decimal precision for Price and similar properties
+            modelBuilder.Entity<Service>()
+                .Property(s => s.Price)
+                .HasColumnType("decimal(18,2)");
+
             // Booking relationships
             modelBuilder.Entity<Booking>()
                 .HasOne(b => b.Customer)
@@ -62,6 +66,7 @@ namespace API.Data
                 .HasOne(c => c.Promotion)
                 .WithMany()
                 .HasForeignKey(c => c.PromotionId)
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
