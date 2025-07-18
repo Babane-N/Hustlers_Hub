@@ -26,7 +26,7 @@ export class FindServiceComponent implements OnInit {
   }
 
   get uniqueServices(): string[] {
-    return [...new Set(this.serviceProviders.map(p => p.service))];
+    return [...new Set(this.serviceProviders.map(p => p.category))];
   }
 
   get filteredProviders() {
@@ -36,23 +36,23 @@ export class FindServiceComponent implements OnInit {
     if (this.searchTerm.trim()) {
       const term = this.searchTerm.toLowerCase();
       result = result.filter(p =>
-        p.name.toLowerCase().includes(term) ||
-        p.service.toLowerCase().includes(term) ||
-        p.location.toLowerCase().includes(term)
+        p.businessName.toLowerCase().includes(term) ||
+        p.category.toLowerCase().includes(term) ||
+        p.businessLocation.toLowerCase().includes(term)
       );
     }
 
     // Filter by service
     if (this.selectedService) {
-      result = result.filter(p => p.service === this.selectedService);
+      result = result.filter(p => p.category === this.selectedService);
     }
 
     // Sort
     result.sort((a, b) => {
       if (this.sortBy === 'name') {
-        return a.name.localeCompare(b.name);
+        return a.businessName.localeCompare(b.businessName);
       } else if (this.sortBy === 'location') {
-        return a.location.localeCompare(b.location);
+        return a.businessLocation.localeCompare(b.businessLocation);
       }
       return 0;
     });

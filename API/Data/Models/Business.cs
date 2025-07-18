@@ -10,7 +10,7 @@ namespace API.Data.Models
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [Required, MaxLength(100)]
-        public string BusisnssName { get; set; }
+        public string BusinessName { get; set; }
 
         public string Description { get; set; }
 

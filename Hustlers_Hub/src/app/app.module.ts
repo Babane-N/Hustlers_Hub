@@ -16,6 +16,9 @@ import { FindServiceComponent } from './features/find-service/find-service.compo
 import { ServiceDetailComponent } from './features/service-detail/service-detail.component';
 import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { BookingDialogComponent } from './features/booking-dialog/booking-dialog.component';
+import { PromotionComponent } from './promotion/promotion.component';
+import { AdCreatorComponent } from './features/ad-creator/ad-creator.component';
+import { HomePageComponent } from './Customer/home-page/home-page.component';
 
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
@@ -31,8 +34,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
-import { PromotionComponent } from './promotion/promotion.component';
-import { AdCreatorComponent } from './features/ad-creator/ad-creator.component';
+import { ReactiveFormsModule } from '@angular/forms';
+
 
 
 
@@ -54,7 +57,8 @@ import { AdCreatorComponent } from './features/ad-creator/ad-creator.component';
     DashboardComponent,
     BookingDialogComponent,
     PromotionComponent,
-    AdCreatorComponent
+    AdCreatorComponent,
+    HomePageComponent
   ],
   imports: [
     BrowserModule,
@@ -71,7 +75,8 @@ import { AdCreatorComponent } from './features/ad-creator/ad-creator.component';
     MatDatepickerModule,
     MatNativeDateModule,
     MatCardModule,
-    MatDialogModule
+    MatDialogModule,
+    ReactiveFormsModule
   ],
   providers: [
     provideAnimationsAsync()

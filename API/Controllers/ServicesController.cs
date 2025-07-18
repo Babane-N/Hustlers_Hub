@@ -21,25 +21,27 @@ namespace API.Controllers
             _context = context;
         }
 
-        // GET: api/Services
+        // ✅ Updated GET: api/Services
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Service>>> GetServices()
+        public async Task<ActionResult<IEnumerable<object>>> GetServices()
         {
-            return await _context.Services.ToListAsync();
-        }
+            var servicesWithBusiness = await _context.Services
+                .Include(s => s.Business) // Make sure navigation property exists
+                .Select(s => new
+                {
+                    s.Id,
+                    s.Title,
+                    s.Category,
+                    s.Description,
+                    s.ImageUrl,
+                    s.Price,
+                    s.DurationMinutes,
+                    BusinessName = s.Business.BusinessName,
+                    BusinessLocation = s.Business.Location
+                })
+                .ToListAsync();
 
-        // GET: api/Services/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Service>> GetService(Guid id)
-        {
-            var service = await _context.Services.FindAsync(id);
-
-            if (service == null)
-            {
-                return NotFound();
-            }
-
-            return service;
+            return Ok(servicesWithBusiness);
         }
 
         // PUT: api/Services/5

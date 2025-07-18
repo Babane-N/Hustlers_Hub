@@ -3,11 +3,15 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 export interface ServiceProvider {
-  name: string;
-  service: string;
-  location: string;
+  id: string;
+  title: string;
+  category: string;
   description: string;
   imageUrl: string;
+  price: number;
+  durationMinutes: number;
+  businessName: string;
+  businessLocation: string;
 }
 
 @Injectable({

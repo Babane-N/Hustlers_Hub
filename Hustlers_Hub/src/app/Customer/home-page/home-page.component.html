@@ -1,0 +1,27 @@
+<div class="home-container">
+  <header class="hero">
+    <h1>Hustlers Hub 👋</h1>
+    <p>Find local services or explore what's happening around you</p>
+
+    <div class="tab-toggle">
+      <button [class.active]="activeTab === 'services'"
+              (click)="switchTab('services')">
+        🔍 Services
+      </button>
+      <button [class.active]="activeTab === 'promotion'"
+              (click)="switchTab('promotion')">
+        🎉 Promotions
+      </button>
+    </div>
+  </header>
+
+  <div class="tab-content">
+    <ng-container *ngIf="activeTab === 'services'">
+      <app-find-service></app-find-service>
+    </ng-container>
+
+    <ng-container *ngIf="activeTab === 'promotion'">
+      <app-promotion></app-promotion>
+    </ng-container>
+  </div>
+</div>

@@ -20,10 +20,10 @@
        (click)="goFindServiceDetail()"
        style="cursor: pointer;">
     <img [src]="provider.imageUrl" alt="Profile" class="profile-pic" />
-    <h3>{{ provider.name }}</h3>
-    <p class="service">{{ provider.service }}</p>
+    <h3>{{ provider.businessName }}</h3>
+    <p class="service">{{ provider.category }}</p>
     <p class="location">
-      <mat-icon>location_on</mat-icon> {{ provider.location }}
+      <mat-icon>location_on</mat-icon> {{ provider.businessLocation }}
     </p>
     <p class="bio">{{ provider.description }}</p>
   </div>
