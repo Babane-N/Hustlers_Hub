@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { RegisterComponent } from './register/register.component';
 import { LoginComponent } from './login/login.component';
 import { HomeComponent } from './home/home.component';
+import { RegisterBusinessComponent } from './features/register-business/register-business.component';
 import { FindServiceComponent } from './features/find-service/find-service.component';
 import { ServiceDetailComponent } from './features/service-detail/service-detail.component';
 import { BookingsComponent } from './bookings/bookings.component';
@@ -17,6 +18,7 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
   { path: 'home', component: HomeComponent },
+  { path: 'register-business', component: RegisterBusinessComponent },
   { path: 'find-service', component: FindServiceComponent },
   { path: 'service-detail', component: ServiceDetailComponent },
   { path: 'bookings', component: BookingsComponent },

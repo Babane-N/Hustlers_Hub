@@ -19,6 +19,7 @@ import { BookingDialogComponent } from './features/booking-dialog/booking-dialog
 import { PromotionComponent } from './promotion/promotion.component';
 import { AdCreatorComponent } from './features/ad-creator/ad-creator.component';
 import { HomePageComponent } from './Customer/home-page/home-page.component';
+import { RegisterBusinessComponent } from './features/register-business/register-business.component';
 
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
@@ -35,6 +36,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
+
 
 
 
@@ -58,7 +60,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     BookingDialogComponent,
     PromotionComponent,
     AdCreatorComponent,
-    HomePageComponent
+    HomePageComponent,
+    RegisterBusinessComponent
   ],
   imports: [
     BrowserModule,
