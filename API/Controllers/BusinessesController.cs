@@ -22,10 +22,13 @@ namespace API.Controllers
         }
 
         // GET: api/Businesses
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Business>>> GetBusinesses()
+        [HttpGet("Users/{userId}")]
+        public async Task<ActionResult<IEnumerable<Business>>> GetBusinesses(Guid userId)
         {
-            return await _context.Businesses.ToListAsync();
+            var businesses = await _context.Businesses
+                .Where(b => b.UserId == userId)
+                .ToListAsync();
+            return Ok(businesses);
         }
 
         // GET: api/Businesses/5

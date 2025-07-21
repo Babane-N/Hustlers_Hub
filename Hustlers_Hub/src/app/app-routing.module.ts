@@ -11,6 +11,7 @@ import { BookingsComponent } from './bookings/bookings.component';
 import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { PromotionComponent } from './promotion/promotion.component';
 import { AdCreatorComponent } from './features/ad-creator/ad-creator.component';
+import { BusinessSwitcherComponent } from './features/business-switcher/business-switcher.component';
 import { HomePageComponent } from './Customer/home-page/home-page.component';
 
 const routes: Routes = [
@@ -19,6 +20,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'home', component: HomeComponent },
   { path: 'register-business', component: RegisterBusinessComponent },
+  { path: 'business-switcher', component: BusinessSwitcherComponent },
   { path: 'find-service', component: FindServiceComponent },
   { path: 'service-detail', component: ServiceDetailComponent },
   { path: 'bookings', component: BookingsComponent },

@@ -1,0 +1,8 @@
+<label for="business-select">Switch Business:</label>
+<select id="business-select"
+        [(ngModel)]="selectedBusinessId"
+        (change)="onSwitchBusiness(selectedBusinessId)">
+  <option *ngFor="let business of businesses" [value]="business.id">
+    {{ business.businessName }}
+  </option>
+</select>
