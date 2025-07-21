@@ -2,30 +2,37 @@
   <header class="hero">
     <h1>Hustlers Hub 🚀</h1>
     <p>Your go-to marketplace for local services and promotions</p>
+
+    <!-- Business Info Display -->
+    <div *ngIf="currentBusiness; else noBusiness" class="business-info">
+      <h2>Welcome, {{ currentBusiness.businessName }}</h2>
+      <p><strong>Category:</strong> {{ currentBusiness.category }}</p>
+      <p><strong>Location:</strong> {{ currentBusiness.location }}</p>
+      <p><strong>Description:</strong> {{ currentBusiness.description }}</p>
+    </div>
+
+    <ng-template #noBusiness>
+      <p class="info">Please select a business to start managing your hustle.</p>
+    </ng-template>
+
     <div class="hero-actions">
-      <a routerLink="/business-switcher" class="btn primary">View Businesses</a>
+      <a routerLink="/business-switcher" class="btn primary">Switch Business</a>
       <a routerLink="/promotions" class="btn secondary">View Promotions</a>
     </div>
   </header>
 
   <section class="features">
-    <!-- Clickable Card: Find Local Services -->
     <a class="feature-card" routerLink="/find-service">
-      <!-- TODO: Confirm or update the router link path for local services -->
       <h3>🛍️ Find Local Services</h3>
       <p>Browse, book, and review local service providers in your area.</p>
     </a>
 
-    <!-- Clickable Card: Promote Your Hustle -->
     <a class="feature-card" routerLink="/promotion">
-      <!-- TODO: Confirm or update the router link path for promotion submission -->
       <h3>📢 Promote Your Hustle</h3>
       <p>Post events, deals, or anything else to reach your community.</p>
     </a>
 
-    <!-- Clickable Card: Manage Bookings -->
     <a class="feature-card" routerLink="/dashboard">
-      <!-- TODO: Replace with the actual path to the bookings management dashboard -->
       <h3>📅 Manage Bookings</h3>
       <p>Track your bookings and connect with your clients easily.</p>
     </a>

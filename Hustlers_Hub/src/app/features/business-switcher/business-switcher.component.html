@@ -1,8 +1,17 @@
-<label for="business-select">Switch Business:</label>
-<select id="business-select"
-        [(ngModel)]="selectedBusinessId"
-        (change)="onSwitchBusiness(selectedBusinessId)">
-  <option *ngFor="let business of businesses" [value]="business.id">
-    {{ business.businessName }}
-  </option>
-</select>
+<div class="business-switcher">
+  <h3>Select a Business</h3>
+
+  <div class="business-cards">
+    <div class="business-card"
+         *ngFor="let business of businesses"
+         [class.selected]="business.id === selectedBusinessId"
+         (click)="onSwitchBusiness(business.id)">
+      <img *ngIf="business.imageUrl" [src]="business.imageUrl" alt="{{ business.businessName }}" />
+      <div class="info">
+        <h4>{{ business.businessName }}</h4>
+        <p>{{ business.location }}</p>
+        <span class="category">{{ business.category }}</span>
+      </div>
+    </div>
+  </div>
+</div>

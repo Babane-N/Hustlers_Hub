@@ -8,6 +8,7 @@ export interface Business {
   businessName: string;
   category: string;
   description: string;
+  imageUrl: string;
   location: string;
   userId: string;
 }
