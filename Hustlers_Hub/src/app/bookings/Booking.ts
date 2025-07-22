@@ -18,7 +18,7 @@ export interface Booking {
 
 export class BookingProvider
 {
-  private apiUrl = 'https://localhost:7018/api/Services';
+  private apiUrl = 'https://localhost:7018/api/Bookings';
 
   constructor(private http: HttpClient) { }
 
