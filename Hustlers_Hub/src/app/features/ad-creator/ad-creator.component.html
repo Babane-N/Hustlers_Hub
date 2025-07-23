@@ -3,34 +3,58 @@
   <p class="subtitle">Share your latest deals and events with the community!</p>
 
   <!-- User post form -->
-  <form class="promo-post-form" (ngSubmit)="submitPromotion()">
+  <form class="promo-post-form" (ngSubmit)="submitPromotion()" enctype="multipart/form-data">
+    <!-- Title -->
     <input type="text"
            placeholder="Promotion Title"
            [(ngModel)]="newPromo.title"
            name="title"
            required />
+
+    <!-- Description -->
     <textarea placeholder="Description"
               [(ngModel)]="newPromo.description"
               name="description"
               rows="3"
               required></textarea>
-    <input type="url"
-           placeholder="Image URL"
-           [(ngModel)]="newPromo.imageUrl"
-           name="imageUrl"
-           required />
+
+    <!-- Category Dropdown -->
+    <select [(ngModel)]="newPromo.category"
+            name="category"
+            required>
+      <option value="" disabled selected>Select Category</option>
+      <option value="Event">Event</option>
+      <option value="Deal">Deal</option>
+      <option value="Buy & Sell">Buy & Sell</option>
+      <option value="Job">Job</option>
+      <option value="Announcement">Announcement</option>
+    </select>
+
+    <!-- Image Upload -->
+    <label class="file-label">
+      Upload Image
+      <input type="file" (change)="onImageSelected($event)" accept="image/*" />
+    </label>
+
+    <!-- Image Preview -->
+    <div *ngIf="imagePreview" class="image-preview">
+      <p>Preview:</p>
+      <img [src]="imagePreview" alt="Preview" />
+    </div>
+
+    <!-- Submit -->
     <button type="submit" class="btn primary">Post Promotion</button>
   </form>
 
   <!-- List of promotion cards -->
   <div class="promo-list">
     <div class="promo-card" *ngFor="let promo of promotions">
-      <img [src]="promo.imageUrl" alt="{{promo.title}}" />
+      <img [src]="promo.imageUrl" alt="{{ promo.title }}" />
       <h3>{{ promo.title }}</h3>
       <p>{{ promo.description }}</p>
       <div class="promo-meta">
-        <span>Posted by {{ promo.user }}</span>
-        <span>{{ promo.date | date:'mediumDate' }}</span>
+        <span>Posted by {{ promo.user || 'Anonymous' }}</span>
+        <span>{{ promo.date | date: 'mediumDate' }}</span>
       </div>
     </div>
   </div>

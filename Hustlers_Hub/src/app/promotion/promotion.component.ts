@@ -1,59 +1,44 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router'; // ✅ Import Router
-
-interface Promotion {
-  title: string;
-  description: string;
-  imageUrl: string;
-  postedBy: string;
-  expires: Date;
-  category: string;
-}
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { Promotion, PromotionProvider } from './Promotion';
 
 @Component({
   selector: 'app-promotion',
   templateUrl: './promotion.component.html',
   styleUrls: ['./promotion.component.scss']
 })
-export class PromotionComponent {
-  constructor(private router: Router) { } // ✅ Inject Router
-
-  promotions: Promotion[] = [
-    {
-      title: 'Summer Sale!',
-      description: 'Get 20% off all local services this summer.',
-      imageUrl: 'https://via.placeholder.com/300x160?text=Summer+Sale',
-      postedBy: 'John Doe',
-      expires: new Date('2025-07-31'),
-      category: 'Sales'
-    },
-    {
-      title: 'Fitness Bootcamp',
-      description: 'Join our free fitness bootcamp every Saturday morning.',
-      imageUrl: 'https://via.placeholder.com/300x160?text=Fitness+Bootcamp',
-      postedBy: 'Jane Smith',
-      expires: new Date('2025-06-30'),
-      category: 'Events'
-    }
-  ];
-
-  // Controls for search, filter and sort
-  searchTerm: string = '';
-  filterCategory: string = '';
-  sortBy: string = 'expires';
-
+export class PromotionComponent implements OnInit {
+  promotions: Promotion[] = [];
+  searchTerm = '';
+  filterCategory = '';
+  sortBy = 'expires'; // Default sort
   showCreateForm = false;
 
-  newPromo: Promotion = {
+  // Model for form input (bound in template)
+  formData: Partial<Promotion> = {
     title: '',
     description: '',
     imageUrl: '',
-    postedBy: 'Anonymous',
+    category: '',
     expires: new Date(),
-    category: ''
+    postedBy: 'Anonymous'
   };
 
-  // ✅ Navigation method
+  constructor(
+    private router: Router,
+    private promotionService: PromotionProvider
+  ) { }
+
+  ngOnInit(): void {
+    this.loadPromotions();
+  }
+
+  loadPromotions(): void {
+    this.promotionService.getPromotion().subscribe(data => {
+      this.promotions = data;
+    });
+  }
+
   goToAdCreator(): void {
     this.router.navigate(['/adcreator']);
   }
@@ -91,42 +76,52 @@ export class PromotionComponent {
     return filtered;
   }
 
-  openCreatePromoModal() {
+  openCreatePromoModal(): void {
     this.showCreateForm = true;
   }
 
-  cancelCreate() {
+  cancelCreate(): void {
     this.showCreateForm = false;
     this.resetForm();
   }
 
-  submitPromotion() {
+  submitPromotion(): void {
     if (
-      this.newPromo.title.trim() &&
-      this.newPromo.description.trim() &&
-      this.newPromo.imageUrl.trim() &&
-      this.newPromo.category.trim()
+      this.formData.title?.trim() &&
+      this.formData.description?.trim() &&
+      this.formData.imageUrl?.trim() &&
+      this.formData.category?.trim()
     ) {
-      this.promotions.unshift({
-        ...this.newPromo,
-        postedBy: 'You',
-        expires: new Date(this.newPromo.expires)
+      const newPromotion: Promotion = {
+        title: this.formData.title,
+        description: this.formData.description,
+        imageUrl: this.formData.imageUrl,
+        category: this.formData.category,
+        expires: new Date(this.formData.expires ?? new Date()),
+        postedBy: this.formData.postedBy || 'Anonymous'
+      };
+
+      this.promotionService.postPromotion(newPromotion).subscribe({
+        next: () => {
+          this.loadPromotions(); // Refresh from backend
+          this.resetForm();
+          this.showCreateForm = false;
+        },
+        error: () => alert('Error saving promotion.')
       });
-      this.resetForm();
-      this.showCreateForm = false;
     } else {
-      alert('Please fill all fields.');
+      alert('Please fill in all fields.');
     }
   }
 
-  private resetForm() {
-    this.newPromo = {
+  private resetForm(): void {
+    this.formData = {
       title: '',
       description: '',
       imageUrl: '',
-      postedBy: 'Anonymous',
+      category: '',
       expires: new Date(),
-      category: ''
+      postedBy: 'Anonymous'
     };
   }
 }
