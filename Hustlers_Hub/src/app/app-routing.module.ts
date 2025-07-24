@@ -16,7 +16,8 @@ import { BusinessSwitcherComponent } from './features/business-switcher/business
 import { HomePageComponent } from './Customer/home-page/home-page.component';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: '', component: HomePageComponent },
+  { path: 'home-page', component: HomePageComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
   { path: 'home', component: HomeComponent },
@@ -43,7 +44,6 @@ const routes: Routes = [
     canActivate: [RoleGuard],
     data: { roles: ['customer', 'business', 'admin'] }
   },
-  { path: 'home-page', component: HomePageComponent }
 ];
 
 @NgModule({

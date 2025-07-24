@@ -1,3 +1,14 @@
+<!-- Hero Heading Section -->
+<div class="hero-heading">
+  <h2>Local Hustlers, Trusted Services</h2>
+  <p class="slogan">Empowering small businesses near you, one connection at a time.</p>
+
+  <button class="register-btn" (click)="goToRegisterBusiness()">
+    + Register Your Business
+  </button>
+</div>
+
+<!-- Search and Filter Bar -->
 <div class="search-filter-bar">
   <input type="text"
          placeholder="Search by name, service, or location"
@@ -14,6 +25,7 @@
   </select>
 </div>
 
+<!-- Results Grid -->
 <div class="results-grid">
   <div class="service-card"
        *ngFor="let provider of filteredProviders"

@@ -25,6 +25,11 @@ export class FindServiceComponent implements OnInit {
     });
   }
 
+  goToRegisterBusiness() {
+    this.router.navigate(['/register-business']); // adjust route as needed
+  }
+
+
   get uniqueServices(): string[] {
     return [...new Set(this.serviceProviders.map(p => p.category))];
   }

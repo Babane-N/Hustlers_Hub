@@ -12,9 +12,14 @@
   }
 
   &:hover {
-    background-color: #a87450;
+    background-color: #fff3e6;
     color: #fff;
   }
+}
+
+.custom-toolbar {
+  background-color: #fff3e6;
+  color: #333; // optional: ensure text/icons are visible
 }
 
 

@@ -1,41 +1,75 @@
-<mat-sidenav-container class="sidenav-container">
-  <mat-sidenav mode="side" [opened]="isOpened" class="sidenav">
+<<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav mode="side" [opened]="isOpened" class="sidenav" fixedInViewport>
     <mat-toolbar color="primary">Menus</mat-toolbar>
     <mat-nav-list>
 
       <!-- Business Role -->
       <ng-container *ngIf="userRole === 'business'">
-        <a mat-list-item routerLink="/dashboard">Dashboard</a>
-        <a mat-list-item routerLink="/bookings">Bookings</a>
-        <a mat-list-item routerLink="/promotion">Promotions</a>
-        <a mat-list-item routerLink="/business-switcher">Switch Business</a>
+        <a mat-list-item routerLink="/dashboard">
+          <mat-icon>dashboard</mat-icon>
+          <span>Dashboard</span>
+        </a>
+        <a mat-list-item routerLink="/bookings">
+          <mat-icon>event</mat-icon>
+          <span>Bookings</span>
+        </a>
+        <a mat-list-item routerLink="/promotion">
+          <mat-icon>campaign</mat-icon>
+          <span>Promotions</span>
+        </a>
+        <a mat-list-item routerLink="/business-switcher">
+          <mat-icon>swap_horiz</mat-icon>
+          <span>Switch Business</span>
+        </a>
       </ng-container>
 
       <!-- Customer Role -->
       <ng-container *ngIf="userRole === 'customer'">
-        <a mat-list-item routerLink="/home-page">Home</a>
-        <a mat-list-item routerLink="/promotions">Community Promotions</a>
-        <a mat-list-item routerLink="/customer-bookings">My Bookings</a>
-        <a mat-list-item routerLink="/login">Login</a>
+        <a mat-list-item routerLink="/home-page">
+          <mat-icon>home</mat-icon>
+          <span>Home</span>
+        </a>
+        <a mat-list-item routerLink="/promotions">
+          <mat-icon>campaign</mat-icon>
+          <span>Community Promotions</span>
+        </a>
+        <a mat-list-item routerLink="/customer-bookings">
+          <mat-icon>event_note</mat-icon>
+          <span>My Bookings</span>
+        </a>
+        <a mat-list-item routerLink="/login">
+          <mat-icon>login</mat-icon>
+          <span>Login</span>
+        </a>
       </ng-container>
 
       <!-- Admin Role -->
       <ng-container *ngIf="userRole === 'admin'">
-        <a mat-list-item routerLink="/admin/users">Manage Users</a>
-        <a mat-list-item routerLink="/admin/businesses">Manage Businesses</a>
-        <a mat-list-item routerLink="/admin/reports">Reports</a>
+        <a mat-list-item routerLink="/admin/users">
+          <mat-icon>supervisor_account</mat-icon>
+          <span>Manage Users</span>
+        </a>
+        <a mat-list-item routerLink="/admin/businesses">
+          <mat-icon>business</mat-icon>
+          <span>Manage Businesses</span>
+        </a>
+        <a mat-list-item routerLink="/admin/reports">
+          <mat-icon>bar_chart</mat-icon>
+          <span>Reports</span>
+        </a>
       </ng-container>
 
     </mat-nav-list>
   </mat-sidenav>
 
   <mat-sidenav-content>
-    <mat-toolbar>
+    <mat-toolbar class="custom-toolbar">
       <button mat-icon-button (click)="toggleSidebar()">
         <mat-icon>menu</mat-icon>
       </button>
-      <span>My App</span>
+      <span class="app-title">Hustlers Hub</span>
     </mat-toolbar>
+    >
 
     <div class="main-content">
       <router-outlet></router-outlet>
