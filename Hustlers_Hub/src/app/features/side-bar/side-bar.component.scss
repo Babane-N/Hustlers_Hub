@@ -3,6 +3,20 @@
   background-color: #fff3e6;
   font-family: 'Segoe UI', sans-serif;
 }
+.login-item {
+  margin-top: auto;
+  color: #ffa94d;
+
+  mat-icon {
+    margin-right: 8px;
+  }
+
+  &:hover {
+    background-color: #a87450;
+    color: #fff;
+  }
+}
+
 
 mat-sidenav {
   width: 250px;

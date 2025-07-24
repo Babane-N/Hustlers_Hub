@@ -9,8 +9,9 @@ import { ProfileComponent } from './profile/profile.component';
 import { BookingsComponent } from './bookings/bookings.component';
 import { SearchComponent } from './search/search.component';
 import { AdminComponent } from './admin/admin.component';
-import { LoginComponent } from './login/login.component';
-import { RegisterComponent } from './register/register.component';
+import { LoginComponent } from './features/auth/login/login.component';
+import { RegisterComponent } from './features/auth/register/register.component';
+
 import { SideBarComponent } from './features/side-bar/side-bar.component';
 import { FindServiceComponent } from './features/find-service/find-service.component';
 import { ServiceDetailComponent } from './features/service-detail/service-detail.component';
@@ -37,6 +38,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
+import { TopBarComponent } from './features/shared/top-bar/top-bar.component';
 
 
 
@@ -64,7 +66,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     AdCreatorComponent,
     HomePageComponent,
     RegisterBusinessComponent,
-    BusinessSwitcherComponent
+    BusinessSwitcherComponent,
+    TopBarComponent
   ],
   imports: [
     BrowserModule,

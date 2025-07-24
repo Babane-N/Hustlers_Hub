@@ -1,29 +1,34 @@
-import { Component } from '@angular/core';
-
-type MenuKey = 'dashboard' | 'settings' | 'bookings' | 'promotion' | 'services' | 'business';
+import { Component, OnInit } from '@angular/core';
+import { AuthService } from './auth.Service'; // Adjust path if needed
 
 @Component({
   selector: 'app-side-bar',
   templateUrl: './side-bar.component.html',
   styleUrls: ['./side-bar.component.scss']
 })
-export class SideBarComponent {
-  isOpened = true;
+export class SideBarComponent implements OnInit {
+  userRole: string = 'customer'; // Default role
+  isOpened: boolean = true;
 
-  submenu: Record<MenuKey, boolean> = {
-    dashboard: false,
-    settings: false,
-    bookings: false,
-    promotion: false,
-    services: false,
-    business: false
-  };
+  constructor(private authService: AuthService) { }
 
-  toggleSubmenu(menu: MenuKey) {
-    this.submenu[menu] = !this.submenu[menu];
+  ngOnInit(): void {
+    const userData = localStorage.getItem('user');
+
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        this.userRole = user?.role || 'customer';
+      } catch {
+        this.userRole = 'customer';
+      }
+    } else {
+      // Ensure guest still sees customer sidebar
+      this.userRole = 'customer';
+    }
   }
 
-  toggleSidebar() {
+  toggleSidebar(): void {
     this.isOpened = !this.isOpened;
   }
 }

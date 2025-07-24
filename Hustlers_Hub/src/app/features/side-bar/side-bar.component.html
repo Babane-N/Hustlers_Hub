@@ -1,69 +1,40 @@
 <mat-sidenav-container class="sidenav-container">
-  <!-- Sidebar -->
-  <mat-sidenav #sidenav mode="side" [(opened)]="isOpened" class="sidenav">
-    <mat-toolbar color="primary" class="toolbar-title">
-      <span>Menus</span>
-    </mat-toolbar>
-
+  <mat-sidenav mode="side" [opened]="isOpened" class="sidenav">
+    <mat-toolbar color="primary">Menus</mat-toolbar>
     <mat-nav-list>
-      <mat-list-item routerLink="/dashboard">
-        <mat-icon>dashboard</mat-icon>
-        <span class="nav-text">Dashboard</span>
-      </mat-list-item>
 
-      <mat-list-item routerLink="/bookings">
-        <mat-icon>event</mat-icon>
-        <span class="nav-text">Bookings</span>
-      </mat-list-item>
+      <!-- Business Role -->
+      <ng-container *ngIf="userRole === 'business'">
+        <a mat-list-item routerLink="/dashboard">Dashboard</a>
+        <a mat-list-item routerLink="/bookings">Bookings</a>
+        <a mat-list-item routerLink="/promotion">Promotions</a>
+        <a mat-list-item routerLink="/business-switcher">Switch Business</a>
+      </ng-container>
 
-      <!-- Promotions -->
-      <mat-list-item (click)="toggleSubmenu('promotion')">
-        <mat-icon>campaign</mat-icon>
-        <span class="nav-text">Promotions</span>
-        <mat-icon class="expand-arrow">{{ submenu['promotion'] ? 'expand_less' : 'expand_more' }}</mat-icon>
-      </mat-list-item>
-      <div *ngIf="submenu['promotion']" class="submenu">
-        <a mat-list-item routerLink="/promotion">View Promotions</a>
-        <a mat-list-item routerLink="/post-promotion">Post Promotion</a>
-      </div>
+      <!-- Customer Role -->
+      <ng-container *ngIf="userRole === 'customer'">
+        <a mat-list-item routerLink="/home-page">Home</a>
+        <a mat-list-item routerLink="/promotions">Community Promotions</a>
+        <a mat-list-item routerLink="/customer-bookings">My Bookings</a>
+        <a mat-list-item routerLink="/login">Login</a>
+      </ng-container>
 
-      <!-- Services -->
-      <mat-list-item (click)="toggleSubmenu('services')">
-        <mat-icon>build</mat-icon>
-        <span class="nav-text">Services</span>
-        <mat-icon class="expand-arrow">{{ submenu['services'] ? 'expand_less' : 'expand_more' }}</mat-icon>
-      </mat-list-item>
-      <div *ngIf="submenu['services']" class="submenu">
-        <a mat-list-item routerLink="/services">Browse Services</a>
-        <a mat-list-item routerLink="/add-service">Add Service</a>
-      </div>
+      <!-- Admin Role -->
+      <ng-container *ngIf="userRole === 'admin'">
+        <a mat-list-item routerLink="/admin/users">Manage Users</a>
+        <a mat-list-item routerLink="/admin/businesses">Manage Businesses</a>
+        <a mat-list-item routerLink="/admin/reports">Reports</a>
+      </ng-container>
 
-      <mat-list-item routerLink="/register-business">
-        <mat-icon>business</mat-icon>
-        <span class="nav-text">Register Business</span>
-      </mat-list-item>
-
-      <!-- Settings -->
-      <mat-list-item (click)="toggleSubmenu('settings')">
-        <mat-icon>settings</mat-icon>
-        <span class="nav-text">Settings</span>
-        <mat-icon class="expand-arrow">{{ submenu['settings'] ? 'expand_less' : 'expand_more' }}</mat-icon>
-      </mat-list-item>
-      <div *ngIf="submenu['settings']" class="submenu">
-        <a mat-list-item routerLink="/profile">Profile</a>
-        <a mat-list-item routerLink="/account">Account</a>
-      </div>
     </mat-nav-list>
   </mat-sidenav>
 
-  <!-- Main Content -->
   <mat-sidenav-content>
-    <!-- Top toolbar -->
-    <mat-toolbar class="main-toolbar" color="primary">
-      <button mat-icon-button (click)="toggleSidebar()" class="toggle-btn">
+    <mat-toolbar>
+      <button mat-icon-button (click)="toggleSidebar()">
         <mat-icon>menu</mat-icon>
       </button>
-      <span class="brand-title">My App</span>
+      <span>My App</span>
     </mat-toolbar>
 
     <div class="main-content">

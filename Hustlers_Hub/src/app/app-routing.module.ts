@@ -1,8 +1,9 @@
 // app-routing.module.ts
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { RegisterComponent } from './register/register.component';
-import { LoginComponent } from './login/login.component';
+import { RegisterComponent } from './features/auth/register/register.component';
+import { RoleGuard } from './features/auth/role.guard';
+import { LoginComponent } from './features/auth/login/login.component';
 import { HomeComponent } from './home/home.component';
 import { RegisterBusinessComponent } from './features/register-business/register-business.component';
 import { FindServiceComponent } from './features/find-service/find-service.component';
@@ -24,11 +25,25 @@ const routes: Routes = [
   { path: 'find-service', component: FindServiceComponent },
   { path: 'service-detail', component: ServiceDetailComponent },
   { path: 'bookings', component: BookingsComponent },
-  { path: 'dashboard', component: DashboardComponent },
-  { path: 'promotion', component: PromotionComponent },
-  { path: 'adcreator', component: AdCreatorComponent },
+  {
+    path: 'dashboard',
+    component: DashboardComponent,
+    canActivate: [RoleGuard],
+    data: { roles: ['business', 'admin'] } // 👈 Only allow business & admin
+  },
+  {
+    path: 'adcreator',
+    component: AdCreatorComponent,
+    canActivate: [RoleGuard],
+    data: { roles: ['business'] } // 👈 Only allow business
+  },
+  {
+    path: 'promotion',
+    component: PromotionComponent,
+    canActivate: [RoleGuard],
+    data: { roles: ['customer', 'business', 'admin'] }
+  },
   { path: 'home-page', component: HomePageComponent }
-  // other routes...
 ];
 
 @NgModule({
