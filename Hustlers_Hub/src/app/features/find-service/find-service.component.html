@@ -29,7 +29,7 @@
 <div class="results-grid">
   <div class="service-card"
        *ngFor="let provider of filteredProviders"
-       (click)="goFindServiceDetail()"
+       (click)="goFindServiceDetail(provider)"
        style="cursor: pointer;">
     <img [src]="provider.imageUrl" alt="Profile" class="profile-pic" />
     <h3>{{ provider.businessName }}</h3>

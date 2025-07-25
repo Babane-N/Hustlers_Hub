@@ -1,30 +1,38 @@
 <div class="detail-container" *ngIf="provider">
-  <div class="profile-card">
-    <img [src]="provider.image" alt="{{ provider.name }}" />
-    <h2>{{ provider.name }}</h2>
-    <p class="service">{{ provider.service }}</p>
-    <p class="location">{{ provider.location }}</p>
-    <p class="description">{{ provider.description }}</p>
+  <!-- Profile / Summary -->
+  <div class="profile-card mat-elevation-z3">
+    <img [src]="provider.logUrl" alt="{{ provider.businessName }}" class="profile-img" />
 
-    <button mat-raised-button color="primary" (click)="openBookingDialog()">Book Now</button>
+    <div class="info">
+      <h2>{{ provider.businessName }}</h2>
+      <span *ngIf="provider.isVerified" class="verified-badge">
+        <mat-icon color="primary">verified</mat-icon> Verified
+      </span>
 
+      <p class="service"><strong>Service:</strong> {{ provider.service }}</p>
+      <p class="location"><mat-icon>location_on</mat-icon> {{ provider.location }}</p>
+      <p class="description">{{ provider.description }}</p>
+
+      <button mat-raised-button color="primary" (click)="openBookingDialog(provider.id)">Book Now</button>
+    </div>
   </div>
 
   <!-- Gallery -->
   <div class="gallery-section">
     <h3>Previous Work</h3>
     <div class="gallery">
-      <img *ngFor="let img of provider.gallery" [src]="img" alt="Work image" />
+      <img *ngFor="let img of provider.gallery" [src]="img" alt="Work image" class="gallery-img" />
     </div>
   </div>
 
   <!-- Reviews -->
   <div class="reviews-section">
     <h3>Client Reviews</h3>
-    <div *ngFor="let review of provider.reviews" class="review">
+    <div *ngFor="let review of provider.reviews" class="review mat-elevation-z1">
       <strong>{{ review.user }}</strong>
       <span class="stars">
         <mat-icon *ngFor="let star of [].constructor(review.rating)">star</mat-icon>
+        <mat-icon *ngFor="let empty of [].constructor(5 - review.rating)">star_border</mat-icon>
       </span>
       <p>{{ review.comment }}</p>
     </div>

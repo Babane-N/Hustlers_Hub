@@ -65,7 +65,8 @@ export class FindServiceComponent implements OnInit {
     return result;
   }
 
-  goFindServiceDetail() {
-    this.router.navigate(['./service-detail']);
+  goFindServiceDetail(provider: ServiceProvider) {
+    this.router.navigate(['/service-detail', provider.id]);
   }
+
 }

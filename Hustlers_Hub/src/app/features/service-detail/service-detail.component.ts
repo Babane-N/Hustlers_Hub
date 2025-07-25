@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { BookingDialogComponent } from '../booking-dialog/booking-dialog.component'; // Adjust the path if needed
+import { BookingDialogComponent } from '../booking-dialog/booking-dialog.component';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ServiceDetail, ServiceProvider } from './service.detail';
 
 @Component({
   selector: 'app-service-detail',
@@ -8,44 +10,49 @@ import { BookingDialogComponent } from '../booking-dialog/booking-dialog.compone
   styleUrls: ['./service-detail.component.scss']
 })
 export class ServiceDetailComponent implements OnInit {
-  provider: any;
+  provider!: ServiceDetail;
+  isLoading = true;
+  error = '';
 
-  providers = [
-    {
-      name: 'Lebo Dlamini',
-      service: 'Electrician',
-      location: 'Johannesburg',
-      image: 'https://randomuser.me/api/portraits/men/32.jpg',
-      description: 'Specialist in home wiring and appliance repairs.',
-      reviews: [
-        { user: 'Sipho', comment: 'Excellent service, quick and neat!', rating: 5 },
-        { user: 'Noma', comment: 'Reliable and professional.', rating: 4 }
-      ],
-      gallery: [
-        'https://source.unsplash.com/400x300/?electrician',
-        'https://source.unsplash.com/400x300/?wiring',
-        'https://source.unsplash.com/400x300/?tools'
-      ]
-    },
-    // More provider data here...
-  ];
-
-  constructor(private dialog: MatDialog) { }
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private dialog: MatDialog,
+    private serviceProvider: ServiceProvider
+  ) { }
 
   ngOnInit(): void {
-    // Your logic to initialize the provider data
-    const id = 0; // Example, change to dynamic fetching if necessary
-    this.provider = this.providers[id];
+    const id = this.route.snapshot.paramMap.get('id'); // 🔁 use string, not number
+
+    if (!id) {
+      this.error = 'Invalid service provider ID.';
+      this.isLoading = false;
+      return;
+    }
+
+    this.serviceProvider.getServiceDetails(id).subscribe({
+      next: (data) => {
+        this.provider = data;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.error = 'Could not load service provider.';
+        console.error(err);
+        this.isLoading = false;
+      }
+    });
   }
 
-  openBookingDialog(): void {
-    const dialogRef = this.dialog.open(BookingDialogComponent, {
-      width: '400px',
-      data: { provider: this.provider }
-    });
+  openBookingDialog(serviceId: number): void {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user || !user.role) {
+      alert('Please log in to book a service.');
+      this.router.navigate(['/login']);
+      return;
+    }
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('Dialog closed', result);
+    this.dialog.open(BookingDialogComponent, {
+      data: { serviceId }
     });
   }
 }

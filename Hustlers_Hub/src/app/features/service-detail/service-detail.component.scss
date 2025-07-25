@@ -1,71 +1,137 @@
 :host {
   display: block;
-  background-color: #fff3e6; // Dark orange
-  color: #fff3e6; // Light creamy text for contrast
+  background-color: #fff3e6;
+  color: #5d2c15;
   padding: 2rem;
   min-height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
 }
 
 .detail-container {
-  max-width: 800px;
+  max-width: 1000px;
   margin: auto;
-  padding: 2rem;
+  padding: 1rem;
 }
 
 .profile-card {
-  text-align: center;
-  background: #fff3e6; // Light peach for contrast
-  color: #5d2c15; // Cocoa brown text
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-  margin-bottom: 2rem;
-
-  img {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    margin-bottom: 1rem;
-    border: 3px solid #ffe0b2; // Soft gold ring
-  }
-
-  h2 {
-    color: #5d2c15; // Cocoa heading
-  }
-}
-
-.gallery-section,
-.reviews-section {
-  margin-top: 2rem;
-}
-
-.gallery {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 1.5rem;
+  background: #fffefc;
+  color: #5d2c15;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  align-items: center;
+  justify-content: center;
 
-  img {
-    width: 100%;
-    max-width: 240px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  .profile-img {
+    width: 140px;
+    height: 140px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 3px solid #ffe0b2;
+  }
+
+  .info {
+    flex: 1;
+    min-width: 250px;
+
+    h2 {
+      margin: 0;
+      font-size: 1.8rem;
+      color: #5d2c15;
+    }
+
+    .verified-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      background: #e6fffa;
+      padding: 4px 8px;
+      border-radius: 16px;
+      margin-top: 4px;
+      color: #00796b;
+
+      mat-icon {
+        font-size: 16px;
+        color: #00796b;
+      }
+    }
+
+    .service,
+    .location,
+    .description {
+      margin: 8px 0;
+      font-size: 0.95rem;
+    }
+
+    mat-icon {
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+
+    button {
+      margin-top: 1rem;
+    }
   }
 }
 
-.review {
-  background: #fff3e6; // Light warm card
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border-left: 4px solid #ffe0b2; // Gold accent
-  border-radius: 8px;
-  color: #5d2c15;
+.gallery-section {
+  margin-top: 2.5rem;
 
-  .stars {
-    color: #a87450; // Warm muted orange-brown
-    margin-left: 0.5rem;
+  h3 {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
   }
 
-  p {
-    margin: 0.5rem 0 0 0;
+  .gallery {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+
+    img {
+      width: 180px;
+      height: 120px;
+      border-radius: 10px;
+      object-fit: cover;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    }
+  }
+}
+
+.reviews-section {
+  margin-top: 2.5rem;
+
+  h3 {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+  }
+
+  .review {
+    background: #fff7ed;
+    padding: 1rem;
+    border-left: 4px solid #ffc266;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+
+    strong {
+      color: #5d2c15;
+      font-weight: 600;
+    }
+
+    .stars {
+      color: #f4b400;
+      margin-left: 6px;
+      font-size: 0.9rem;
+    }
+
+    p {
+      margin: 0.5rem 0 0;
+      font-size: 0.9rem;
+      color: #4e342e;
+    }
   }
 }

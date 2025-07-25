@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API.Data;
@@ -21,12 +20,12 @@ namespace API.Controllers
             _context = context;
         }
 
-        // ✅ Updated GET: api/Services
+        // ✅ Existing endpoint: GET: api/Services
         [HttpGet]
         public async Task<ActionResult<IEnumerable<object>>> GetServices()
         {
             var servicesWithBusiness = await _context.Services
-                .Include(s => s.Business) // Make sure navigation property exists
+                .Include(s => s.Business)
                 .Select(s => new
                 {
                     s.Id,
@@ -44,15 +43,43 @@ namespace API.Controllers
             return Ok(servicesWithBusiness);
         }
 
+        // ✅ NEW endpoint: GET api/Services/detail/{id}
+        [HttpGet("detail/{id}")]
+        public async Task<ActionResult<object>> GetServiceWithBusiness(Guid id)
+        {
+            var service = await _context.Services
+                .Include(s => s.Business)
+                .Where(s => s.Id == id)
+                .Select(s => new
+                {
+                    s.Id,
+                    s.Title,
+                    s.Description,
+                    s.Category,
+                    s.ImageUrl,
+                    s.Price,
+                    s.DurationMinutes,
+                    BusinessName = s.Business.BusinessName,
+                    BusinessLogo = s.Business.LogoUrl,
+                    BusinessLocation = s.Business.Location,
+                    BusinessDescription = s.Business.Description,
+                    IsVerified = s.Business.IsVerified
+                    
+                })
+                .FirstOrDefaultAsync();
+
+            if (service == null)
+                return NotFound();
+
+            return Ok(service);
+        }
+
         // PUT: api/Services/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutService(Guid id, Service service)
         {
             if (id != service.Id)
-            {
                 return BadRequest();
-            }
 
             _context.Entry(service).State = EntityState.Modified;
 
@@ -63,20 +90,15 @@ namespace API.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 if (!ServiceExists(id))
-                {
                     return NotFound();
-                }
                 else
-                {
                     throw;
-                }
             }
 
             return NoContent();
         }
 
         // POST: api/Services
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Service>> PostService(Service service)
         {
@@ -92,9 +114,7 @@ namespace API.Controllers
         {
             var service = await _context.Services.FindAsync(id);
             if (service == null)
-            {
                 return NotFound();
-            }
 
             _context.Services.Remove(service);
             await _context.SaveChangesAsync();

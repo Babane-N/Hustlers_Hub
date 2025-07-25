@@ -14,6 +14,7 @@ import { PromotionComponent } from './promotion/promotion.component';
 import { AdCreatorComponent } from './features/ad-creator/ad-creator.component';
 import { BusinessSwitcherComponent } from './features/business-switcher/business-switcher.component';
 import { HomePageComponent } from './Customer/home-page/home-page.component';
+import { BookingDialogComponent } from './features/booking-dialog/booking-dialog.component';
 
 const routes: Routes = [
   { path: '', component: HomePageComponent },
@@ -21,10 +22,9 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
   { path: 'home', component: HomeComponent },
-  { path: 'register-business', component: RegisterBusinessComponent },
   { path: 'business-switcher', component: BusinessSwitcherComponent },
   { path: 'find-service', component: FindServiceComponent },
-  { path: 'service-detail', component: ServiceDetailComponent },
+  { path: 'service-detail/:id', component: ServiceDetailComponent },
   { path: 'bookings', component: BookingsComponent },
   {
     path: 'dashboard',
@@ -36,13 +36,25 @@ const routes: Routes = [
     path: 'adcreator',
     component: AdCreatorComponent,
     canActivate: [RoleGuard],
-    data: { roles: ['business'] } // 👈 Only allow business
+    data: { roles: ['business', 'customer'] } // 👈 Only allow business
   },
   {
     path: 'promotion',
     component: PromotionComponent,
     canActivate: [RoleGuard],
     data: { roles: ['customer', 'business', 'admin'] }
+  },
+  {
+    path: 'register-business',
+    component: RegisterBusinessComponent,
+    canActivate: [RoleGuard],
+    data: {roles: ['customer', 'business', 'admin']}
+  },
+  {
+    path: 'booking-dialog',
+    component: BookingDialogComponent,
+    canActivate: [RoleGuard],
+    data: {roles: ['customer', 'business', 'admin']}
   },
 ];
 
