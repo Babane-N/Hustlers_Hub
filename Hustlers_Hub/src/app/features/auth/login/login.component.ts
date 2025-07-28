@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -12,7 +13,13 @@ export class LoginComponent {
   isLoading = false;
   loginError = '';
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  private loginUrl = 'https://localhost:7018/api/Users/login'; // 🔁 Update if your endpoint differs
+
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private http: HttpClient
+  ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
@@ -25,35 +32,40 @@ export class LoginComponent {
     this.isLoading = true;
     this.loginError = '';
 
-    const { email, password } = this.loginForm.value;
+    const loginData = this.loginForm.value;
 
-    // Simulate backend call
-    setTimeout(() => {
-      // 🔒 Replace this logic with actual API call to AuthService
-      if (email === 'test@example.com' && password === '123456') {
-        const fakeResponse = {
-          token: 'fake-jwt-token-123',
-          role: 'business',
-          userId: 'abc123',
-          email: email
-        };
-
+    this.http.post<any>(this.loginUrl, loginData).subscribe({
+      next: (response) => {
         // ✅ Save to localStorage
-        localStorage.setItem('user', JSON.stringify(fakeResponse));
+        localStorage.setItem('user', JSON.stringify({
+          token: response.token,
+          role: response.role,
+          userId: response.userId,
+          email: response.email
+        }));
 
         // ✅ Navigate to a role-based route
-        if (fakeResponse.role === 'business') {
-          this.router.navigate(['/dashboard']);
-        } else if (fakeResponse.role === 'customer') {
-          this.router.navigate(['/home-page']);
-        } else {
-          this.router.navigate(['/home']);
+        switch (response.role) {
+          case 'business':
+            this.router.navigate(['/dashboard']);
+            break;
+          case 'customer':
+            this.router.navigate(['/home-page']);
+            break;
+          case 'admin':
+            this.router.navigate(['/admin/users']);
+            break;
+          default:
+            this.router.navigate(['/home']);
         }
-      } else {
-        this.loginError = 'Invalid credentials. Please try again.';
-      }
 
-      this.isLoading = false;
-    }, 1000);
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.loginError = err.error?.message || 'Login failed. Please try again.';
+        this.isLoading = false;
+      }
+    });
   }
 }
+

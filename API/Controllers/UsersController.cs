@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using API.Data;
 using API.Data.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -21,6 +20,28 @@ namespace API.Controllers
             _context = context;
         }
 
+        // ✅ NEW: POST api/Users/login
+        [HttpPost("login")]
+        public async Task<ActionResult<object>> Login([FromBody] LoginRequest request)
+        {
+            if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
+                return BadRequest("Email and password are required.");
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == request.Email && u.PasswordHash == request.Password);
+
+            if (user == null)
+                return Unauthorized("Invalid credentials.");
+
+            return Ok(new
+            {
+                token = Guid.NewGuid(), // For now, just simulate a token
+                role = user.UserType,
+                userId = user.Id,
+                email = user.Email
+            });
+        }
+
         // GET: api/Users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
@@ -33,24 +54,18 @@ namespace API.Controllers
         public async Task<ActionResult<User>> GetUser(Guid id)
         {
             var user = await _context.Users.FindAsync(id);
-
             if (user == null)
-            {
                 return NotFound();
-            }
 
             return user;
         }
 
         // PUT: api/Users/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(Guid id, User user)
         {
             if (id != user.Id)
-            {
                 return BadRequest();
-            }
 
             _context.Entry(user).State = EntityState.Modified;
 
@@ -61,27 +76,22 @@ namespace API.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 if (!UserExists(id))
-                {
                     return NotFound();
-                }
                 else
-                {
                     throw;
-                }
             }
 
             return NoContent();
         }
 
         // POST: api/Users
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(User user)
         {
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
+            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
         }
 
         // DELETE: api/Users/5
@@ -90,9 +100,7 @@ namespace API.Controllers
         {
             var user = await _context.Users.FindAsync(id);
             if (user == null)
-            {
                 return NotFound();
-            }
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
@@ -103,6 +111,13 @@ namespace API.Controllers
         private bool UserExists(Guid id)
         {
             return _context.Users.Any(e => e.Id == id);
+        }
+
+        // ✅ Login DTO
+        public class LoginRequest
+        {
+            public string Email { get; set; } = string.Empty;
+            public string Password { get; set; } = string.Empty;
         }
     }
 }
