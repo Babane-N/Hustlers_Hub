@@ -20,36 +20,74 @@ namespace API.Controllers
             _context = context;
         }
 
-        // ✅ NEW: POST api/Users/login
+        // ✅ LOGIN: api/Users/login
         [HttpPost("login")]
         public async Task<ActionResult<object>> Login([FromBody] LoginRequest request)
         {
-            if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
+            if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
                 return BadRequest("Email and password are required.");
 
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Email == request.Email && u.PasswordHash == request.Password);
 
             if (user == null)
-                return Unauthorized("Invalid credentials.");
+                return Unauthorized("Invalid email or password.");
 
             return Ok(new
             {
-                token = Guid.NewGuid(), // For now, just simulate a token
-                role = user.UserType,
+                token = Guid.NewGuid(),
+                role = user.UserType.ToString(), // Convert enum to string
                 userId = user.Id,
                 email = user.Email
             });
         }
 
-        // GET: api/Users
+        public class RegisterUserDto
+        {
+            public string FullName { get; set; } = string.Empty;
+            public string Email { get; set; } = string.Empty;
+            public string PhoneNumber { get; set; } = string.Empty;
+            public string Password { get; set; } = string.Empty;
+            public UserType UserType { get; set; }
+        }
+
+        // ✅ REGISTER: api/Users
+        [HttpPost]
+        public async Task<ActionResult<User>> PostUser([FromBody] RegisterUserDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
+                return BadRequest("Email and password are required.");
+
+            if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
+                return BadRequest("Email is already registered.");
+
+            var user = new User
+            {
+                Id = Guid.NewGuid(),
+                FullName = dto.FullName,
+                Email = dto.Email,
+                PhoneNumber = dto.PhoneNumber,
+                PasswordHash = dto.Password, // 🔐 Replace with hashing in production
+                UserType = dto.UserType,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
+        }
+
+
+
+        // ✅ GET ALL: api/Users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
             return await _context.Users.ToListAsync();
         }
 
-        // GET: api/Users/5
+        // ✅ GET BY ID: api/Users/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(Guid id)
         {
@@ -60,7 +98,7 @@ namespace API.Controllers
             return user;
         }
 
-        // PUT: api/Users/5
+        // ✅ UPDATE: api/Users/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(Guid id, User user)
         {
@@ -84,17 +122,7 @@ namespace API.Controllers
             return NoContent();
         }
 
-        // POST: api/Users
-        [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
-        {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
-        }
-
-        // DELETE: api/Users/5
+        // ✅ DELETE: api/Users/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
@@ -113,7 +141,7 @@ namespace API.Controllers
             return _context.Users.Any(e => e.Id == id);
         }
 
-        // ✅ Login DTO
+        // DTO for login
         public class LoginRequest
         {
             public string Email { get; set; } = string.Empty;

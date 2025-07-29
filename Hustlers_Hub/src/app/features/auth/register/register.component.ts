@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-register',
@@ -12,16 +13,14 @@ export class RegisterComponent {
   isLoading = false;
   registrationError = '';
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(private fb: FormBuilder, private router: Router, private http: HttpClient) {
     this.registerForm = this.fb.group({
       fullName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       phoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10,}$')]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required]
-    }, {
-      validators: this.matchPasswords
-    });
+    }, { validators: this.matchPasswords });
   }
 
   matchPasswords(form: FormGroup) {
@@ -36,17 +35,27 @@ export class RegisterComponent {
     this.isLoading = true;
     this.registrationError = '';
 
-    // Simulate API call
-    setTimeout(() => {
-      const { email } = this.registerForm.value;
+    const { fullName, email, phoneNumber, password } = this.registerForm.value;
 
-      if (email === 'already@used.com') {
-        this.registrationError = 'Email already registered.';
-      } else {
+    const userPayload = {
+      fullName,
+      email,
+      password: password, // match the backend model name
+      phoneNumber,
+      userType: 0, // enum value as string
+      createdAt: new Date().toISOString()
+    };
+
+    this.http.post('https://localhost:7018/api/Users', userPayload).subscribe({
+      next: () => {
         this.router.navigate(['/login']);
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.registrationError = err.error || 'Registration failed.';
+        this.isLoading = false;
       }
-
-      this.isLoading = false;
-    }, 1500);
+    });
   }
 }

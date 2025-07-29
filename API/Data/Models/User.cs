@@ -33,8 +33,8 @@ namespace API.Data.Models
 
     public enum UserType
     {
-        Custumer,
-        ServiceProvider,
+        Customer,
+        Business,
         Admin
     }
 }
