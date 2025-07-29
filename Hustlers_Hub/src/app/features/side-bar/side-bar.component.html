@@ -4,7 +4,7 @@
     <mat-nav-list>
 
       <!-- Business Role -->
-      <ng-container *ngIf="userRole === 'business'">
+      <ng-container *ngIf="userRole === 'Business'">
         <a mat-list-item routerLink="/dashboard">
           <mat-icon>dashboard</mat-icon>
           <span>Dashboard</span>
@@ -24,7 +24,7 @@
       </ng-container>
 
       <!-- Customer Role -->
-      <ng-container *ngIf="userRole === 'customer'">
+      <ng-container *ngIf="userRole === 'Customer'">
         <a mat-list-item routerLink="/home-page">
           <mat-icon>home</mat-icon>
           <span>Home</span>
@@ -44,7 +44,7 @@
       </ng-container>
 
       <!-- Admin Role -->
-      <ng-container *ngIf="userRole === 'admin'">
+      <ng-container *ngIf="userRole === 'Admin'">
         <a mat-list-item routerLink="/admin/users">
           <mat-icon>supervisor_account</mat-icon>
           <span>Manage Users</span>

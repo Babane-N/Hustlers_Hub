@@ -48,7 +48,7 @@ export class RegisterComponent {
 
     this.http.post('https://localhost:7018/api/Users', userPayload).subscribe({
       next: () => {
-        this.router.navigate(['/login']);
+        this.router.navigate(['/home-page']);
         this.isLoading = false;
       },
       error: (err) => {

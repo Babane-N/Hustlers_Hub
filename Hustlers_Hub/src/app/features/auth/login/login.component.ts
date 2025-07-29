@@ -46,17 +46,17 @@ export class LoginComponent {
 
         // ✅ Navigate to a role-based route
         switch (response.role) {
-          case 'business':
-            this.router.navigate(['/dashboard']);
+          case 'Business':
+            this.router.navigate(['/home']);
             break;
-          case 'customer':
+          case 'Customer':
             this.router.navigate(['/home-page']);
             break;
-          case 'admin':
+          case 'Admin':
             this.router.navigate(['/admin/users']);
             break;
           default:
-            this.router.navigate(['/home']);
+            this.router.navigate(['/dashboard']);
         }
 
         this.isLoading = false;

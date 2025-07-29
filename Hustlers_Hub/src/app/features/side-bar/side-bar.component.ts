@@ -7,7 +7,7 @@ import { AuthService } from './auth.Service'; // Adjust path if needed
   styleUrls: ['./side-bar.component.scss']
 })
 export class SideBarComponent implements OnInit {
-  userRole: string = 'customer'; // Default role
+  userRole: string = 'Customer'; // Default role
   isOpened: boolean = true;
 
   constructor(private authService: AuthService) { }
@@ -18,13 +18,13 @@ export class SideBarComponent implements OnInit {
     if (userData) {
       try {
         const user = JSON.parse(userData);
-        this.userRole = user?.role || 'customer';
+        this.userRole = user?.role || 'Customer';
       } catch {
-        this.userRole = 'customer';
+        this.userRole = 'Customer';
       }
     } else {
       // Ensure guest still sees customer sidebar
-      this.userRole = 'customer';
+      this.userRole = 'Customer';
     }
   }
 
