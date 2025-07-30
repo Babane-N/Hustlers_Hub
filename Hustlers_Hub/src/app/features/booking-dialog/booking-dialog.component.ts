@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { CreateBookingDto, BookingService } from './BookingService';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-booking-dialog',
@@ -13,7 +15,10 @@ export class BookingDialogComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<BookingDialogComponent>,
-    private router: Router
+    @Inject(MAT_DIALOG_DATA) public data: { serviceId: string, providerId: string },
+    private bookingService: BookingService,
+    private router: Router,
+    private snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -25,13 +30,27 @@ export class BookingDialogComponent implements OnInit {
   }
 
   submitBooking() {
-    console.log('Booking submitted:', { date: this.bookingDate, notes: this.notes });
-    this.dialogRef.close(); // Close after submission
+    const user = JSON.parse(localStorage.getItem('user')!);
+    const bookingDto: CreateBookingDto = {
+      serviceId: this.data.serviceId,
+      providerId: this.data.providerId,
+      customerId: user.id,
+      bookingDate: this.bookingDate!
+    };
+
+    this.bookingService.createBooking(bookingDto).subscribe({
+      next: () => {
+        this.snackBar.open('Booking submitted successfully', 'Close', { duration: 3000 });
+        this.dialogRef.close(true);
+      },
+      error: () => {
+        this.snackBar.open('Failed to submit booking', 'Close', { duration: 3000 });
+      }
+    });
   }
 
   closeDialog() {
     this.dialogRef.close();
   }
 }
-
 

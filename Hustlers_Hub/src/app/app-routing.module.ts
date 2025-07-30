@@ -30,31 +30,31 @@ const routes: Routes = [
     path: 'dashboard',
     component: DashboardComponent,
     canActivate: [RoleGuard],
-    data: { roles: ['business', 'admin'] } // 👈 Only allow business & admin
+    data: { roles: ['Business', 'Admin'] } // 👈 Only allow business & admin
   },
   {
     path: 'adcreator',
     component: AdCreatorComponent,
     canActivate: [RoleGuard],
-    data: { roles: ['business', 'customer'] } // 👈 Only allow business
+    data: { roles: ['Business', 'Customer'] } // 👈 Only allow business
   },
   {
     path: 'promotion',
     component: PromotionComponent,
     canActivate: [RoleGuard],
-    data: { roles: ['customer', 'business', 'admin'] }
+    data: { roles: ['Customer', 'Business', 'Admin'] }
   },
   {
     path: 'register-business',
     component: RegisterBusinessComponent,
     canActivate: [RoleGuard],
-    data: {roles: ['customer', 'business', 'admin']}
+    data: {roles: ['Customer', 'Business', 'Admin']}
   },
   {
     path: 'booking-dialog',
     component: BookingDialogComponent,
     canActivate: [RoleGuard],
-    data: {roles: ['customer', 'business', 'admin']}
+    data: {roles: ['Customer', 'Business', 'Admin']}
   },
 ];
 

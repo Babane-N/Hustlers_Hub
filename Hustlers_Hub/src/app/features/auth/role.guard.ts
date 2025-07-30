@@ -6,28 +6,30 @@ import {
   UrlTree,
   Router
 } from '@angular/router';
-import { Observable } from 'rxjs';
+import { AuthService } from './auth.service'; 
 
 @Injectable({
   providedIn: 'root'
 })
 export class RoleGuard implements CanActivate {
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) { }
 
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): boolean | UrlTree {
-    const token = localStorage.getItem('authToken');
-    const role = localStorage.getItem('userRole');
+    const token = this.authService.getToken();
+    const role = this.authService.getRole();
 
     const allowedRoles: string[] = route.data['roles'];
 
-    if (token && allowedRoles.includes(role!)) {
+    if (token && role && allowedRoles.includes(role)) {
       return true;
     }
 
-    // Redirect to login if not allowed
     return this.router.parseUrl('/login');
   }
 }

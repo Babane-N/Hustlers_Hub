@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../auth.service'; // Adjust path if needed
 
 @Component({
   selector: 'app-login',
@@ -13,12 +13,10 @@ export class LoginComponent {
   isLoading = false;
   loginError = '';
 
-  private loginUrl = 'https://localhost:7018/api/Users/login'; // 🔁 Update if your endpoint differs
-
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private http: HttpClient
+    private authService: AuthService
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -34,17 +32,15 @@ export class LoginComponent {
 
     const loginData = this.loginForm.value;
 
-    this.http.post<any>(this.loginUrl, loginData).subscribe({
+    this.authService.login(loginData).subscribe({
       next: (response) => {
-        // ✅ Save to localStorage
-        localStorage.setItem('user', JSON.stringify({
-          token: response.token,
-          role: response.role,
-          userId: response.userId,
-          email: response.email
-        }));
+        // Save token and role in localStorage using AuthService or here explicitly
+        localStorage.setItem('authToken', response.token);
+        localStorage.setItem('userRole', response.role);
+        localStorage.setItem('userId', response.userId);
+        localStorage.setItem('userEmail', response.email);
 
-        // ✅ Navigate to a role-based route
+        // Navigate based on role
         switch (response.role) {
           case 'Business':
             this.router.navigate(['/home']);
@@ -68,4 +64,3 @@ export class LoginComponent {
     });
   }
 }
-

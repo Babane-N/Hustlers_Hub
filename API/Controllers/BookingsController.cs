@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API.Data;
@@ -28,6 +27,7 @@ namespace API.Controllers
             var bookings = await _context.Bookings
                 .Include(b => b.Customer)
                 .Include(b => b.Service)
+                .Include(b => b.ServiceProvider)
                 .ToListAsync();
 
             return Ok(bookings);
@@ -37,56 +37,52 @@ namespace API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Booking>> GetBooking(Guid id)
         {
-            var booking = await _context.Bookings.FindAsync(id);
+            var booking = await _context.Bookings
+                .Include(b => b.Customer)
+                .Include(b => b.Service)
+                .Include(b => b.ServiceProvider)
+                .FirstOrDefaultAsync(b => b.Id == id);
 
             if (booking == null)
-            {
                 return NotFound();
-            }
 
-            return booking;
-        }
-
-        // PUT: api/Bookings/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutBooking(Guid id, Booking booking)
-        {
-            if (id != booking.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(booking).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BookingExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            return Ok(booking);
         }
 
         // POST: api/Bookings
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Booking>> PostBooking(Booking booking)
+        public async Task<ActionResult<Booking>> PostBooking([FromBody] CreateBookingDto dto)
         {
+            var booking = new Booking
+            {
+                Id = Guid.NewGuid(),
+                ServiceId = dto.ServiceId,
+                CustomerId = dto.CustomerId,
+                ProviderId = dto.ProviderId,
+                BookingDate = dto.BookingDate,
+                Status = BookingStatus.Pending
+            };
+
             _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetBooking", new { id = booking.Id }, booking);
+            return CreatedAtAction(nameof(GetBooking), new { id = booking.Id }, booking);
+        }
+
+        // PUT: api/Bookings/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutBooking(Guid id, [FromBody] UpdateBookingDto dto)
+        {
+            var booking = await _context.Bookings.FindAsync(id);
+            if (booking == null)
+                return NotFound();
+
+            booking.BookingDate = dto.BookingDate;
+            booking.Status = dto.Status;
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
 
         // DELETE: api/Bookings/5
@@ -95,14 +91,25 @@ namespace API.Controllers
         {
             var booking = await _context.Bookings.FindAsync(id);
             if (booking == null)
-            {
                 return NotFound();
-            }
 
             _context.Bookings.Remove(booking);
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        // GET: api/Bookings/provider/{providerId}
+        [HttpGet("provider/{providerId}")]
+        public async Task<ActionResult<IEnumerable<Booking>>> GetBookingsByProvider(Guid providerId)
+        {
+            var bookings = await _context.Bookings
+                .Where(b => b.ProviderId == providerId)
+                .Include(b => b.Customer)
+                .Include(b => b.Service)
+                .ToListAsync();
+
+            return Ok(bookings);
         }
 
         private bool BookingExists(Guid id)
@@ -111,3 +118,4 @@ namespace API.Controllers
         }
     }
 }
+

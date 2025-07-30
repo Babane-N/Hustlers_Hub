@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from './auth.Service'; // Adjust path if needed
+import { AuthService } from '../auth/auth.service'; // ✅ Adjust path based on your structure
 
 @Component({
   selector: 'app-side-bar',
@@ -13,19 +13,8 @@ export class SideBarComponent implements OnInit {
   constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
-    const userData = localStorage.getItem('user');
-
-    if (userData) {
-      try {
-        const user = JSON.parse(userData);
-        this.userRole = user?.role || 'Customer';
-      } catch {
-        this.userRole = 'Customer';
-      }
-    } else {
-      // Ensure guest still sees customer sidebar
-      this.userRole = 'Customer';
-    }
+    const role = this.authService.getRole();
+    this.userRole = role ?? 'Customer';
   }
 
   toggleSidebar(): void {
