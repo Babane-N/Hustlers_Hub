@@ -7,7 +7,6 @@ frontend:
         - npm ci
     build:
       commands:
-        - cd Hustlers_Hub
         - npm run build
   artifacts:
     baseDirectory: Hustlers_Hub/dist/hustlers-hub
@@ -16,4 +15,3 @@ frontend:
   cache:
     paths:
       - Hustlers_Hub/node_modules/**/*
-
