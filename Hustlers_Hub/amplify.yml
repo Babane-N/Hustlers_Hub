@@ -8,9 +8,10 @@ frontend:
       commands:
         - npm run build
   artifacts:
-    baseDirectory: Hustlers_Hub/dist/hustlers-hub
+    baseDirectory: dist/hustlers-hub
     files:
       - '**/*'
   cache:
     paths:
-      - Hustlers_Hub/node_modules/**/*
+      - node_modules/**/*
+
