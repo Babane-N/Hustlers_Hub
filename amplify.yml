@@ -1,14 +1,14 @@
-version: 1
 frontend:
   phases:
     preBuild:
       commands:
-        - npm install
+        - cd Hustlers_Hub
+        - npm ci
     build:
       commands:
-        - npm run build -- --prod
+        - npm run build
   artifacts:
-    baseDirectory: dist/Hustlers-Hub
+    baseDirectory: dist/Hustlers_Hub
     files:
       - '**/*'
   cache:
