@@ -3,7 +3,6 @@ frontend:
   phases:
     preBuild:
       commands:
-        - cd Hustlers_Hub
         - npm ci
     build:
       commands:
