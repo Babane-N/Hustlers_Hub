@@ -7,7 +7,7 @@ frontend:
       commands:
         - npm run build
   artifacts:
-    baseDirectory: dist/Hustlers_Hub
+    baseDirectory: dist/hustlers-hub
     files:
       - '**/*'
   cache:
