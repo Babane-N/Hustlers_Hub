@@ -51,13 +51,30 @@ o	Announcements
 
 # Screenshoots
 
-![Screenshot 2025-07-06 180444](https://github.com/user-attachments/assets/caceb4e0-dae5-4987-9bf9-ccebf8d4e451)
-![Screenshot 2025-07-06 180217](https://github.com/user-attachments/assets/0f3e816d-2cde-4bd8-9f1d-3bdc01fa1259)
-![Screenshot 2025-08-04 135007](https://github.com/user-attachments/assets/107b3175-bfa2-4a45-a456-1c08eacc9b28)
-![Screenshot 2025-08-04 134940](https://github.com/user-attachments/assets/f3c85d05-5f27-42f0-b253-7b824f2689a0)
-![Screenshot 2025-08-04 134800](https://github.com/user-attachments/assets/6968d261-cc05-455c-ab38-916ec43342b6)
-![Screenshot 2025-08-04 134640](https://github.com/user-attachments/assets/b5eab8b1-7c5e-4124-b9ee-5a1bd79b139a)
-![Screenshot 2025-08-04 131810](https://github.com/user-attachments/assets/8261cac7-276b-417e-9f52-986105407e13)
-![Screenshot 2025-07-06 180508](https://github.com/user-attachments/assets/f120bb8a-dc8a-40b4-8400-9a601073a762)
+## Browse Services
+![Screenshot 2025-08-04 131810](https://github.com/user-attachments/assets/3656ec42-4f19-47e6-a42f-fe6f426a4de4)
 
+## Booking Service
+![Screenshot 2025-08-04 135942](https://github.com/user-attachments/assets/53af677d-8099-4af1-b84b-0a4db9137249)
+
+## Browse Promotion
+![Screenshot 2025-08-04 135913](https://github.com/user-attachments/assets/97c1ce5f-e988-440f-947d-fdcf1f482408)
+
+## Post Promotion
+![Screenshot 2025-08-04 135007](https://github.com/user-attachments/assets/534b8f75-914f-4484-ac44-7228af5c2e87)
+
+## Register Business
+![Screenshot 2025-08-04 134940](https://github.com/user-attachments/assets/28b42692-bcb1-436a-948b-afe332a8280b)
+
+## Business 
+![Screenshot 2025-08-04 134640](https://github.com/user-attachments/assets/d80b8258-b4a4-4777-a533-2f30b4ea2f8c)
+
+## Business Dashboard
+![Screenshot 2025-07-06 180444](https://github.com/user-attachments/assets/ec5b50e4-e659-48ac-8050-80365459acd1)
+
+ ## Bookings Received
+![Screenshot 2025-07-06 180508](https://github.com/user-attachments/assets/11082c89-db9a-4f6f-b224-4fd9c457586f)
+
+## Switch Business
+![Screenshot 2025-08-04 134800](https://github.com/user-attachments/assets/2a273293-ac6e-402d-b4f2-0a0940d4c019)
 
