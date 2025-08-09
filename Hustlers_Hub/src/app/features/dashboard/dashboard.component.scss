@@ -1,59 +1,51 @@
-:host {
-  display: block;
-  background-color: linear-gradient(45deg, #8b4000, #a87450); // Dark orange
-  color: #fff3e6; // Creamy vanilla text
-  padding: 2rem;
-}
-
 .dashboard-container {
-  max-width: 1200px;
-  margin: auto;
+  padding: 2rem;
 
   .welcome {
     font-size: 1.8rem;
-    margin-bottom: 2rem;
-    color: #7a4f25; // Warm gold heading
+    margin-bottom: 1rem;
+  }
+
+  .logo-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+
+    .dashboard-logo {
+      max-height: 120px;
+      max-width: 100%;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
   }
 
   .dashboard-grid {
     display: grid;
-    gap: 1.5rem;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
   }
 
   .dashboard-card {
-    border-radius: 16px;
     padding: 1rem;
-    background-color: #fff3e6; // Light card
-    color: #5d2c15; // Cocoa brown text
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    transition: transform 0.2s ease;
-    backdrop-filter: blur(4px);
-
-    h3 {
-      margin: 0.5rem 0 0;
-      color: #a87450; // Muted gold-brown
-    }
-
-    ul {
-      margin: 0.5rem 0 0;
-      padding-left: 1rem;
-      list-style: disc;
-      color: #4a2e1c; // Cocoa text
-    }
-
-    p {
-      margin: 0.25rem 0;
-      color: #5d2c15;
-    }
+    cursor: default;
 
     &.clickable {
       cursor: pointer;
+      transition: box-shadow 0.3s ease;
 
       &:hover {
-        transform: scale(1.02);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       }
+    }
+
+    mat-card-title {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    mat-card-content ul {
+      padding-left: 1.2rem;
     }
   }
 }

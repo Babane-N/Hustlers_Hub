@@ -1,23 +1,25 @@
-import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../auth/auth.service'; // ✅ Adjust path based on your structure
+// side-bar.component.ts
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-side-bar',
   templateUrl: './side-bar.component.html',
   styleUrls: ['./side-bar.component.scss']
 })
-export class SideBarComponent implements OnInit {
-  userRole: string = 'Customer'; // Default role
-  isOpened: boolean = true;
+export class SideBarComponent {
+  isOpened = true;
+  userRole = localStorage.getItem('userRole');
+  isLoggedIn = !!localStorage.getItem('authToken');
 
-  constructor(private authService: AuthService) { }
-
-  ngOnInit(): void {
-    const role = this.authService.getRole();
-    this.userRole = role ?? 'Customer';
-  }
+  constructor(private router: Router) { }
 
   toggleSidebar(): void {
     this.isOpened = !this.isOpened;
+  }
+
+  logout(): void {
+    localStorage.clear();
+    this.router.navigate(['/home-page']);
   }
 }

@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Data;
+using API.Data.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using API.Data;
-using API.Data.Models;
 
 namespace API.Controllers
 {
@@ -15,13 +17,15 @@ namespace API.Controllers
     public class BusinessesController : ControllerBase
     {
         private readonly HustlersHubDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public BusinessesController(HustlersHubDbContext context)
+        public BusinessesController(HustlersHubDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
-        // GET: api/Businesses
+        // ✅ GET businesses for a user
         [HttpGet("Users/{userId}")]
         public async Task<ActionResult<IEnumerable<Business>>> GetBusinesses(Guid userId)
         {
@@ -31,29 +35,22 @@ namespace API.Controllers
             return Ok(businesses);
         }
 
-        // GET: api/Businesses/5
+        // ✅ GET by ID
         [HttpGet("{id}")]
         public async Task<ActionResult<Business>> GetBusiness(Guid id)
         {
             var business = await _context.Businesses.FindAsync(id);
-
             if (business == null)
-            {
                 return NotFound();
-            }
-
             return business;
         }
 
-        // PUT: api/Businesses/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // ✅ UPDATE business
         [HttpPut("{id}")]
         public async Task<IActionResult> PutBusiness(Guid id, Business business)
         {
             if (id != business.Id)
-            {
                 return BadRequest();
-            }
 
             _context.Entry(business).State = EntityState.Modified;
 
@@ -64,38 +61,59 @@ namespace API.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 if (!BusinessExists(id))
-                {
                     return NotFound();
-                }
                 else
-                {
                     throw;
-                }
             }
 
             return NoContent();
         }
 
-        // POST: api/Businesses
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // ✅ CREATE with optional logo
         [HttpPost]
-        public async Task<ActionResult<Business>> PostBusiness(Business business)
+        public async Task<ActionResult<Business>> PostBusiness([FromForm] BusinessCreateDto dto)
         {
+            var business = new Business
+            {
+                Id = Guid.NewGuid(),
+                BusinessName = dto.BusinessName,
+                Category = dto.Category,
+                Location = dto.Location,
+                Description = dto.Description,
+                UserId = dto.UserId,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            // 🔁 Save logo image if provided
+            if (dto.Logo != null && dto.Logo.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(_env.WebRootPath ?? "wwwroot", "uploads");
+                Directory.CreateDirectory(uploadsFolder);
+
+                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(dto.Logo.FileName)}";
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await dto.Logo.CopyToAsync(stream);
+                }
+
+                business.LogoUrl = $"/uploads/{fileName}";
+            }
+
             _context.Businesses.Add(business);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetBusiness", new { id = business.Id }, business);
+            return CreatedAtAction(nameof(GetBusiness), new { id = business.Id }, business);
         }
 
-        // DELETE: api/Businesses/5
+        // ✅ DELETE business
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBusiness(Guid id)
         {
             var business = await _context.Businesses.FindAsync(id);
             if (business == null)
-            {
                 return NotFound();
-            }
 
             _context.Businesses.Remove(business);
             await _context.SaveChangesAsync();
@@ -107,5 +125,16 @@ namespace API.Controllers
         {
             return _context.Businesses.Any(e => e.Id == id);
         }
+    }
+
+    // ✅ DTO for form-data creation
+    public class BusinessCreateDto
+    {
+        public string BusinessName { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
+        public string Location { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public Guid UserId { get; set; }
+        public IFormFile? Logo { get; set; }
     }
 }

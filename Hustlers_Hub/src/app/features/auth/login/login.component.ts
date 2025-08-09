@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../auth.service'; // Adjust path if needed
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-login',
@@ -30,18 +30,19 @@ export class LoginComponent {
     this.isLoading = true;
     this.loginError = '';
 
-    const loginData = this.loginForm.value;
+    const credentials = this.loginForm.value;
 
-    this.authService.login(loginData).subscribe({
-      next: (response) => {
-        // Save token and role in localStorage using AuthService or here explicitly
-        localStorage.setItem('authToken', response.token);
-        localStorage.setItem('userRole', response.role);
-        localStorage.setItem('userId', response.userId);
-        localStorage.setItem('userEmail', response.email);
+    this.authService.login(credentials).subscribe({
+      next: (res) => {
+        // Set session using AuthService
+        this.authService.setSession(res.token, res.role);
+
+        // Save additional user data if needed
+        localStorage.setItem('userId', res.userId);
+        localStorage.setItem('userEmail', res.email);
 
         // Navigate based on role
-        switch (response.role) {
+        switch (res.role) {
           case 'Business':
             this.router.navigate(['/home']);
             break;

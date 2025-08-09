@@ -7,6 +7,7 @@ export interface ServiceProvider {
   title: string;
   category: string;
   description: string;
+  logoUrl?: string;
   imageUrl: string;
   price: number;
   durationMinutes: number;

@@ -17,10 +17,18 @@ export class BusinessSwitcherComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const userId = 'E1111111-AAAA-1111-AAAA-111111111111'; // replace with actual ID or AuthService
-    this.businessService.getUserBusinesses(userId).subscribe(data => {
-      this.businesses = data;
-    });
+    const storedUser = localStorage.getItem('user');
+    const user = storedUser ? JSON.parse(storedUser) : null;
+
+    if (user?.userId) {
+      const userId = user.userId;
+      this.businessService.getUserBusinesses(userId).subscribe(data => {
+        this.businesses = data;
+      });
+    } else {
+      console.error('User not found in localStorage.');
+      this.router.navigate(['/login']);
+    }
   }
 
   onSwitchBusiness(businessId: string) {

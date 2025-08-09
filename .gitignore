@@ -363,3 +363,8 @@ MigrationBackup/
 FodyWeavers.xsd
 /Scrnsht
 /🌐 Hustlers Hub Core Concept.docx
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

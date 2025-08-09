@@ -1,6 +1,13 @@
 <div class="dashboard-container">
   <h2 class="welcome">Welcome Back, Hustler 💼</h2>
 
+  <!-- Business Logo -->
+  <div class="logo-wrapper" *ngIf="business.logoUrl">
+    <img [src]="'https://localhost:7018' + business.logoUrl"
+         alt="Business Logo"
+         class="dashboard-logo" />
+  </div>
+
   <div class="dashboard-grid">
     <!-- Bookings Overview -->
     <mat-card class="dashboard-card clickable" (click)="goTo('bookings')">
@@ -9,32 +16,32 @@
         <p *ngIf="bookings.length === 0">No upcoming bookings.</p>
         <ul *ngIf="bookings.length">
           <li *ngFor="let b of bookings | slice:0:3">
-            {{ b.date | date:'shortDate' }} - {{ b.clientName }} ({{ b.service }})
+            {{ b.date | date: 'shortDate' }} - {{ b.clientName }} ({{ b.service }})
           </li>
         </ul>
       </mat-card-content>
     </mat-card>
 
-    <!-- History -->
+    <!-- Booking History -->
     <mat-card class="dashboard-card">
       <mat-card-title>📁 Booking History</mat-card-title>
       <mat-card-content>
         <p>{{ history.length }} jobs completed</p>
         <ul *ngIf="history.length">
           <li *ngFor="let h of history | slice:0:3">
-            {{ h.date | date:'shortDate' }} - {{ h.clientName }}
+            {{ h.date | date: 'shortDate' }} - {{ h.clientName }}
           </li>
         </ul>
       </mat-card-content>
     </mat-card>
 
-    <!-- Reviews -->
+    <!-- Latest Reviews -->
     <mat-card class="dashboard-card">
       <mat-card-title>⭐ Latest Reviews</mat-card-title>
       <mat-card-content>
-        <div *ngIf="reviews.length; else noReviews">
+        <div *ngIf="reviews.length > 0; else noReviews">
           <p *ngFor="let r of reviews | slice:0:2">
-            "{{ r.comment }}" - <strong>{{ r.reviewer }}</strong> ({{ r.rating }}/5)
+            “{{ r.comment }}” — <strong>{{ r.reviewer }}</strong> ({{ r.rating }}/5)
           </p>
         </div>
         <ng-template #noReviews>
@@ -47,7 +54,7 @@
     <mat-card class="dashboard-card">
       <mat-card-title>💰 Total Earnings</mat-card-title>
       <mat-card-content>
-        <h3>R{{ totalEarnings | number:'1.2-2' }}</h3>
+        <h3>R{{ totalEarnings | number: '1.2-2' }}</h3>
         <p>{{ history.length }} jobs done</p>
       </mat-card-content>
     </mat-card>

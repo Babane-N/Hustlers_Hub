@@ -8,36 +8,35 @@ import { ServiceProviderService, ServiceProvider } from './ServiceProvider';
   styleUrls: ['./find-service.component.scss']
 })
 export class FindServiceComponent implements OnInit {
-  constructor(
-    private router: Router,
-    private providerService: ServiceProviderService // ✅ Fixed service injection
-  ) { }
-
+  serviceProviders: ServiceProvider[] = [];
   searchTerm = '';
   selectedService = '';
   sortBy = 'name';
 
-  serviceProviders: ServiceProvider[] = [];
+  constructor(
+    private router: Router,
+    private providerService: ServiceProviderService
+  ) { }
 
   ngOnInit(): void {
-    this.providerService.getProviders().subscribe(data => {
-      this.serviceProviders = data;
+    this.providerService.getProviders().subscribe({
+      next: (data) => this.serviceProviders = data,
+      error: (err) => console.error('Error loading service providers:', err)
     });
   }
 
-  goToRegisterBusiness() {
-    this.router.navigate(['/register-business']); // adjust route as needed
+  goToRegisterBusiness(): void {
+    this.router.navigate(['/register-business']);
   }
-
 
   get uniqueServices(): string[] {
     return [...new Set(this.serviceProviders.map(p => p.category))];
   }
 
-  get filteredProviders() {
+  get filteredProviders(): ServiceProvider[] {
     let result = [...this.serviceProviders];
 
-    // Search
+    // 🔍 Search by name, category, or location
     if (this.searchTerm.trim()) {
       const term = this.searchTerm.toLowerCase();
       result = result.filter(p =>
@@ -47,26 +46,24 @@ export class FindServiceComponent implements OnInit {
       );
     }
 
-    // Filter by service
+    // 🎯 Filter by selected category
     if (this.selectedService) {
       result = result.filter(p => p.category === this.selectedService);
     }
 
-    // Sort
-    result.sort((a, b) => {
-      if (this.sortBy === 'name') {
-        return a.businessName.localeCompare(b.businessName);
-      } else if (this.sortBy === 'location') {
-        return a.businessLocation.localeCompare(b.businessLocation);
-      }
-      return 0;
-    });
+    // 🔤 Sort
+    if (this.sortBy === 'name') {
+      result.sort((a, b) => a.businessName.localeCompare(b.businessName));
+    } else if (this.sortBy === 'location') {
+      result.sort((a, b) => a.businessLocation.localeCompare(b.businessLocation));
+    }
 
     return result;
   }
 
-  goFindServiceDetail(provider: ServiceProvider) {
-    this.router.navigate(['/service-detail', provider.id]);
+  goFindServiceDetail(provider: ServiceProvider): void {
+    if (provider?.id) {
+      this.router.navigate(['/service-detail', provider.id]);
+    }
   }
-
 }
