@@ -51,10 +51,30 @@ o	Announcements
 
 # Screenshoots
 
-![Screenshot 2025-07-06 180217](https://github.com/user-attachments/assets/1bb3f4cb-1df4-4d4f-b0f5-70dc1fb8a94f)
-![Screenshot 2025-07-06 180508](https://github.com/user-attachments/assets/19981f42-9045-48f5-a8f7-cae507167db6)
-![Screenshot 2025-07-06 180444](https://github.com/user-attachments/assets/6550a91b-0ea1-4f4a-8233-ef1388a428c9)
-![Screenshot 2025-07-06 180412](https://github.com/user-attachments/assets/fa75fdaa-c81a-43a5-847c-abddfe44e32b)
-![Screenshot 2025-07-06 180340](https://github.com/user-attachments/assets/aaeabd5b-d34c-49e8-99b6-7bd9b97881e4)
+## Browse Services
+![Screenshot 2025-08-04 131810](https://github.com/user-attachments/assets/3656ec42-4f19-47e6-a42f-fe6f426a4de4)
 
+## Booking Service
+![Screenshot 2025-08-04 135942](https://github.com/user-attachments/assets/53af677d-8099-4af1-b84b-0a4db9137249)
+
+## Browse Promotion
+![Screenshot 2025-08-04 135913](https://github.com/user-attachments/assets/97c1ce5f-e988-440f-947d-fdcf1f482408)
+
+## Post Promotion
+![Screenshot 2025-08-04 135007](https://github.com/user-attachments/assets/534b8f75-914f-4484-ac44-7228af5c2e87)
+
+## Register Business
+![Screenshot 2025-08-04 134940](https://github.com/user-attachments/assets/28b42692-bcb1-436a-948b-afe332a8280b)
+
+## Business 
+![Screenshot 2025-08-04 134640](https://github.com/user-attachments/assets/d80b8258-b4a4-4777-a533-2f30b4ea2f8c)
+
+## Business Dashboard
+![Screenshot 2025-07-06 180444](https://github.com/user-attachments/assets/ec5b50e4-e659-48ac-8050-80365459acd1)
+
+ ## Bookings Received
+![Screenshot 2025-07-06 180508](https://github.com/user-attachments/assets/11082c89-db9a-4f6f-b224-4fd9c457586f)
+
+## Switch Business
+![Screenshot 2025-08-04 134800](https://github.com/user-attachments/assets/2a273293-ac6e-402d-b4f2-0a0940d4c019)
 
