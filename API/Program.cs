@@ -39,8 +39,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// ✅ Serve static files (e.g., uploaded images in wwwroot/uploads)
+app.UseStaticFiles();
+
 app.UseCors("AllowAll");
 app.UseAuthorization();
 
 app.MapControllers();
+
 app.Run();

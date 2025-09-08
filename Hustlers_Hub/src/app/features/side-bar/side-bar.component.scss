@@ -4,13 +4,13 @@
   font-family: 'Segoe UI', sans-serif;
 }
 
-mat-sidenav {
+:host ::ng-deep mat-sidenav {
   width: 250px;
   background-color: #fff3e6;
-  color: #5d2c15;
+  color: #7a4f25;
 
   mat-toolbar {
-    background-color: #5d2c15;
+    background: linear-gradient(45deg, #8b4000, #a87450);
     color: #ffe0b2;
     font-weight: bold;
     display: flex;
@@ -22,38 +22,30 @@ mat-sidenav {
   }
 
   .mat-list-item {
-    display: flex;
-    align-items: center;
-    padding: 12px 16px;
-    font-weight: 500;
-    color: #5d2c15;
-    cursor: pointer;
-    gap: 28px; // 👈 Controls spacing between icon and text
+    display: flex !important;
+    align-items: center !important;
+    padding: 8px 16px !important;
+    gap: 12px !important;
 
     .mat-icon {
-      font-size: 24px;
-      color: #7a4f25;
-      margin-right: 14px; // Extra spacing for visual balance
+      font-size: 14px !important;
+      width: 14px !important;
+      height: 14px !important;
+      flex-shrink: 0 !important;
+      color: #7a4f25 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
     }
 
     .nav-text {
-      display: flex;
-      align-items: center;
-      font-size: 14px;
-    }
-
-    &:hover {
-      background-color: #a87450;
-      color: #fff;
-
-      .mat-icon {
-        color: #fff;
-      }
-    }
-
-    .expand-arrow {
-      margin-left: auto;
-      color: #ffa94d;
+      font-size: 14px !important;
+      line-height: 1.2 !important;
+      position: relative !important;
+      top: -3px !important;
+      white-space: nowrap !important;
+      display: flex !important;
+      align-items: center !important;
     }
   }
 
@@ -68,42 +60,42 @@ mat-sidenav {
       padding-left: 1rem;
 
       &:hover {
-        background-color: #a87450;
+        background-color: #7a4f25;
+        color: #fff;
+      }
+    }
+  }
+
+  .login-item {
+    margin-top: auto;
+    padding: 12px 16px;
+    color: #ffa94d;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 10px;
+
+    mat-icon {
+      font-size: 16px !important;
+    }
+
+    &:hover {
+      background-color: #a87450;
+      color: #fff;
+
+      mat-icon {
         color: #fff;
       }
     }
   }
 }
 
-.login-item {
-  margin-top: auto;
-  padding: 12px 16px;
-  color: #ffa94d;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  gap: 10px;
-
-  mat-icon {
-    font-size: 22px;
-  }
-
-  &:hover {
-    background-color: #a87450;
-    color: #fff;
-
-    mat-icon {
-      color: #fff;
-    }
-  }
-}
-
-.custom-toolbar {
+:host ::ng-deep .custom-toolbar {
   background-color: #fff3e6;
   color: #333;
 }
 
-mat-sidenav-content {
+:host ::ng-deep mat-sidenav-content {
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -155,3 +147,4 @@ mat-sidenav-content {
     transform: translateY(0);
   }
 }
+

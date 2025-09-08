@@ -20,7 +20,13 @@ export class FindServiceComponent implements OnInit {
 
   ngOnInit(): void {
     this.providerService.getProviders().subscribe({
-      next: (data) => this.serviceProviders = data,
+      next: (data) => {
+        // ✅ Prepend API URL for logos so <img> works
+        this.serviceProviders = data.map(p => ({
+          ...p,
+          logoUrl: p.logoUrl ? `https://localhost:7018${p.logoUrl}` : null
+        }));
+      },
       error: (err) => console.error('Error loading service providers:', err)
     });
   }

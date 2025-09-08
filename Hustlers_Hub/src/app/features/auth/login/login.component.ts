@@ -37,9 +37,13 @@ export class LoginComponent {
         // Set session using AuthService
         this.authService.setSession(res.token, res.role);
 
-        // Save additional user data if needed
-        localStorage.setItem('userId', res.userId);
-        localStorage.setItem('userEmail', res.email);
+        // Store entire user data as one object under 'user' key
+        localStorage.setItem('user', JSON.stringify({
+          userId: res.userId,
+          email: res.email,
+          role: res.role,
+          token: res.token
+        }));
 
         // Navigate based on role
         switch (res.role) {

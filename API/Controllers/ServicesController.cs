@@ -20,7 +20,7 @@ namespace API.Controllers
             _context = context;
         }
 
-        // ✅ Existing endpoint: GET: api/Services
+        // ✅ GET: api/Services
         [HttpGet]
         public async Task<ActionResult<IEnumerable<object>>> GetServices()
         {
@@ -35,15 +35,16 @@ namespace API.Controllers
                     s.ImageUrl,
                     s.Price,
                     s.DurationMinutes,
-                    BusinessName = s.Business.BusinessName,
-                    BusinessLocation = s.Business.Location
+                    businessName = s.Business.BusinessName,
+                    businessLocation = s.Business.Location,
+                    logoUrl = s.Business.LogoUrl // ✅ Unified camelCase name
                 })
                 .ToListAsync();
 
             return Ok(servicesWithBusiness);
         }
 
-        // ✅ NEW endpoint: GET api/Services/detail/{id}
+        // ✅ GET: api/Services/detail/{id}
         [HttpGet("detail/{id}")]
         public async Task<ActionResult<object>> GetServiceWithBusiness(Guid id)
         {
@@ -59,12 +60,11 @@ namespace API.Controllers
                     s.ImageUrl,
                     s.Price,
                     s.DurationMinutes,
-                    BusinessName = s.Business.BusinessName,
-                    BusinessLogo = s.Business.LogoUrl,
-                    BusinessLocation = s.Business.Location,
-                    BusinessDescription = s.Business.Description,
-                    IsVerified = s.Business.IsVerified
-                    
+                    businessName = s.Business.BusinessName,
+                    logoUrl = s.Business.LogoUrl, // ✅ Unified camelCase name
+                    businessLocation = s.Business.Location,
+                    businessDescription = s.Business.Description,
+                    isVerified = s.Business.IsVerified
                 })
                 .FirstOrDefaultAsync();
 
@@ -74,7 +74,7 @@ namespace API.Controllers
             return Ok(service);
         }
 
-        // PUT: api/Services/5
+        // ✅ PUT: api/Services/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> PutService(Guid id, Service service)
         {
@@ -98,17 +98,17 @@ namespace API.Controllers
             return NoContent();
         }
 
-        // POST: api/Services
+        // ✅ POST: api/Services
         [HttpPost]
         public async Task<ActionResult<Service>> PostService(Service service)
         {
             _context.Services.Add(service);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetService", new { id = service.Id }, service);
+            return CreatedAtAction(nameof(GetServiceWithBusiness), new { id = service.Id }, service);
         }
 
-        // DELETE: api/Services/5
+        // ✅ DELETE: api/Services/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteService(Guid id)
         {

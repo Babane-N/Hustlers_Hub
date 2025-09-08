@@ -3,58 +3,76 @@
   <p class="subtitle">Share your latest deals and events with the community!</p>
 
   <!-- User post form -->
-  <form class="promo-post-form" (ngSubmit)="submitPromotion()" enctype="multipart/form-data">
+  <form class="promo-post-form" (ngSubmit)="submitPromotion()" enctype="multipart/form-data" #promoForm="ngForm" novalidate>
     <!-- Title -->
     <input type="text"
            placeholder="Promotion Title"
            [(ngModel)]="newPromo.title"
            name="title"
-           required />
+           required
+           #title="ngModel"
+           [class.invalid]="title.invalid && title.touched" />
 
     <!-- Description -->
     <textarea placeholder="Description"
               [(ngModel)]="newPromo.description"
               name="description"
               rows="3"
-              required></textarea>
+              required
+              #description="ngModel"
+              [class.invalid]="description.invalid && description.touched"></textarea>
 
     <!-- Category Dropdown -->
     <select [(ngModel)]="newPromo.category"
             name="category"
-            required>
-      <option value="" disabled selected>Select Category</option>
+            required
+            #category="ngModel"
+            [class.invalid]="category.invalid && category.touched">
+      <option value="" disabled>Select Category</option>
       <option value="Event">Event</option>
       <option value="Deal">Deal</option>
+      <option value="Sale">Sale</option>
       <option value="Buy & Sell">Buy & Sell</option>
       <option value="Job">Job</option>
       <option value="Announcement">Announcement</option>
     </select>
 
-    <!-- Image Upload -->
-    <label class="file-label">
-      Upload Image
-      <input type="file" (change)="onImageSelected($event)" accept="image/*" />
+    <!-- Image Upload (multiple) -->
+    <label class="file-label" for="imageUpload">
+      Upload Images
     </label>
+    <input id="imageUpload"
+           type="file"
+           (change)="onImagesSelected($event)"
+           accept="image/*"
+           multiple
+           required />
 
-    <!-- Image Preview -->
-    <div *ngIf="imagePreview" class="image-preview">
+    <!-- Image Previews -->
+    <div *ngIf="imagePreviews.length > 0" class="image-preview">
       <p>Preview:</p>
-      <img [src]="imagePreview" alt="Preview" />
+      <div class="preview-images">
+        <img *ngFor="let img of imagePreviews" [src]="img" alt="Preview Image" />
+      </div>
     </div>
 
     <!-- Submit -->
-    <button type="submit" class="btn primary">Post Promotion</button>
+    <button type="submit"
+            class="btn primary"
+            [disabled]="isSubmitting || promoForm.invalid || selectedImageFiles.length === 0">
+      {{ isSubmitting ? 'Submitting...' : 'Post Promotion' }}
+    </button>
   </form>
 
   <!-- List of promotion cards -->
-  <div class="promo-list">
+  <div class="promo-list" *ngIf="promotions.length > 0">
     <div class="promo-card" *ngFor="let promo of promotions">
-      <img [src]="promo.imageUrl" alt="{{ promo.title }}" />
-      <h3>{{ promo.title }}</h3>
-      <p>{{ promo.description }}</p>
+      <img *ngIf="promo.Images?.length > 0" [src]="promo.Images[0]" alt="{{ promo.Title }}" />
+      <h3>{{ promo.Title }}</h3>
+      <p>{{ promo.Description }}</p>
       <div class="promo-meta">
-        <span>Posted by {{ promo.user || 'Anonymous' }}</span>
-        <span>{{ promo.date | date: 'mediumDate' }}</span>
+        <span>Posted by {{ promo.PostedBy || 'Anonymous' }}</span>
+        <span>{{ promo.ExpiresAt | date: 'mediumDate' }}</span>
       </div>
     </div>
   </div>

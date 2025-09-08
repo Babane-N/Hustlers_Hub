@@ -7,13 +7,14 @@ export interface ServiceProvider {
   title: string;
   category: string;
   description: string;
-  logoUrl?: string;
   imageUrl: string;
   price: number;
   durationMinutes: number;
   businessName: string;
   businessLocation: string;
+  logoUrl?: string | null; // ✅ allow null
 }
+
 
 @Injectable({
   providedIn: 'root'

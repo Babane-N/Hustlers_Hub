@@ -32,8 +32,9 @@
        (click)="goFindServiceDetail(provider)"
        style="cursor: pointer;">
 
+    <!-- ✅ Show logo if exists -->
     <img *ngIf="provider.logoUrl"
-         [src]="'https://localhost:7018' + provider.logoUrl"
+         [src]="provider.logoUrl"
          alt="Business Logo"
          class="profile-pic" />
 
@@ -45,3 +46,4 @@
     <p class="bio">{{ provider.description }}</p>
   </div>
 </div>
+

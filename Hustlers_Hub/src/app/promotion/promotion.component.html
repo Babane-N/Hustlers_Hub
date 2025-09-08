@@ -18,7 +18,7 @@
     </select>
 
     <select [(ngModel)]="sortBy">
-      <option value="expires">Sort by Expiry</option>
+      <option value="expiresAt">Sort by Expiry</option>
       <option value="title">Sort by Title</option>
       <option value="postedBy">Sort by Poster</option>
     </select>
@@ -26,12 +26,20 @@
 
   <div class="promo-list">
     <div class="promo-card" *ngFor="let promo of filteredPromotions">
-      <img [src]="promo.imageUrl" alt="{{ promo.title }}" />
+
+      <!-- Carousel / Multiple Images -->
+      <div class="promo-images">
+        <img *ngFor="let img of promo.images"
+             [src]="img"
+             alt="{{ promo.title }}"
+             class="promo-img" />
+      </div>
+
       <h3>{{ promo.title }}</h3>
       <p>{{ promo.description }}</p>
       <div class="promo-meta">
         <span>👤 {{ promo.postedBy }}</span>
-        <span>⏳ {{ promo.expires | date:'mediumDate' }}</span>
+        <span>⏳ {{ promo.expiresAt | date:'mediumDate' }}</span>
         <span>📂 {{ promo.category }}</span>
       </div>
     </div>

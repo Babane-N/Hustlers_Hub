@@ -14,6 +14,8 @@ namespace API.Data
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<PromotionImage> PromotionImages { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

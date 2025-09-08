@@ -1,6 +1,6 @@
 .promo-container {
   padding: 2rem;
-  max-width: 900px;
+  max-width: 10000px;
   margin: 0 auto;
   font-family: 'Segoe UI', sans-serif;
   color: #5d2c15; // Cocoa brown text
@@ -81,7 +81,7 @@
     .promo-card {
       background: #fff8f0; // Creamy card background
       border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -95,7 +95,7 @@
 
       img {
         width: 100%;
-        height: 160px;
+        height: 240px;
         object-fit: cover;
         border-bottom: 1px solid #a87450;
       }
@@ -118,6 +118,44 @@
         padding: 0 1rem 1rem;
         font-size: 0.85rem;
         color: #a57c5b;
+      }
+
+      .promo-images {
+        display: flex;
+        overflow-x: auto;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem 0 1rem;
+        /* hide default scrollbar but keep scroll */
+        scrollbar-width: thin;
+        scrollbar-color: #a87450 transparent;
+
+        &::-webkit-scrollbar {
+          height: 6px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background-color: #a87450;
+          border-radius: 3px;
+        }
+
+        &::-webkit-scrollbar-track {
+          background: transparent;
+        }
+      }
+
+      .promo-img {
+        flex: 0 0 auto; /* prevent shrinking */
+        width: 140px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 2px solid transparent;
+        transition: border-color 0.2s ease;
+        cursor: pointer;
+
+        &:hover {
+          border-color: #8b4000;
+        }
       }
     }
   }

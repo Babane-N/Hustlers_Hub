@@ -14,38 +14,59 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BusinessesController : ControllerBase
+    public class BusinessesController(HustlersHubDbContext _context, IWebHostEnvironment _env) : ControllerBase
     {
-        private readonly HustlersHubDbContext _context;
-        private readonly IWebHostEnvironment _env;
 
-        public BusinessesController(HustlersHubDbContext context, IWebHostEnvironment env)
-        {
-            _context = context;
-            _env = env;
-        }
-
-        // ✅ GET businesses for a user
+        // ✅ GET businesses for a specific user (with Logo)
         [HttpGet("Users/{userId}")]
-        public async Task<ActionResult<IEnumerable<Business>>> GetBusinesses(Guid userId)
+        public async Task<ActionResult<IEnumerable<object>>> GetBusinesses(Guid userId)
         {
             var businesses = await _context.Businesses
                 .Where(b => b.UserId == userId)
+                .Select(b => new
+                {
+                    b.Id,
+                    b.BusinessName,
+                    b.Category,
+                    b.Location,
+                    b.Description,
+                    b.UserId,
+                    b.CreatedAt,
+                    b.IsVerified,
+                    LogoUrl = string.IsNullOrEmpty(b.LogoUrl) ? null : b.LogoUrl
+                })
                 .ToListAsync();
+
             return Ok(businesses);
         }
 
-        // ✅ GET by ID
+        // ✅ GET single business by ID (with Logo)
         [HttpGet("{id}")]
-        public async Task<ActionResult<Business>> GetBusiness(Guid id)
+        public async Task<ActionResult<object>> GetBusiness(Guid id)
         {
-            var business = await _context.Businesses.FindAsync(id);
+            var business = await _context.Businesses
+                .Where(b => b.Id == id)
+                .Select(b => new
+                {
+                    b.Id,
+                    b.BusinessName,
+                    b.Category,
+                    b.Location,
+                    b.Description,
+                    b.UserId,
+                    b.CreatedAt,
+                    b.IsVerified,
+                    LogoUrl = string.IsNullOrEmpty(b.LogoUrl) ? null : b.LogoUrl
+                })
+                .FirstOrDefaultAsync();
+
             if (business == null)
                 return NotFound();
-            return business;
+
+            return Ok(business);
         }
 
-        // ✅ UPDATE business
+        // ✅ UPDATE existing business
         [HttpPut("{id}")]
         public async Task<IActionResult> PutBusiness(Guid id, Business business)
         {
@@ -69,7 +90,7 @@ namespace API.Controllers
             return NoContent();
         }
 
-        // ✅ CREATE with optional logo
+        // ✅ CREATE new business with optional logo
         [HttpPost]
         public async Task<ActionResult<Business>> PostBusiness([FromForm] BusinessCreateDto dto)
         {
@@ -87,7 +108,7 @@ namespace API.Controllers
             // 🔁 Save logo image if provided
             if (dto.Logo != null && dto.Logo.Length > 0)
             {
-                var uploadsFolder = Path.Combine(_env.WebRootPath ?? "wwwroot", "uploads");
+                var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
                 Directory.CreateDirectory(uploadsFolder);
 
                 var fileName = $"{Guid.NewGuid()}{Path.GetExtension(dto.Logo.FileName)}";

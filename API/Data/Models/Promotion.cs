@@ -14,10 +14,8 @@ namespace API.Data.Models
         [Required]
         public string Description { get; set; }
 
-        public string? ImageUrl { get; set; }
-
         [Required]
-        public string Category { get; set; } // "Event", "Deal", "Buy & Sell", "Job", "Announcement"
+        public string Category { get; set; }
 
         [Required]
         public Guid PostedById { get; set; }
@@ -30,6 +28,8 @@ namespace API.Data.Models
 
         [ForeignKey("PostedById")]
         public User PostedBy { get; set; }
+
+        public ICollection<PromotionImage> Images { get; set; } = new List<PromotionImage>();
     }
 
 }
