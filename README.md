@@ -78,3 +78,8 @@ o	Announcements
 ## Switch Business
 ![Screenshot 2025-08-04 134800](https://github.com/user-attachments/assets/2a273293-ac6e-402d-b4f2-0a0940d4c019)
 
+New
+![Logged In](https://github.com/user-attachments/assets/cc05ae9b-e87b-4de4-9461-89860ecb4b02)
+![Business ](https://github.com/user-attachments/assets/eeba81a9-e576-4c6b-ad95-4feef18e242a)
+![Logged Out](https://github.com/user-attachments/assets/f63a9430-cc05-42c2-8459-4c7fb2b0c975)
+
