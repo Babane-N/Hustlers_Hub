@@ -1,1 +1,45 @@
-<p>profile works!</p>
+<div class="profile-container" *ngIf="!isLoading; else loading">
+  <h2>👤 My Profile</h2>
+
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+    <!-- Profile Image -->
+    <div class="profile-image">
+      <img *ngIf="profilePreview; else noImage"
+           [src]="profilePreview"
+           alt="Profile" />
+      <ng-template #noImage>
+        <div class="placeholder">No Image</div>
+      </ng-template>
+      <input type="file" (change)="onFileSelected($event)" />
+    </div>
+
+    <!-- Full Name -->
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" formControlName="fullName" />
+    </div>
+
+    <!-- Email -->
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" formControlName="email" [disabled]="true" />
+    </div>
+
+    <!-- Phone -->
+    <div class="form-group">
+      <label>Phone</label>
+      <input type="text" formControlName="phoneNumber" />
+    </div>
+
+    <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+    <button type="submit" [disabled]="profileForm.invalid">
+      Update Profile
+    </button>
+  </form>
+</div>
+
+<ng-template #loading>
+  <p>Loading profile...</p>
+</ng-template>
+

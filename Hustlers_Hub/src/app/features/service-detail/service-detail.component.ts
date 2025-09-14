@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { BookingDialogComponent } from '../booking-dialog/booking-dialog.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServiceDetail, ServiceProvider } from './service.detail';
+import { BookingDialogComponent } from '../booking-dialog/booking-dialog.component';
+import { ServiceProvider, ServiceDetail, Review } from './service.detail';
 
 @Component({
   selector: 'app-service-detail',
@@ -11,6 +11,7 @@ import { ServiceDetail, ServiceProvider } from './service.detail';
 })
 export class ServiceDetailComponent implements OnInit {
   provider!: ServiceDetail;
+  reviews: Review[] = [];
   isLoading = true;
   error = '';
 
@@ -22,7 +23,7 @@ export class ServiceDetailComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id'); // 🔁 use string, not number
+    const id = this.route.snapshot.paramMap.get('id');
 
     if (!id) {
       this.error = 'Invalid service provider ID.';
@@ -30,10 +31,14 @@ export class ServiceDetailComponent implements OnInit {
       return;
     }
 
+    // ✅ Load service details
     this.serviceProvider.getServiceDetails(id).subscribe({
       next: (data) => {
         this.provider = data;
         this.isLoading = false;
+
+        // After provider is loaded, fetch reviews (needs businessId → same as service.businessId or provider.id depending on backend)
+        this.loadReviews(this.provider.id);
       },
       error: (err) => {
         this.error = 'Could not load service provider.';
@@ -43,7 +48,20 @@ export class ServiceDetailComponent implements OnInit {
     });
   }
 
-  openBookingDialog(serviceId: number): void {
+  // ✅ Load reviews for business
+  loadReviews(businessId: string): void {
+    this.serviceProvider.getBusinessReviews(businessId).subscribe({
+      next: (data) => {
+        this.reviews = data;
+      },
+      error: (err) => {
+        console.error('Error loading reviews:', err);
+      }
+    });
+  }
+
+  // ✅ Booking dialog
+  openBookingDialog(serviceId: string): void {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (!user || !user.role) {
       alert('Please log in to book a service.');

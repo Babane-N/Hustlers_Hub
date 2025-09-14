@@ -61,7 +61,7 @@ namespace API.Controllers
                     s.Price,
                     s.DurationMinutes,
                     businessName = s.Business.BusinessName,
-                    logoUrl = s.Business.LogoUrl, // ✅ Unified camelCase name
+                    logoUrl = s.Business.LogoUrl,
                     businessLocation = s.Business.Location,
                     businessDescription = s.Business.Description,
                     isVerified = s.Business.IsVerified
@@ -72,6 +72,26 @@ namespace API.Controllers
                 return NotFound();
 
             return Ok(service);
+        }
+
+        // ✅ GET: api/Services/reviews/business/{businessId}
+        [HttpGet("reviews/business/{businessId}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetBusinessReviews(Guid businessId)
+        {
+            var reviews = await _context.Reviews
+                .Include(r => r.User) // join with user for reviewer name
+                .Where(r => r.BusinessId == businessId)
+                .Select(r => new
+                {
+                    r.Id,
+                    r.Comment,
+                    r.Rating,
+                    Reviewer = r.User.FullName,
+                    r.CreatedAt
+                })
+                .ToListAsync();
+
+            return Ok(reviews);
         }
 
         // ✅ PUT: api/Services/{id}

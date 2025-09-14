@@ -11,6 +11,7 @@ import { ServiceDetailComponent } from './features/service-detail/service-detail
 import { BookingsComponent } from './bookings/bookings.component';
 import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { PromotionComponent } from './promotion/promotion.component';
+import { ProfileComponent } from './profile/profile.component';
 import { AdCreatorComponent } from './features/ad-creator/ad-creator.component';
 import { BusinessSwitcherComponent } from './features/business-switcher/business-switcher.component';
 import { HomePageComponent } from './Customer/home-page/home-page.component';
@@ -26,6 +27,7 @@ const routes: Routes = [
   { path: 'find-service', component: FindServiceComponent },
   { path: 'service-detail/:id', component: ServiceDetailComponent },
   { path: 'bookings', component: BookingsComponent },
+  { path: 'profile', component: ProfileComponent },
   {
     path: 'dashboard',
     component: DashboardComponent,
