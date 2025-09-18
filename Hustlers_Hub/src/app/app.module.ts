@@ -40,6 +40,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TopBarComponent } from './features/shared/top-bar/top-bar.component';
 import { MatMenuModule } from '@angular/material/menu';
+import { GoogleMapsModule } from '@angular/google-maps';
 
 
 
@@ -82,7 +83,8 @@ import { MatMenuModule } from '@angular/material/menu';
     MatCardModule,
     MatDialogModule,
     ReactiveFormsModule,
-    MatMenuModule
+    MatMenuModule,
+    GoogleMapsModule
   ],
   providers: [
     provideAnimationsAsync()

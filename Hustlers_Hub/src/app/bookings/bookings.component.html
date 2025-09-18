@@ -1,19 +1,38 @@
 <div class="bookings-container">
   <h2 class="page-title">📋 Service Bookings Received</h2>
 
-  <div class="bookings-grid">
-    <mat-card class="booking-card" *ngFor="let booking of bookings">
-      <mat-card-header>
-        <div mat-card-avatar class="avatar" [ngStyle]="{ 'background-image': 'url(' + booking.clientImage + ')' }"></div>
-        <mat-card-title>{{ booking.clientName }}</mat-card-title>
-        <mat-card-subtitle>{{ booking.service }}</mat-card-subtitle>
-      </mat-card-header>
+  <!-- Loading state -->
+  <div *ngIf="isLoading" class="loading-message">
+    Loading bookings...
+  </div>
 
-      <mat-card-content>
-        <p><strong>Date:</strong> {{ booking.date | date:'mediumDate' }}</p>
-        <p><strong>Location:</strong> {{ booking.location }}</p>
-        <p><strong>Details:</strong> {{ booking.details }}</p>
-      </mat-card-content>
+  <!-- Error state -->
+  <div *ngIf="!isLoading && errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Bookings list -->
+  <div *ngIf="!isLoading && !errorMessage && bookings.length > 0" class="bookings-grid">
+    <mat-card class="booking-card" *ngFor="let booking of bookings">
+      <!-- Example card content -->
+      <h3>{{ booking.service }}</h3>
+      <p>Customer: {{ booking.clientName }}</p>
+      <p>Location: {{ booking.location }}</p>
+      <p>Date: {{ booking.date | date:'short' }}</p>
     </mat-card>
   </div>
+
+  <!-- No bookings message -->
+  <ng-template #noBookings>
+    <div *ngIf="!isLoading && !errorMessage && bookings.length === 0" class="no-bookings">
+      <mat-card class="no-bookings-card">
+        <p>No bookings received yet.</p>
+      </mat-card>
+    </div>
+  </ng-template>
+
+  <!-- Render no bookings template -->
+  <ng-container *ngIf="!isLoading && !errorMessage && bookings.length === 0">
+    <ng-container *ngTemplateOutlet="noBookings"></ng-container>
+  </ng-container>
 </div>

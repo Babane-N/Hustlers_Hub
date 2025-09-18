@@ -1,12 +1,14 @@
 <div class="register-business-container">
   <h2>Register Your Business</h2>
 
-  <form [formGroup]="businessForm" (ngSubmit)="onSubmit()" enctype="multipart/form-data">
+  <form [formGroup]="businessForm" (ngSubmit)="onSubmit()">
+    <!-- Business Name -->
     <div class="form-group">
       <label>Business Name</label>
       <input type="text" formControlName="businessName" />
     </div>
 
+    <!-- Category -->
     <div class="form-group">
       <label>Category</label>
       <select formControlName="category">
@@ -15,38 +17,52 @@
         <option>Plumber</option>
         <option>Cleaner</option>
         <option>House Builder</option>
-        <option>Car Machanic</option>
+        <option>Car Mechanic</option>
         <option>Painter</option>
         <option>Fitness Trainer</option>
         <option>Tutor</option>
       </select>
     </div>
 
+    <!-- Address (Google Places Autocomplete) -->
     <div class="form-group">
-      <label>Location</label>
-      <input type="text" formControlName="location" />
+      <label>Address</label>
+      <input type="text" formControlName="location" #addressInput placeholder="Type your address" />
     </div>
 
+    <!-- Map -->
+    <div class="form-group">
+      <label>Select Location on Map</label>
+      <google-map [center]="center"
+                  [zoom]="zoom"
+                  height="300px"
+                  width="100%"
+                  (mapClick)="onMapClick($event)">
+        <map-marker *ngIf="selectedPosition" [position]="selectedPosition"></map-marker>
+      </google-map>
+    </div>
+
+    <!-- Description -->
     <div class="form-group">
       <label>Description</label>
       <textarea rows="4" formControlName="description"></textarea>
     </div>
 
-    <!-- ✅ Logo Upload Section -->
-    <div class="form-group logo-upload">
-      <label for="logo">Upload Business Logo</label>
-      <input type="file" accept="image/*" (change)="onLogoSelected($event)" />
-
+    <!-- Logo Upload -->
+    <div class="form-group">
+      <label>Business Logo</label>
+      <input type="file" (change)="onLogoSelected($event)" />
       <div *ngIf="logoPreview" class="logo-preview">
         <img [src]="logoPreview" alt="Logo Preview" />
       </div>
     </div>
 
+    <!-- Error -->
     <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
 
+    <!-- Submit -->
     <button type="submit" [disabled]="isSubmitting">
       {{ isSubmitting ? 'Submitting...' : 'Register Business' }}
     </button>
   </form>
 </div>
-

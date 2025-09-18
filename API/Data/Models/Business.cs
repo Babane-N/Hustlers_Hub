@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace API.Data.Models
@@ -15,7 +17,7 @@ namespace API.Data.Models
         public string Description { get; set; }
 
         [MaxLength(255)]
-        public string Location { get; set; }
+        public string Location { get; set; } // e.g. "Johannesburg, South Africa"
 
         [MaxLength(100)]
         public string Category { get; set; } // E.g., Plumbing, Cleaning, Fitness
@@ -25,6 +27,10 @@ namespace API.Data.Models
         public bool IsVerified { get; set; } = false;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        // ✅ New: Store map coordinates
+        public double? Latitude { get; set; }   // precise lat
+        public double? Longitude { get; set; }  // precise lng
 
         // Foreign Key
         [Required]

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BusinessService } from './business.service';
 import { Router } from '@angular/router';
@@ -8,12 +8,18 @@ import { Router } from '@angular/router';
   templateUrl: './register-business.component.html',
   styleUrls: ['./register-business.component.scss']
 })
-export class RegisterBusinessComponent {
+export class RegisterBusinessComponent implements AfterViewInit {
+  @ViewChild('addressInput') addressInput!: ElementRef<HTMLInputElement>;
+
   businessForm: FormGroup;
   isSubmitting = false;
   errorMessage = '';
   logoPreview: string | null = null;
   selectedLogoFile: File | null = null;
+
+  center: google.maps.LatLngLiteral = { lat: -26.2041, lng: 28.0473 }; // Johannesburg default
+  selectedPosition: google.maps.LatLngLiteral | null = null;
+  zoom = 14;
 
   constructor(
     private fb: FormBuilder,
@@ -23,8 +29,33 @@ export class RegisterBusinessComponent {
     this.businessForm = this.fb.group({
       businessName: ['', Validators.required],
       category: ['', Validators.required],
-      location: ['', Validators.required],
+      location: [''],
       description: ['', Validators.required],
+      latitude: [null],
+      longitude: [null]
+    });
+  }
+
+  ngAfterViewInit(): void {
+    const autocomplete = new google.maps.places.Autocomplete(this.addressInput.nativeElement, {
+      fields: ['geometry', 'formatted_address']
+    });
+
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      if (place.geometry && place.geometry.location) {
+        const lat = place.geometry.location.lat();
+        const lng = place.geometry.location.lng();
+
+        this.center = { lat, lng };
+        this.selectedPosition = { lat, lng };
+
+        this.businessForm.patchValue({
+          location: place.formatted_address,
+          latitude: lat,
+          longitude: lng
+        });
+      }
     });
   }
 
@@ -41,6 +72,16 @@ export class RegisterBusinessComponent {
     }
   }
 
+  onMapClick(event: google.maps.MapMouseEvent) {
+    if (event.latLng) {
+      this.selectedPosition = event.latLng.toJSON();
+      this.businessForm.patchValue({
+        latitude: this.selectedPosition.lat,
+        longitude: this.selectedPosition.lng
+      });
+    }
+  }
+
   onSubmit(): void {
     if (this.businessForm.invalid || !this.getUserId()) {
       this.errorMessage = 'Please complete the form and ensure you are logged in.';
@@ -53,8 +94,10 @@ export class RegisterBusinessComponent {
     const formData = new FormData();
     formData.append('businessName', this.businessForm.value.businessName);
     formData.append('category', this.businessForm.value.category);
-    formData.append('location', this.businessForm.value.location);
+    formData.append('location', this.businessForm.value.location || '');
     formData.append('description', this.businessForm.value.description);
+    formData.append('latitude', this.businessForm.value.latitude ?? '');
+    formData.append('longitude', this.businessForm.value.longitude ?? '');
     formData.append('userId', this.getUserId());
 
     if (this.selectedLogoFile) {
@@ -77,3 +120,4 @@ export class RegisterBusinessComponent {
     return user ? JSON.parse(user)?.userId : '';
   }
 }
+

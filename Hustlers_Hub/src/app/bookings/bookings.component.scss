@@ -7,15 +7,38 @@
     margin-bottom: 2rem;
     font-size: 1.8rem;
     font-weight: 600;
+    color: #5d2c15;
+    text-align: center;
   }
 
   :host {
     display: block;
     background-color: transparent !important;
-    color: #fff;
+    color: #333;
     padding: 2rem;
   }
+  /* ✅ Empty state */
+  .no-bookings {
+    display: flex;
+    justify-content: center;
+    margin-top: 3rem;
 
+    .no-bookings-card {
+      padding: 2rem;
+      text-align: center;
+      font-size: 1.2rem;
+      font-style: italic;
+      color: #7a4f25;
+      background: #fff8f0;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+      p {
+        margin: 0;
+      }
+    }
+  }
+  /* ✅ Grid layout for bookings */
   .bookings-grid {
     display: grid;
     gap: 1.5rem;
@@ -24,7 +47,33 @@
 
   .booking-card {
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: #fff;
+
+    mat-card-header {
+      background: #fff3e6;
+      border-radius: 12px 12px 0 0;
+      padding: 1rem;
+
+      mat-card-title {
+        font-weight: 600;
+        color: #5d2c15;
+      }
+
+      mat-card-subtitle {
+        color: #7a4f25;
+        font-size: 0.9rem;
+      }
+    }
+
+    mat-card-content {
+      padding: 1rem;
+
+      p {
+        margin: 0.5rem 0;
+        font-size: 0.95rem;
+      }
+    }
   }
 
   .avatar {

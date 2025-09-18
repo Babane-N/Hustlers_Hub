@@ -157,5 +157,8 @@ namespace API.Controllers
         public string Description { get; set; } = string.Empty;
         public Guid UserId { get; set; }
         public IFormFile? Logo { get; set; }
+
+        public double? Latitude { get; set; }   // precise lat
+        public double? Longitude { get; set; }
     }
 }
