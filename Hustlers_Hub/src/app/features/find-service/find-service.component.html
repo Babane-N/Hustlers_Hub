@@ -10,7 +10,8 @@
 
 <!-- Search and Filter Bar -->
 <div class="search-filter-bar">
-  <input type="text"
+  <input #locationInput
+         type="text"
          placeholder="Search by name, service, or location"
          [(ngModel)]="searchTerm" />
 
@@ -23,16 +24,29 @@
     <option value="name">Sort by Name</option>
     <option value="location">Sort by Location</option>
   </select>
+
+  <!-- Toggle Buttons -->
+  <div class="view-toggle">
+    <button mat-stroked-button color="primary"
+            (click)="toggleView('list')"
+            [disabled]="viewMode==='list'">
+      <mat-icon>view_list</mat-icon> List View
+    </button>
+    <button mat-stroked-button color="primary"
+            (click)="toggleView('map')"
+            [disabled]="viewMode==='map'">
+      <mat-icon>map</mat-icon> Map View
+    </button>
+  </div>
 </div>
 
-<!-- Results Grid -->
-<div class="results-grid">
+<!-- Results -->
+<div *ngIf="viewMode==='list'" class="results-grid">
   <div class="service-card"
        *ngFor="let provider of filteredProviders"
        (click)="goFindServiceDetail(provider)"
        style="cursor: pointer;">
 
-    <!-- ✅ Show logo if exists -->
     <img *ngIf="provider.logoUrl"
          [src]="provider.logoUrl"
          alt="Business Logo"
@@ -45,5 +59,18 @@
     </p>
     <p class="bio">{{ provider.description }}</p>
   </div>
+</div>
+
+<!-- Map -->
+<div *ngIf="viewMode==='map'" class="map-container">
+  <google-map height="500px" width="100%"
+              [center]="center"
+              [zoom]="zoom">
+    <map-marker *ngFor="let marker of mapMarkers"
+                [position]="marker.position"
+                [title]="marker.title"
+                (mapClick)="goFindServiceDetail(marker.provider)">
+    </map-marker>
+  </google-map>
 </div>
 

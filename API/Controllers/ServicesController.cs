@@ -35,6 +35,8 @@ namespace API.Controllers
                     s.ImageUrl,
                     s.Price,
                     s.DurationMinutes,
+                    s.Business.Latitude,
+                    s.Business.Longitude,
                     businessName = s.Business.BusinessName,
                     businessLocation = s.Business.Location,
                     logoUrl = s.Business.LogoUrl // ✅ Unified camelCase name
@@ -60,6 +62,8 @@ namespace API.Controllers
                     s.ImageUrl,
                     s.Price,
                     s.DurationMinutes,
+                    s.Business.Latitude,
+                    s.Business.Longitude,
                     businessName = s.Business.BusinessName,
                     logoUrl = s.Business.LogoUrl,
                     businessLocation = s.Business.Location,

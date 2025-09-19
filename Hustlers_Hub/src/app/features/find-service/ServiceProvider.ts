@@ -12,6 +12,8 @@ export interface ServiceProvider {
   durationMinutes: number;
   businessName: string;
   businessLocation: string;
+  latitude?: number;
+  longitude?: number;
   logoUrl?: string | null; // ✅ allow null
 }
 

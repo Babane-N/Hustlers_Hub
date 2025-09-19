@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ServiceProviderService, ServiceProvider } from './ServiceProvider';
 
@@ -7,11 +7,19 @@ import { ServiceProviderService, ServiceProvider } from './ServiceProvider';
   templateUrl: './find-service.component.html',
   styleUrls: ['./find-service.component.scss']
 })
-export class FindServiceComponent implements OnInit {
+export class FindServiceComponent implements OnInit, AfterViewInit {
   serviceProviders: ServiceProvider[] = [];
   searchTerm = '';
   selectedService = '';
   sortBy = 'name';
+
+  viewMode: 'list' | 'map' = 'list';
+
+  // Google Maps
+  center: google.maps.LatLngLiteral = { lat: -26.2041, lng: 28.0473 }; // Johannesburg
+  zoom = 11;
+
+  @ViewChild('locationInput') locationInput!: ElementRef<HTMLInputElement>;
 
   constructor(
     private router: Router,
@@ -21,14 +29,37 @@ export class FindServiceComponent implements OnInit {
   ngOnInit(): void {
     this.providerService.getProviders().subscribe({
       next: (data) => {
-        // ✅ Prepend API URL for logos so <img> works
         this.serviceProviders = data.map(p => ({
           ...p,
           logoUrl: p.logoUrl ? `https://localhost:7018${p.logoUrl}` : null
         }));
       },
-      error: (err) => console.error('Error loading service providers:', err)
+      error: (err) => console.error('Error loading providers:', err)
     });
+  }
+
+  ngAfterViewInit(): void {
+    if (this.locationInput) {
+      const autocomplete = new google.maps.places.Autocomplete(this.locationInput.nativeElement, {
+        fields: ['geometry', 'formatted_address'],
+        types: ['geocode']
+      });
+
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (place.geometry?.location) {
+          this.center = {
+            lat: place.geometry.location.lat(),
+            lng: place.geometry.location.lng()
+          };
+          this.zoom = 13;
+        }
+      });
+    }
+  }
+
+  toggleView(mode: 'list' | 'map'): void {
+    this.viewMode = mode;
   }
 
   goToRegisterBusiness(): void {
@@ -42,29 +73,36 @@ export class FindServiceComponent implements OnInit {
   get filteredProviders(): ServiceProvider[] {
     let result = [...this.serviceProviders];
 
-    // 🔍 Search by name, category, or location
     if (this.searchTerm.trim()) {
       const term = this.searchTerm.toLowerCase();
       result = result.filter(p =>
         p.businessName.toLowerCase().includes(term) ||
         p.category.toLowerCase().includes(term) ||
-        p.businessLocation.toLowerCase().includes(term)
+        p.businessLocation?.toLowerCase().includes(term)
       );
     }
 
-    // 🎯 Filter by selected category
     if (this.selectedService) {
       result = result.filter(p => p.category === this.selectedService);
     }
 
-    // 🔤 Sort
     if (this.sortBy === 'name') {
       result.sort((a, b) => a.businessName.localeCompare(b.businessName));
     } else if (this.sortBy === 'location') {
-      result.sort((a, b) => a.businessLocation.localeCompare(b.businessLocation));
+      result.sort((a, b) => (a.businessLocation || '').localeCompare(b.businessLocation || ''));
     }
 
     return result;
+  }
+
+  get mapMarkers() {
+    return this.filteredProviders
+      .filter(p => p.latitude && p.longitude)
+      .map(p => ({
+        position: { lat: p.latitude!, lng: p.longitude! },
+        title: p.businessName,
+        provider: p
+      }));
   }
 
   goFindServiceDetail(provider: ServiceProvider): void {
@@ -73,3 +111,4 @@ export class FindServiceComponent implements OnInit {
     }
   }
 }
+

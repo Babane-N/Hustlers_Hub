@@ -14,10 +14,18 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BusinessesController(HustlersHubDbContext _context, IWebHostEnvironment _env) : ControllerBase
+    public class BusinessesController : ControllerBase
     {
+        private readonly HustlersHubDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        // ✅ GET businesses for a specific user (with Logo)
+        public BusinessesController(HustlersHubDbContext context, IWebHostEnvironment env)
+        {
+            _context = context;
+            _env = env;
+        }
+
+        // ✅ GET businesses for a specific user (with Logo + Lat/Long)
         [HttpGet("Users/{userId}")]
         public async Task<ActionResult<IEnumerable<object>>> GetBusinesses(Guid userId)
         {
@@ -29,6 +37,8 @@ namespace API.Controllers
                     b.BusinessName,
                     b.Category,
                     b.Location,
+                    b.Latitude,
+                    b.Longitude,
                     b.Description,
                     b.UserId,
                     b.CreatedAt,
@@ -40,7 +50,7 @@ namespace API.Controllers
             return Ok(businesses);
         }
 
-        // ✅ GET single business by ID (with Logo)
+        // ✅ GET single business by ID
         [HttpGet("{id}")]
         public async Task<ActionResult<object>> GetBusiness(Guid id)
         {
@@ -52,6 +62,8 @@ namespace API.Controllers
                     b.BusinessName,
                     b.Category,
                     b.Location,
+                    b.Latitude,
+                    b.Longitude,
                     b.Description,
                     b.UserId,
                     b.CreatedAt,
@@ -90,7 +102,7 @@ namespace API.Controllers
             return NoContent();
         }
 
-        // ✅ CREATE new business with optional logo
+        // ✅ CREATE new business with optional logo and Lat/Long
         [HttpPost]
         public async Task<ActionResult<Business>> PostBusiness([FromForm] BusinessCreateDto dto)
         {
@@ -100,6 +112,8 @@ namespace API.Controllers
                 BusinessName = dto.BusinessName,
                 Category = dto.Category,
                 Location = dto.Location,
+                Latitude = dto.Latitude,
+                Longitude = dto.Longitude,
                 Description = dto.Description,
                 UserId = dto.UserId,
                 CreatedAt = DateTime.UtcNow
@@ -108,7 +122,7 @@ namespace API.Controllers
             // 🔁 Save logo image if provided
             if (dto.Logo != null && dto.Logo.Length > 0)
             {
-                var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
+                var uploadsFolder = Path.Combine(_env.WebRootPath ?? "wwwroot", "uploads");
                 Directory.CreateDirectory(uploadsFolder);
 
                 var fileName = $"{Guid.NewGuid()}{Path.GetExtension(dto.Logo.FileName)}";
@@ -157,8 +171,8 @@ namespace API.Controllers
         public string Description { get; set; } = string.Empty;
         public Guid UserId { get; set; }
         public IFormFile? Logo { get; set; }
-
         public double? Latitude { get; set; }   // precise lat
         public double? Longitude { get; set; }
     }
 }
+
