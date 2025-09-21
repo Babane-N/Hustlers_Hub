@@ -7,7 +7,6 @@
          alt="Business Logo"
          class="dashboard-logo" />
   </div>
-
   <div class="dashboard-grid">
     <!-- Bookings Overview -->
     <mat-card class="dashboard-card clickable" (click)="goTo('bookings')">
@@ -23,7 +22,7 @@
     </mat-card>
 
     <!-- Booking History -->
-    <mat-card class="dashboard-card">
+    <mat-card class="dashboard-card clickable" (click)="goTo('history')">
       <mat-card-title>📁 Booking History</mat-card-title>
       <mat-card-content>
         <p>{{ history.length }} jobs completed</p>
@@ -36,7 +35,7 @@
     </mat-card>
 
     <!-- Latest Reviews -->
-    <mat-card class="dashboard-card">
+    <mat-card class="dashboard-card clickable" (click)="goTo('reviews')">
       <mat-card-title>⭐ Latest Reviews</mat-card-title>
       <mat-card-content>
         <div *ngIf="reviews.length > 0; else noReviews">
@@ -49,14 +48,50 @@
         </ng-template>
       </mat-card-content>
     </mat-card>
-
-    <!-- Earnings -->
-    <mat-card class="dashboard-card">
-      <mat-card-title>💰 Total Earnings</mat-card-title>
-      <mat-card-content>
-        <h3>R{{ totalEarnings | number: '1.2-2' }}</h3>
-        <p>{{ history.length }} jobs done</p>
-      </mat-card-content>
-    </mat-card>
   </div>
+  <!-- Business Management Tools Section -->
+  <div class="tools-section">
+    <h3 class="tools-header">🧰 Business Management Tools</h3>
+
+    <div class="tools-grid">
+      <!-- Unlocked Tools -->
+      <div class="tool-card" (click)="goTo('edit-business')">
+        <div class="tool-icon">📝</div>
+        <div class="tool-title">Edit Business Profile</div>
+      </div>
+
+      <div class="tool-card" (click)="goTo('update-logo')">
+        <div class="tool-icon">🖼️</div>
+        <div class="tool-title">Update Logo & Photos</div>
+      </div>
+
+      <div class="tool-card" (click)="goTo('customer-feedback')">
+        <div class="tool-icon">💬</div>
+        <div class="tool-title">View Customer Feedback</div>
+      </div>
+
+      <!-- Premium Tools -->
+      <div class="tool-card locked-tool">
+        <div class="lock-icon">🔒</div>
+        <div class="tool-icon">📩</div>
+        <div class="tool-title">Customer Messaging</div>
+      </div>
+      <div class="tool-card locked-tool">
+        <div class="lock-icon">🔒</div>
+        <div class="tool-icon">💰</div>
+        <div class="tool-title">View Total Earnings</div>
+      </div>
+      <div class="tool-card locked-tool">
+        <div class="lock-icon">🔒</div>
+        <div class="tool-icon">💳</div>
+        <div class="tool-title">Online Payment Setup</div>
+      </div>
+      <div class="tool-card locked-tool">
+        <div class="lock-icon">🔒</div>
+        <div class="tool-icon">📊</div>
+        <div class="tool-title">Advanced Analytics</div>
+      </div>
+    </div>
+  </div>
+
 </div>

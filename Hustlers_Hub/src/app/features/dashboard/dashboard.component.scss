@@ -1,51 +1,117 @@
 .dashboard-container {
   padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+}
 
-  .welcome {
-    font-size: 1.8rem;
+.welcome {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.logo-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+
+  .dashboard-logo {
+    max-height: 100px;
+    border-radius: 50%;
+    border: 3px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.dashboard-card {
+  background: #f4f6f8;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border-radius: 12px;
+  cursor: pointer;
+  border: 1px solid #e0e0e0;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Tools Section */
+.tools-section {
+  margin-top: 2rem;
+
+  .tools-header {
+    font-size: 1.4rem;
     margin-bottom: 1rem;
   }
 
-  .logo-wrapper {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1rem;
-
-    .dashboard-logo {
-      max-height: 120px;
-      max-width: 100%;
-      object-fit: contain;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    }
-  }
-
-  .dashboard-grid {
+  .tools-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.2rem;
   }
-
-  .dashboard-card {
+  /* ✅ Unlocked Tools now transparent */
+  .tool-card {
+    background: transparent; /* <-- transparent */
+    border-radius: 12px;
     padding: 1rem;
-    cursor: default;
+    text-align: center;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    cursor: pointer;
+    border: 1px solid #e0e0e0;
 
-    &.clickable {
-      cursor: pointer;
-      transition: box-shadow 0.3s ease;
-
-      &:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      }
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+      background: rgba(255, 255, 255, 0.05); /* subtle hover tint */
     }
 
-    mat-card-title {
-      font-weight: bold;
+    .tool-icon {
+      font-size: 2rem;
       margin-bottom: 0.5rem;
+      color: #1976d2;
     }
 
-    mat-card-content ul {
-      padding-left: 1.2rem;
+    .tool-title {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #333;
+    }
+  }
+  /* 🔒 Locked Premium Tools */
+  .locked-tool {
+    background: #fdf6e3;
+    border: 2px dashed #d4af37;
+    color: #999;
+    cursor: not-allowed;
+    position: relative;
+
+    &:hover {
+      transform: none;
+      box-shadow: none;
+      background: #fdf6e3;
+    }
+
+    .lock-icon {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 1.2rem;
+      color: #b8860b;
+    }
+
+    .tool-icon {
+      color: #b8860b;
+    }
+
+    .tool-title {
+      color: #777;
     }
   }
 }
