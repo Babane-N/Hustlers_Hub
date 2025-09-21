@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Booking, BookingProvider } from './Booking';
+import { BookingService, Booking } from './BookingService';
 
 @Component({
   selector: 'app-bookings',
@@ -14,13 +14,43 @@ export class BookingsComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private bookingService: BookingProvider
+    private bookingService: BookingService
   ) { }
 
   ngOnInit(): void {
-    this.bookingService.getProvider().subscribe({
+    this.loadBookings();
+  }
+
+  private loadBookings(): void {
+    this.isLoading = true;
+
+    // ✅ Get logged-in user from localStorage
+    const user = localStorage.getItem('user');
+    if (!user) {
+      this.errorMessage = 'You must be logged in to view bookings.';
+      this.isLoading = false;
+      return;
+    }
+
+    const parsedUser = JSON.parse(user);
+    const providerId = parsedUser?.businessId || parsedUser?.id; // fallback
+
+    if (!providerId) {
+      this.errorMessage = 'Provider information is missing.';
+      this.isLoading = false;
+      return;
+    }
+
+    // ✅ Call API with providerId
+    this.bookingService.getProviderBookings(providerId).subscribe({
       next: (data) => {
-        this.bookings = data;
+        this.bookings = data.map(b => ({
+          ...b,
+          serviceName: b.service?.title || 'Unknown Service',
+          customerName: b.customer?.fullName || 'Unknown Customer',
+          providerName: b.business?.businessName || 'Unknown Provider',
+          location: b.location || 'Not provided'
+        }));
         this.isLoading = false;
       },
       error: (err) => {
@@ -31,8 +61,12 @@ export class BookingsComponent implements OnInit {
     });
   }
 
-  // ✅ Handy getter for template
+  // ✅ Template helper
   get hasBookings(): boolean {
-    return this.bookings && this.bookings.length > 0;
+    return this.bookings.length > 0;
+  }
+
+  viewBookingDetails(booking: Booking): void {
+    this.router.navigate(['/booking-detail', booking.id]);
   }
 }

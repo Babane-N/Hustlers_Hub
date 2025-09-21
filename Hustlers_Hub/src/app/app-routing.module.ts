@@ -16,6 +16,7 @@ import { AdCreatorComponent } from './features/ad-creator/ad-creator.component';
 import { BusinessSwitcherComponent } from './features/business-switcher/business-switcher.component';
 import { HomePageComponent } from './Customer/home-page/home-page.component';
 import { BookingDialogComponent } from './features/booking-dialog/booking-dialog.component';
+import { MyBookingsComponent } from './Customer/my-bookings/my-bookings.component';
 
 const routes: Routes = [
   { path: '', component: HomePageComponent },
@@ -27,6 +28,7 @@ const routes: Routes = [
   { path: 'find-service', component: FindServiceComponent },
   { path: 'service-detail/:id', component: ServiceDetailComponent },
   { path: 'bookings', component: BookingsComponent },
+  { path: 'my-bookings', component: MyBookingsComponent },
   { path: 'profile', component: ProfileComponent },
   {
     path: 'dashboard',

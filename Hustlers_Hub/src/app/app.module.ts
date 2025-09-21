@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 
@@ -41,10 +41,12 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { TopBarComponent } from './features/shared/top-bar/top-bar.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { GoogleMapsModule } from '@angular/google-maps';
+import { MyBookingsComponent } from './Customer/my-bookings/my-bookings.component';
 
 
 
 @NgModule({
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [
     AppComponent,
     HomeComponent,
@@ -64,7 +66,8 @@ import { GoogleMapsModule } from '@angular/google-maps';
     HomePageComponent,
     RegisterBusinessComponent,
     BusinessSwitcherComponent,
-    TopBarComponent
+    TopBarComponent,
+    MyBookingsComponent
   ],
   imports: [
     BrowserModule,

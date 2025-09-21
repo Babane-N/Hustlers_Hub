@@ -32,9 +32,9 @@ namespace API.Data
                 .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Booking>()
-                .HasOne(b => b.ServiceProvider)
+                .HasOne(b => b.Business)
                 .WithMany()
-                .HasForeignKey(b => b.ProviderId)
+                .HasForeignKey(b => b.BusinessId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             // Review relationships

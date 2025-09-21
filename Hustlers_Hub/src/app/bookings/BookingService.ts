@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+// 🟢 Booking model
 export interface Booking {
   id: string;
   serviceId: string;
@@ -10,38 +11,30 @@ export interface Booking {
   bookingDate: Date;
   status: string;
 
-  // Extra info
+  // Extra details
   description?: string;
-  contactNumber?: string;
   location?: string;
   latitude?: number;
   longitude?: number;
+  contactNumber?: string;
 
-  // Relations (from backend Includes)
+  // Optional relationships (if API expands them)
   service?: { id: string; title: string };
   customer?: { id: string; fullName: string };
   business?: { id: string; businessName: string };
 }
 
+// 🟢 CreateBooking DTO
 export interface CreateBookingDto {
   serviceId: string;
   customerId: string;
+  businessId: string;
   bookingDate: string;
   description?: string;
-  contactNumber?: string;
   location?: string;
   latitude?: number;
   longitude?: number;
-}
-
-export interface UpdateBookingDto {
-  bookingDate: string;
-  status: string;
-  description?: string;
   contactNumber?: string;
-  location?: string;
-  latitude?: number;
-  longitude?: number;
 }
 
 @Injectable({
@@ -52,38 +45,39 @@ export class BookingService {
 
   constructor(private http: HttpClient) { }
 
-  // ✅ Create new booking
-  createBooking(dto: CreateBookingDto): Observable<Booking> {
-    return this.http.post<Booking>(this.apiUrl, dto);
+  // ✅ CRUD methods
+
+  createBooking(dto: CreateBookingDto): Observable<any> {
+    return this.http.post(this.apiUrl, dto);
   }
 
-  // ✅ Get all bookings
   getBookings(): Observable<Booking[]> {
     return this.http.get<Booking[]>(this.apiUrl);
   }
 
-  // ✅ Get single booking
   getBooking(id: string): Observable<Booking> {
     return this.http.get<Booking>(`${this.apiUrl}/${id}`);
   }
 
-  // ✅ Get bookings for a business
+  updateBooking(id: string, dto: Partial<CreateBookingDto> & { bookingDate: Date }): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, dto);
+  }
+
+  deleteBooking(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  // ✅ Custom endpoints
+
   getBookingsByBusiness(businessId: string): Observable<Booking[]> {
     return this.http.get<Booking[]>(`${this.apiUrl}/business/${businessId}`);
   }
 
-  // ✅ Get bookings for a customer
-  getBookingsByCustomer(customerId: string): Observable<Booking[]> {
+  getCustomerBookings(customerId: string): Observable<Booking[]> {
     return this.http.get<Booking[]>(`${this.apiUrl}/customer/${customerId}`);
   }
 
-  // ✅ Update booking
-  updateBooking(id: string, dto: UpdateBookingDto): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, dto);
-  }
-
-  // ✅ Delete booking
-  deleteBooking(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+  getProviderBookings(providerId: string): Observable<Booking[]> {
+    return this.http.get<Booking[]>(`${this.apiUrl}/provider/${providerId}`);
   }
 }

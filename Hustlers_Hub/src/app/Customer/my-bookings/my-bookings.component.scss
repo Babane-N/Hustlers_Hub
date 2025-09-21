@@ -1,0 +1,65 @@
+.bookings-container {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: auto;
+
+  .page-title {
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+  }
+
+  .no-bookings {
+    text-align: center;
+    color: #888;
+    margin-top: 2rem;
+
+    mat-icon {
+      font-size: 3rem;
+      display: block;
+      margin: 0 auto 0.5rem;
+    }
+  }
+
+  .bookings-grid {
+    display: grid;
+    gap: 1.2rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+
+  .booking-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 0.5rem 0.5rem 1rem;
+  }
+
+  .status-chip {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+    text-transform: capitalize;
+  }
+
+  .status-pending {
+    background: #fff3cd;
+    color: #856404;
+  }
+
+  .status-confirmed {
+    background: #d4edda;
+    color: #155724;
+  }
+
+  .status-completed {
+    background: #cce5ff;
+    color: #004085;
+  }
+
+  .status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+  }
+}

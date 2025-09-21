@@ -1,7 +1,6 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Router } from '@angular/router';
-import { CreateBookingDto, BookingService } from './BookingService';
+import { BookingService, CreateBookingDto } from './BookingService';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -9,15 +8,18 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './booking-dialog.component.html',
   styleUrls: ['./booking-dialog.component.scss']
 })
-export class BookingDialogComponent implements OnInit {
+export class BookingDialogComponent implements OnInit, AfterViewInit {
   bookingDate: Date | null = null;
-  notes = '';
+  description = '';
+  contactNumber = '';
+  location = '';
+  latitude?: number;
+  longitude?: number;
 
   constructor(
-    public dialogRef: MatDialogRef<BookingDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { serviceId: string, providerId: string },
+    private dialogRef: MatDialogRef<BookingDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { serviceId: string },
     private bookingService: BookingService,
-    private router: Router,
     private snackBar: MatSnackBar
   ) { }
 
@@ -25,17 +27,40 @@ export class BookingDialogComponent implements OnInit {
     const user = localStorage.getItem('user');
     if (!user) {
       this.dialogRef.close();
-      this.router.navigate(['/login']);
     }
   }
 
-  submitBooking() {
+  ngAfterViewInit(): void {
+    const input = document.getElementById('placeAutocomplete') as HTMLInputElement;
+    if (input && (window as any).google) {
+      const autocomplete = new (window as any).google.maps.places.Autocomplete(input);
+
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        this.location = place.formatted_address || '';
+        this.latitude = place.geometry?.location?.lat();
+        this.longitude = place.geometry?.location?.lng();
+      });
+    }
+  }
+
+  submitBooking(): void {
     const user = JSON.parse(localStorage.getItem('user')!);
+
+    if (!this.bookingDate) {
+      this.snackBar.open('Please select a booking date', 'Close', { duration: 3000 });
+      return;
+    }
+
     const bookingDto: CreateBookingDto = {
       serviceId: this.data.serviceId,
-      providerId: this.data.providerId,
-      customerId: user.id,
-      bookingDate: this.bookingDate!
+      customerId: user.userId,
+      bookingDate: this.bookingDate.toISOString(),
+      description: this.description,
+      contactNumber: this.contactNumber,
+      location: this.location,
+      latitude: this.latitude,
+      longitude: this.longitude
     };
 
     this.bookingService.createBooking(bookingDto).subscribe({
@@ -43,14 +68,14 @@ export class BookingDialogComponent implements OnInit {
         this.snackBar.open('Booking submitted successfully', 'Close', { duration: 3000 });
         this.dialogRef.close(true);
       },
-      error: () => {
+      error: (err) => {
+        console.error('Booking submission error:', err);
         this.snackBar.open('Failed to submit booking', 'Close', { duration: 3000 });
       }
     });
   }
 
-  closeDialog() {
+  closeDialog(): void {
     this.dialogRef.close();
   }
 }
-

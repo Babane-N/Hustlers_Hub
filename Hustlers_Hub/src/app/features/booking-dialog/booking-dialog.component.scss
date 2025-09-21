@@ -1,4 +1,13 @@
-.full-width {
-  width: 100%;
-  margin-bottom: 1rem;
+.dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .full-width {
+    width: 100%;
+  }
+}
+
+mat-dialog-actions {
+  margin-top: 1rem;
 }
