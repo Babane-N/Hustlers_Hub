@@ -18,55 +18,50 @@ export class BookingsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.loadBookings();
-  }
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const businessId = user.businessId || user.id; // ✅ normalize
 
-  private loadBookings(): void {
-    this.isLoading = true;
-
-    // ✅ Get logged-in user from localStorage
-    const user = localStorage.getItem('user');
-    if (!user) {
-      this.errorMessage = 'You must be logged in to view bookings.';
+    if (!businessId) {
+      this.errorMessage = 'You must be logged in as a business to view bookings.';
       this.isLoading = false;
       return;
     }
 
-    const parsedUser = JSON.parse(user);
-    const providerId = parsedUser?.businessId || parsedUser?.id; // fallback
-
-    if (!providerId) {
-      this.errorMessage = 'Provider information is missing.';
-      this.isLoading = false;
-      return;
-    }
-
-    // ✅ Call API with providerId
-    this.bookingService.getProviderBookings(providerId).subscribe({
+    this.bookingService.getBookingsByBusiness(businessId).subscribe({
       next: (data) => {
         this.bookings = data.map(b => ({
           ...b,
-          serviceName: b.service?.title || 'Unknown Service',
-          customerName: b.customer?.fullName || 'Unknown Customer',
-          providerName: b.business?.businessName || 'Unknown Provider',
-          location: b.location || 'Not provided'
+          serviceTitle: b.serviceTitle || b.service?.title || 'Unknown Service',
+          customerName: b.customerName || b.customer?.fullName || 'Unknown Customer',
+          businessName: b.businessName || b.business?.businessName || 'Unknown Business'
         }));
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Error fetching bookings:', err);
+        console.error('Error fetching business bookings:', err);
         this.errorMessage = 'Could not load bookings. Please try again later.';
         this.isLoading = false;
       }
     });
   }
 
-  // ✅ Template helper
+  // ✅ Template helpers
   get hasBookings(): boolean {
     return this.bookings.length > 0;
+  }
+
+  getStatusClass(status: string): string {
+    switch (status?.toLowerCase()) {
+      case 'pending': return 'status-pending';
+      case 'confirmed': return 'status-confirmed';
+      case 'completed': return 'status-completed';
+      case 'cancelled': return 'status-cancelled';
+      default: return '';
+    }
   }
 
   viewBookingDetails(booking: Booking): void {
     this.router.navigate(['/booking-detail', booking.id]);
   }
 }
+

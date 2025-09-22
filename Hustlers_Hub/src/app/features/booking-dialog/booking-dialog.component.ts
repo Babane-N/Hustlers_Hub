@@ -1,6 +1,6 @@
 import { Component, OnInit, AfterViewInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { BookingService, CreateBookingDto } from './BookingService';
+import { BookingService, CreateBookingDto } from './BookingService'; // ✅ fixed import
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -24,8 +24,11 @@ export class BookingDialogComponent implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit(): void {
-    const user = localStorage.getItem('user');
-    if (!user) {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const customerId = user.userId || user.id;  // ✅ normalize
+
+    if (!customerId) {
+      this.snackBar.open('You must be logged in to create a booking', 'Close', { duration: 3000 });
       this.dialogRef.close();
     }
   }
@@ -45,7 +48,17 @@ export class BookingDialogComponent implements OnInit, AfterViewInit {
   }
 
   submitBooking(): void {
-    const user = JSON.parse(localStorage.getItem('user')!);
+    const userRaw = localStorage.getItem('user');
+    if (!userRaw) {
+      this.snackBar.open('You must be logged in to book a service', 'Close', { duration: 3000 });
+      this.dialogRef.close();
+      return;
+    }
+
+    const user = JSON.parse(userRaw);
+
+    // 🔑 Normalize customerId (support both id and userId)
+    const customerId = user.userId || user.id;
 
     if (!this.bookingDate) {
       this.snackBar.open('Please select a booking date', 'Close', { duration: 3000 });
@@ -54,7 +67,7 @@ export class BookingDialogComponent implements OnInit, AfterViewInit {
 
     const bookingDto: CreateBookingDto = {
       serviceId: this.data.serviceId,
-      customerId: user.userId,
+      customerId: customerId,
       bookingDate: this.bookingDate.toISOString(),
       description: this.description,
       contactNumber: this.contactNumber,
@@ -62,6 +75,8 @@ export class BookingDialogComponent implements OnInit, AfterViewInit {
       latitude: this.latitude,
       longitude: this.longitude
     };
+
+    console.log("📤 Booking DTO sending:", bookingDto); // 🔍 Debug log
 
     this.bookingService.createBooking(bookingDto).subscribe({
       next: () => {

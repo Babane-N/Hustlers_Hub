@@ -1,38 +1,26 @@
 <div class="bookings-container">
-  <h2 class="page-title">📋 Service Bookings Received</h2>
+  <h2 class="page-title">📋 Bookings Received</h2>
 
-  <!-- Loading state -->
-  <div *ngIf="isLoading" class="loading-message">
-    Loading bookings...
-  </div>
+  <div *ngIf="isLoading" class="loading">Loading bookings...</div>
+  <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
 
-  <!-- Error state -->
-  <div *ngIf="!isLoading && errorMessage" class="error-message">
-    {{ errorMessage }}
-  </div>
-
-  <!-- Bookings list -->
-  <div *ngIf="!isLoading && !errorMessage && bookings.length > 0" class="bookings-grid">
-    <mat-card class="booking-card" *ngFor="let booking of bookings">
-      <!-- Example card content -->
-      <h3>{{ booking.service }}</h3>
-      <p>Customer: {{ booking.customer }}</p>
-      <p>Location: {{ booking.location }}</p>
-      <p>Date: {{ booking.bookingDate | date:'short' }}</p>
-    </mat-card>
-  </div>
-
-  <!-- No bookings message -->
-  <ng-template #noBookings>
-    <div *ngIf="!isLoading && !errorMessage && bookings.length === 0" class="no-bookings">
-      <mat-card class="no-bookings-card">
-        <p>No bookings received yet.</p>
-      </mat-card>
+  <div *ngIf="hasBookings; else noBookings" class="bookings-grid">
+    <div class="booking-card clickable"
+         *ngFor="let booking of bookings"
+         (click)="viewBookingDetails(booking)">
+      <div class="booking-header">
+        <div class="customer-name">{{ booking.customerName }}</div>
+        <div class="booking-date">{{ booking.bookingDate | date:'short' }}</div>
+      </div>
+      <div class="booking-service">{{ booking.serviceTitle }}</div>
+      <div class="booking-location">📍 {{ booking.location }}</div>
+      <div class="booking-status" [ngClass]="getStatusClass(booking.status)">
+        {{ booking.status }}
+      </div>
     </div>
-  </ng-template>
+  </div>
 
-  <!-- Render no bookings template -->
-  <ng-container *ngIf="!isLoading && !errorMessage && bookings.length === 0">
-    <ng-container *ngTemplateOutlet="noBookings"></ng-container>
-  </ng-container>
+  <ng-template #noBookings>
+    <p>No bookings received yet.</p>
+  </ng-template>
 </div>

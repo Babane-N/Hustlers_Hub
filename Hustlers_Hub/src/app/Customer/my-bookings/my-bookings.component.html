@@ -1,31 +1,24 @@
-<<div class="bookings-container">
-  <h2 class="page-title">📅 My Bookings</h2>
+<div class="my-bookings-container">
+  <h2 class="page-title">📋 My Bookings</h2>
 
-  <div *ngIf="isLoading">Loading your bookings...</div>
-  <div *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div *ngIf="isLoading" class="loading">Loading your bookings...</div>
+  <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
 
-  <div *ngIf="!isLoading && !hasBookings" class="no-bookings">
-    <mat-icon>event_busy</mat-icon>
-    <p>No bookings yet. Start exploring services!</p>
+  <div *ngIf="hasBookings; else noBookings" class="bookings-grid">
+    <div class="booking-card" *ngFor="let booking of bookings">
+      <div class="booking-header">
+        <div class="service-name">{{ booking.serviceTitle }}</div>
+        <div class="booking-date">{{ booking.bookingDate | date:'short' }}</div>
+      </div>
+      <div class="provider-name">🏢 {{ booking.businessName }}</div>
+      <div class="booking-location">📍 {{ booking.location }}</div>
+      <div class="booking-status" [ngClass]="getStatusClass(booking.status)">
+        {{ booking.status }}
+      </div>
+    </div>
   </div>
 
-  <div class="bookings-grid" *ngIf="hasBookings">
-    <mat-card class="booking-card" *ngFor="let booking of bookings">
-      <mat-card-header>
-        <mat-card-title>{{ booking.service }}</mat-card-title>
-        <mat-card-subtitle>{{ booking.business }}</mat-card-subtitle>
-      </mat-card-header>
-
-      <mat-card-content>
-        <p><strong>Date:</strong> {{ booking.bookingDate | date:'medium' }}</p>
-        <p><strong>Location:</strong> {{ booking.location }}</p>
-        <p><strong>Notes:</strong> {{ booking.description || '—' }}</p>
-
-        <span class="status-chip" [ngClass]="getStatusClass(booking.status)">
-          {{ booking.status }}
-        </span>
-      </mat-card-content>
-    </mat-card>
-  </div>
+  <ng-template #noBookings>
+    <p>You have not made any bookings yet.</p>
+  </ng-template>
 </div>
-

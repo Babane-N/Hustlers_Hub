@@ -16,27 +16,31 @@ namespace API.Controllers
         private readonly HustlersHubDbContext _context;
         public BookingsController(HustlersHubDbContext context) => _context = context;
 
+        // ---------------------------
         // GET: api/Bookings
+        // ---------------------------
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BookingDto>>> GetBookings()
         {
             var bookings = await _context.Bookings
                 .Include(b => b.Customer)
                 .Include(b => b.Service)
-                .ThenInclude(s => s.Business)
+                .Include(b => b.Business)
                 .ToListAsync();
 
-            return Ok(bookings.Select(b => MapToDto(b)));
+            return Ok(bookings.Select(MapToDto));
         }
 
-        // GET: api/Bookings/5
+        // ---------------------------
+        // GET: api/Bookings/{id}
+        // ---------------------------
         [HttpGet("{id}")]
         public async Task<ActionResult<BookingDto>> GetBooking(Guid id)
         {
             var booking = await _context.Bookings
                 .Include(b => b.Customer)
                 .Include(b => b.Service)
-                .ThenInclude(s => s.Business)
+                .Include(b => b.Business)
                 .FirstOrDefaultAsync(b => b.Id == id);
 
             if (booking == null)
@@ -45,11 +49,44 @@ namespace API.Controllers
             return Ok(MapToDto(booking));
         }
 
+        // ---------------------------
+        // GET: api/Bookings/business/{businessId}
+        // ---------------------------
+        [HttpGet("business/{businessId}")]
+        public async Task<ActionResult<IEnumerable<BookingDto>>> GetBookingsByBusiness(Guid businessId)
+        {
+            var bookings = await _context.Bookings
+                .Where(b => b.BusinessId == businessId)
+                .Include(b => b.Customer)
+                .Include(b => b.Service)
+                .Include(b => b.Business)
+                .ToListAsync();
+
+            return Ok(bookings.Select(MapToDto));
+        }
+
+        // ---------------------------
+        // GET: api/Bookings/customer/{customerId}
+        // ---------------------------
+        [HttpGet("customer/{customerId}")]
+        public async Task<ActionResult<IEnumerable<BookingDto>>> GetBookingsByCustomer(Guid customerId)
+        {
+            var bookings = await _context.Bookings
+                .Where(b => b.CustomerId == customerId)
+                .Include(b => b.Customer)
+                .Include(b => b.Service)
+                .Include(b => b.Business)
+                .ToListAsync();
+
+            return Ok(bookings.Select(MapToDto));
+        }
+
+        // ---------------------------
         // POST: api/Bookings
+        // ---------------------------
         [HttpPost]
         public async Task<ActionResult<BookingDto>> PostBooking([FromBody] CreateBookingDto dto)
         {
-            // Validate Service exists
             var service = await _context.Services
                 .Include(s => s.Business)
                 .FirstOrDefaultAsync(s => s.Id == dto.ServiceId);
@@ -57,11 +94,9 @@ namespace API.Controllers
             if (service == null)
                 return BadRequest($"Service with Id {dto.ServiceId} does not exist.");
 
-            // Validate Customer exists
             if (!await _context.Users.AnyAsync(u => u.Id == dto.CustomerId))
                 return BadRequest($"Customer with Id {dto.CustomerId} does not exist.");
 
-            // Create Booking
             var booking = new Booking
             {
                 Id = Guid.NewGuid(),
@@ -80,11 +115,12 @@ namespace API.Controllers
             _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
 
-            // Return DTO instead of EF entity to avoid cycles
             return CreatedAtAction(nameof(GetBooking), new { id = booking.Id }, MapToDto(booking));
         }
 
-        // PUT: api/Bookings/5
+        // ---------------------------
+        // PUT: api/Bookings/{id}
+        // ---------------------------
         [HttpPut("{id}")]
         public async Task<IActionResult> PutBooking(Guid id, [FromBody] UpdateBookingDto dto)
         {
@@ -104,7 +140,9 @@ namespace API.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Bookings/5
+        // ---------------------------
+        // DELETE: api/Bookings/{id}
+        // ---------------------------
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBooking(Guid id)
         {
@@ -117,29 +155,17 @@ namespace API.Controllers
             return NoContent();
         }
 
-        // GET: api/Bookings/business/5
-        [HttpGet("business/{businessId}")]
-        public async Task<ActionResult<IEnumerable<BookingDto>>> GetBookingsByBusiness(Guid businessId)
-        {
-            var bookings = await _context.Bookings
-                .Where(b => b.BusinessId == businessId)
-                .Include(b => b.Customer)
-                .Include(b => b.Service)
-                .ThenInclude(s => s.Business)
-                .ToListAsync();
-
-            return Ok(bookings.Select(b => MapToDto(b)));
-        }
-
+        // ---------------------------
         // Helper: Map Booking EF entity to BookingDto
+        // ---------------------------
         private BookingDto MapToDto(Booking b) => new BookingDto
         {
             Id = b.Id,
             BookingDate = b.BookingDate,
             Status = b.Status,
-            CustomerName = b.Customer?.FullName,
-            ServiceTitle = b.Service?.Title,
-            BusinessName = b.Service?.Business?.BusinessName,
+            CustomerName = b.Customer?.FullName ?? "Unknown Customer",
+            ServiceTitle = b.Service?.Title ?? "Unknown Service",
+            BusinessName = b.Business?.BusinessName ?? "Unknown Business",
             Description = b.Description,
             ContactNumber = b.ContactNumber,
             Location = b.Location,
@@ -148,7 +174,9 @@ namespace API.Controllers
         };
     }
 
+    // ---------------------------
     // DTOs
+    // ---------------------------
     public class CreateBookingDto
     {
         public Guid ServiceId { get; set; }
