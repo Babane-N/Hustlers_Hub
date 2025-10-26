@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
+import { environment } from '../environment';
 
 export interface RegisterRequest {
   fullName: string;
@@ -16,7 +17,8 @@ export interface LoginRequest {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private apiUrl = 'https://localhost:7018/api/Users';
+  // ✅ Use environment-based API URL instead of localhost
+  private apiUrl = `${environment.apiUrl}/Users`;
 
   // Reactive login status tracker
   private loggedInSubject = new BehaviorSubject<boolean>(this.hasToken());
@@ -24,27 +26,31 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
+  // ✅ Register user
   register(user: RegisterRequest): Observable<any> {
-    return this.http.post(`${this.apiUrl}`, user);
+    return this.http.post(this.apiUrl, user);
   }
 
+  // ✅ Login user
   login(credentials: LoginRequest): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/login`, credentials);
   }
 
-  // Call this after login success
+  // ✅ Store session info locally
   setSession(token: string, role: string): void {
     localStorage.setItem('authToken', token);
     localStorage.setItem('userRole', role);
     this.loggedInSubject.next(true);
   }
 
+  // ✅ Logout
   logout(): void {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userRole');
     this.loggedInSubject.next(false);
   }
 
+  // ✅ Token & role helpers
   getToken(): string | null {
     return localStorage.getItem('authToken');
   }
@@ -53,6 +59,7 @@ export class AuthService {
     return localStorage.getItem('userRole');
   }
 
+  // ✅ Authentication state
   isLoggedIn(): boolean {
     return this.loggedInSubject.value;
   }
@@ -61,7 +68,9 @@ export class AuthService {
     return this.isLoggedIn();
   }
 
+  // ✅ Internal token check
   private hasToken(): boolean {
     return !!localStorage.getItem('authToken');
   }
 }
+

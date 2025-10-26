@@ -24,7 +24,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
         policy => policy
-            .WithOrigins("http://localhost:4200", "https://localhost:4200")
+            .WithOrigins("https://hustlershub-g3cjffaea3axckg3.southafricanorth-01.azurewebsites.net", "https://localhost:4200")
             .AllowAnyHeader()
             .AllowAnyMethod());
 });
