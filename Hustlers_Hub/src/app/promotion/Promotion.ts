@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Promotion {
   id?: string; // Assuming your backend returns an Id
@@ -14,15 +15,15 @@ export interface Promotion {
 
 @Injectable({ providedIn: 'root' })
 export class PromotionProvider {
-  private apiUrl = 'https://localhost:7018/api/Promotions';
+  private baseUrl = `${environment.apiUrl}/Bookings`
 
   constructor(private http: HttpClient) { }
 
   getPromotions(): Observable<Promotion[]> {
-    return this.http.get<Promotion[]>(this.apiUrl);
+    return this.http.get<Promotion[]>(this.baseUrl);
   }
 
   postPromotion(formData: FormData): Observable<Promotion> {
-    return this.http.post<Promotion>(this.apiUrl, formData);
+    return this.http.post<Promotion>(this.baseUrl, formData);
   }
 }

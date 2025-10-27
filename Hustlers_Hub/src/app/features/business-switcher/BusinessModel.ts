@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 // ✅ 1. Interface for Business model
 export interface Business {
@@ -18,7 +19,7 @@ export interface Business {
   providedIn: 'root'
 })
 export class BusinessService {
-  private baseUrl = 'https://localhost:7018/api/Businesses'; // Your backend API route
+  private baseUrl = `${environment.apiUrl}/Businesses`; // Your backend API route
 
   constructor(private http: HttpClient) { }
 

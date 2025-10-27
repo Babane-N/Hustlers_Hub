@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface ServiceProvider {
   id: string;
@@ -22,11 +23,10 @@ export interface ServiceProvider {
   providedIn: 'root'
 })
 export class ServiceProviderService {
-  private apiUrl = 'https://localhost:7018/api/Services';
-
+  private baseUrl = `${environment.apiUrl}/Busineses`;
   constructor(private http: HttpClient) { }
 
   getProviders(): Observable<ServiceProvider[]> {
-    return this.http.get<ServiceProvider[]>(this.apiUrl);
+    return this.http.get<ServiceProvider[]>(this.baseUrl);
   }
 }

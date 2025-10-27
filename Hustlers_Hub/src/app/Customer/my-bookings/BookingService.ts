@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface Booking {
   id: string;
@@ -32,19 +33,20 @@ export interface CreateBookingDto {
   providedIn: 'root'
 })
 export class BookingService {
-  private apiUrl = 'https://localhost:7018/api/Bookings';
+  private baseUrl = `${environment.apiUrl}/Bookings`;
 
   constructor(private http: HttpClient) { }
 
   createBooking(dto: CreateBookingDto): Observable<any> {
-    return this.http.post(this.apiUrl, dto);
+    return this.http.post(this.baseUrl, dto);
   }
 
   getBookingsByCustomer(customerId: string): Observable<Booking[]> {
-    return this.http.get<Booking[]>(`${this.apiUrl}/customer/${customerId}`);
+    return this.http.get<Booking[]>(`${this.baseUrl}/customer/${customerId}`);
   }
 
   getBookingsByBusiness(businessId: string): Observable<Booking[]> {
-    return this.http.get<Booking[]>(`${this.apiUrl}/business/${businessId}`);
+    return this.http.get<Booking[]>(`${this.baseUrl}/business/${businessId}`);
   }
 }
+

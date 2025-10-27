@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 // 📌 Service + Business details
 export interface ServiceDetail {
@@ -30,7 +31,7 @@ export interface Review {
 
 @Injectable({ providedIn: 'root' })
 export class ServiceProvider {
-  private baseUrl = 'https://localhost:7018/api/Services';
+  private baseUrl = `${environment.apiUrl}/Services`;
 
   constructor(private http: HttpClient) { }
 
