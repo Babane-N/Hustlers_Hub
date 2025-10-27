@@ -4,7 +4,7 @@ import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class BusinessService {
-  private baseUrl = `${environment.apiUrl}/Busineses`; // ✅ Ensure this matches your backend
+  private baseUrl = `${environment.apiUrl}/Businesses`; // ✅ Ensure this matches your backend
 
   constructor(private http: HttpClient) { }
 

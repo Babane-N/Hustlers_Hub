@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 interface UserProfile {
   id: string;
@@ -25,7 +26,7 @@ export class ProfileComponent implements OnInit {
   profilePreview: string | ArrayBuffer | null = null;
   selectedFile: File | null = null;
 
-  private apiUrl = 'https://localhost:7018/api/Users';
+  private baseUrl = `${environment.apiUrl}/Users`;
 
   constructor(
     private fb: FormBuilder,
@@ -40,7 +41,7 @@ export class ProfileComponent implements OnInit {
       return;
     }
 
-    this.http.get<UserProfile>(`${this.apiUrl}/${storedUser.userId}`).subscribe({
+    this.http.get<UserProfile>(`${this.baseUrl}/${storedUser.userId}`).subscribe({
       next: (data) => {
         this.user = data;
         this.initForm();
@@ -88,7 +89,7 @@ export class ProfileComponent implements OnInit {
       formData.append('profileImage', this.selectedFile);
     }
 
-    this.http.put(`${this.apiUrl}/${this.user.id}`, formData).subscribe({
+    this.http.put(`${this.baseUrl}/${this.user.id}`, formData).subscribe({
       next: () => {
         alert('Profile updated successfully!');
         this.router.navigate(['/dashboard']);
