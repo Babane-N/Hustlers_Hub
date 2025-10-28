@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ServiceProviderService, ServiceProvider } from './ServiceProvider';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-find-service',
@@ -31,7 +32,8 @@ export class FindServiceComponent implements OnInit, AfterViewInit {
       next: (data) => {
         this.serviceProviders = data.map(p => ({
           ...p,
-          logoUrl: p.logoUrl ? `https://localhost:7018${p.logoUrl}` : null
+          // ✅ Use environment.apiUrl instead of localhost
+          logoUrl: p.logoUrl ? `${environment.apiUrl}${p.logoUrl}` : null
         }));
       },
       error: (err) => console.error('Error loading providers:', err)
@@ -111,4 +113,3 @@ export class FindServiceComponent implements OnInit, AfterViewInit {
     }
   }
 }
-

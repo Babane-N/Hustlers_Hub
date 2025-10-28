@@ -63,7 +63,7 @@ export class ProfileComponent implements OnInit {
     });
 
     this.profilePreview = this.user.profileImage
-      ? `https://localhost:7018${this.user.profileImage}`
+      ? `${environment.apiUrl}${this.user.profileImage}`
       : null;
   }
 

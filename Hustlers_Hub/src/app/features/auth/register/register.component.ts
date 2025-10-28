@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-register',
@@ -40,13 +41,16 @@ export class RegisterComponent {
     const userPayload = {
       fullName,
       email,
-      password: password, // match the backend model name
+      password,
       phoneNumber,
-      userType: 0, // enum value as string
+      userType: 0,
       createdAt: new Date().toISOString()
     };
 
-    this.http.post('https://localhost:7018/api/Users', userPayload).subscribe({
+    // ✅ Use environment.apiUrl for production/deployment
+    const baseUrl = `${environment.apiUrl}/Users`;
+
+    this.http.post(baseUrl, userPayload).subscribe({
       next: () => {
         this.router.navigate(['/home-page']);
         this.isLoading = false;

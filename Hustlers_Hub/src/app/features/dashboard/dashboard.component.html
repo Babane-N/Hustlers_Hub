@@ -3,7 +3,7 @@
 
   <!-- Business Logo -->
   <div class="logo-wrapper" *ngIf="business.logoUrl">
-    <img [src]="'https://localhost:7018' + business.logoUrl"
+    <img [src]="environment.apiUrl + business.logoUrl"
          alt="Business Logo"
          class="dashboard-logo" />
   </div>

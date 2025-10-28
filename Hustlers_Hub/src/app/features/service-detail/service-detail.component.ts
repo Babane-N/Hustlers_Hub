@@ -3,6 +3,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BookingDialogComponent } from '../booking-dialog/booking-dialog.component';
 import { ServiceProvider, ServiceDetail, Review } from './service.detail';
+import { environment } from '../../../environments/environment';
+
 
 @Component({
   selector: 'app-service-detail',
@@ -10,6 +12,7 @@ import { ServiceProvider, ServiceDetail, Review } from './service.detail';
   styleUrls: ['./service-detail.component.scss']
 })
 export class ServiceDetailComponent implements OnInit {
+  public environment = environment;
   provider!: ServiceDetail;
   reviews: Review[] = [];
   isLoading = true;

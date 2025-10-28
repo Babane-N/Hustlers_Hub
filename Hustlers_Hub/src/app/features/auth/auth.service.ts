@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { environment } from '../../../environments/environment.prod';
+import { environment } from '../../../environments/environment';
 
 export interface RegisterRequest {
   fullName: string;
@@ -18,7 +18,7 @@ export interface LoginRequest {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   // ✅ Use environment-based API URL instead of localhost
-  private apiUrl = `${environment.production}/Users`;
+  private apiUrl = `${environment}/Users`;
 
   // Reactive login status tracker
   private loggedInSubject = new BehaviorSubject<boolean>(this.hasToken());

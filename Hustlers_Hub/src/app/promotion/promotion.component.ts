@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Promotion, PromotionProvider } from './Promotion';
+import { environment } from '../../environments/environment';
 
 interface PromotionImage {
   imageUrl: string;
@@ -39,14 +40,14 @@ export class PromotionComponent implements OnInit {
   }
 
   loadPromotions(): void {
-    const apiBaseUrl = 'https://localhost:7018';
+    const baseUrl = `${environment.apiUrl}`
 
     this.promotionService.getPromotions().subscribe(data => {
       this.promotions = data.map(p => ({
         ...p,
         // map image URLs to absolute URLs
         images: Array.isArray(p.images)
-          ? p.images.map(url => url.startsWith('http') ? url : apiBaseUrl + url)
+          ? p.images.map(url => url.startsWith('http') ? url : baseUrl + url)
           : [],
         expiresAt: p.expiresAt || new Date(),
         postedBy: p.postedBy || 'Babane_N'
