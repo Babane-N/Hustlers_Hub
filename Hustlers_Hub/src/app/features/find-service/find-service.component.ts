@@ -13,29 +13,18 @@ export class FindServiceComponent implements OnInit, AfterViewInit {
   searchTerm = '';
   selectedService = '';
   sortBy = 'name';
-
   viewMode: 'list' | 'map' = 'list';
-
-  // Google Maps
-  center: google.maps.LatLngLiteral = { lat: -26.2041, lng: 28.0473 }; // Johannesburg
+  center: google.maps.LatLngLiteral = { lat: -26.2041, lng: 28.0473 };
   zoom = 11;
 
   @ViewChild('locationInput') locationInput!: ElementRef<HTMLInputElement>;
+  uploadsUrl = environment.apiUrl;
 
-  constructor(
-    private router: Router,
-    private providerService: ServiceProviderService
-  ) { }
+  constructor(private router: Router, private providerService: ServiceProviderService) { }
 
   ngOnInit(): void {
     this.providerService.getProviders().subscribe({
-      next: (data) => {
-        this.serviceProviders = data.map(p => ({
-          ...p,
-          // ✅ Use environment.apiUrl instead of localhost
-          logoUrl: p.logoUrl ? `${environment.apiUrl}${p.logoUrl}` : null
-        }));
-      },
+      next: (data) => this.serviceProviders = data,
       error: (err) => console.error('Error loading providers:', err)
     });
   }
@@ -50,31 +39,21 @@ export class FindServiceComponent implements OnInit, AfterViewInit {
       autocomplete.addListener('place_changed', () => {
         const place = autocomplete.getPlace();
         if (place.geometry?.location) {
-          this.center = {
-            lat: place.geometry.location.lat(),
-            lng: place.geometry.location.lng()
-          };
+          this.center = { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() };
           this.zoom = 13;
         }
       });
     }
   }
 
-  toggleView(mode: 'list' | 'map'): void {
-    this.viewMode = mode;
-  }
+  toggleView(mode: 'list' | 'map') { this.viewMode = mode; }
 
-  goToRegisterBusiness(): void {
-    this.router.navigate(['/register-business']);
-  }
+  goToRegisterBusiness() { this.router.navigate(['/register-business']); }
 
-  get uniqueServices(): string[] {
-    return [...new Set(this.serviceProviders.map(p => p.category))];
-  }
+  get uniqueServices(): string[] { return [...new Set(this.serviceProviders.map(p => p.category))]; }
 
   get filteredProviders(): ServiceProvider[] {
     let result = [...this.serviceProviders];
-
     if (this.searchTerm.trim()) {
       const term = this.searchTerm.toLowerCase();
       result = result.filter(p =>
@@ -83,33 +62,18 @@ export class FindServiceComponent implements OnInit, AfterViewInit {
         p.businessLocation?.toLowerCase().includes(term)
       );
     }
-
-    if (this.selectedService) {
-      result = result.filter(p => p.category === this.selectedService);
-    }
-
-    if (this.sortBy === 'name') {
-      result.sort((a, b) => a.businessName.localeCompare(b.businessName));
-    } else if (this.sortBy === 'location') {
-      result.sort((a, b) => (a.businessLocation || '').localeCompare(b.businessLocation || ''));
-    }
-
+    if (this.selectedService) result = result.filter(p => p.category === this.selectedService);
+    if (this.sortBy === 'name') result.sort((a, b) => a.businessName.localeCompare(b.businessName));
+    else if (this.sortBy === 'location') result.sort((a, b) => (a.businessLocation || '').localeCompare(b.businessLocation || ''));
     return result;
   }
 
   get mapMarkers() {
-    return this.filteredProviders
-      .filter(p => p.latitude && p.longitude)
-      .map(p => ({
-        position: { lat: p.latitude!, lng: p.longitude! },
-        title: p.businessName,
-        provider: p
-      }));
+    return this.filteredProviders.filter(p => p.latitude && p.longitude)
+      .map(p => ({ position: { lat: p.latitude!, lng: p.longitude! }, title: p.businessName, provider: p }));
   }
 
-  goFindServiceDetail(provider: ServiceProvider): void {
-    if (provider?.id) {
-      this.router.navigate(['/service-detail', provider.id]);
-    }
+  goFindServiceDetail(provider: ServiceProvider) {
+    if (provider?.id) this.router.navigate(['/service-detail', provider.id]);
   }
 }

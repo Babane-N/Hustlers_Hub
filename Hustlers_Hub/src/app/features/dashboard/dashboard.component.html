@@ -3,10 +3,11 @@
 
   <!-- Business Logo -->
   <div class="logo-wrapper" *ngIf="business.logoUrl">
-    <img [src]="environment.apiUrl + business.logoUrl"
+    <img [src]="uploadsUrl + '/' + business.logoUrl"
          alt="Business Logo"
          class="dashboard-logo" />
   </div>
+
   <div class="dashboard-grid">
     <!-- Bookings Overview -->
     <mat-card class="dashboard-card clickable" (click)="goTo('bookings')">
@@ -49,6 +50,7 @@
       </mat-card-content>
     </mat-card>
   </div>
+
   <!-- Business Management Tools Section -->
   <div class="tools-section">
     <h3 class="tools-header">🧰 Business Management Tools</h3>

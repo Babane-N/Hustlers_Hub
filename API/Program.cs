@@ -1,60 +1,86 @@
 ﻿using API.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ✅ Configure Entity Framework and SQL Server connection
+// ---------------------------
+// ✅ Database
+// ---------------------------
 builder.Services.AddDbContext<HustlersHubDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// ✅ Add Controllers with enum as string conversion
+// ---------------------------
+// ✅ Controllers with JSON enum as string
+// ---------------------------
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
-// ✅ Enable Swagger for API documentation
+// ---------------------------
+// ✅ Swagger for development/testing
+// ---------------------------
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// ✅ Configure CORS — allow both production & local origins
+// ---------------------------
+// ✅ CORS: allow frontend origins
+// ---------------------------
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
         policy.WithOrigins(
-            // ✅ Production Frontend (Azure Static Web App)
+            // Production Static Web App
             "https://purple-water-01a0ea703.3.azurestaticapps.net",
 
-            // ✅ (Optional) Staging or alternative Azure URL
+            // Optional backend app domain (if calling API directly)
             "https://hustlershub-g3cjffaea3axckg3.southafricanorth-01.azurewebsites.net",
 
-            // ✅ Local Angular app
+            // Local Angular dev
             "https://localhost:4200",
             "http://localhost:4200"
         )
         .AllowAnyHeader()
         .AllowAnyMethod()
-        .AllowCredentials() // only if you use cookies or authorization headers
     );
 });
 
 var app = builder.Build();
 
-// ✅ Middleware setup
+// ---------------------------
+// ✅ Middleware
+// ---------------------------
+
+// Swagger for development
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+// Enforce HTTPS
 app.UseHttpsRedirection();
 
-// ✅ Serve static files (e.g., uploaded images)
+// Serve static files (wwwroot)
 app.UseStaticFiles();
 
-// ✅ Apply CORS globally
+// Serve uploaded images from /Uploads
+var uploadsPath = Path.Combine(builder.Environment.ContentRootPath, "Uploads");
+if (!Directory.Exists(uploadsPath))
+{
+    Directory.CreateDirectory(uploadsPath);
+}
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadsPath),
+    RequestPath = "/uploads"
+});
+
+// Apply CORS globally
 app.UseCors("AllowFrontend");
 
 app.UseAuthorization();

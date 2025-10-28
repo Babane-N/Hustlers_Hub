@@ -13,6 +13,7 @@ export class RegisterComponent {
   registerForm: FormGroup;
   isLoading = false;
   registrationError = '';
+  private baseUrl = `${environment.apiUrl}/Users`;
 
   constructor(private fb: FormBuilder, private router: Router, private http: HttpClient) {
     this.registerForm = this.fb.group({
@@ -30,36 +31,17 @@ export class RegisterComponent {
     return password === confirm ? null : { mismatch: true };
   }
 
-  onSubmit(): void {
+  onSubmit() {
     if (this.registerForm.invalid) return;
-
     this.isLoading = true;
     this.registrationError = '';
 
     const { fullName, email, phoneNumber, password } = this.registerForm.value;
+    const userPayload = { fullName, email, password, phoneNumber, userType: 0, createdAt: new Date().toISOString() };
 
-    const userPayload = {
-      fullName,
-      email,
-      password,
-      phoneNumber,
-      userType: 0,
-      createdAt: new Date().toISOString()
-    };
-
-    // ✅ Use environment.apiUrl for production/deployment
-    const baseUrl = `${environment.apiUrl}/Users`;
-
-    this.http.post(baseUrl, userPayload).subscribe({
-      next: () => {
-        this.router.navigate(['/home-page']);
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error(err);
-        this.registrationError = err.error || 'Registration failed.';
-        this.isLoading = false;
-      }
+    this.http.post(this.baseUrl, userPayload).subscribe({
+      next: () => { this.router.navigate(['/home-page']); this.isLoading = false; },
+      error: (err) => { console.error(err); this.registrationError = err.error || 'Registration failed.'; this.isLoading = false; }
     });
   }
 }

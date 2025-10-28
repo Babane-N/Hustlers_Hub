@@ -4,14 +4,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
-interface UserProfile {
-  id: string;
-  fullName: string;
-  email: string;
-  phoneNumber?: string;
-  profileImage?: string;
-  userType: string;
-}
+interface UserProfile { id: string; fullName: string; email: string; phoneNumber?: string; profileImage?: string; userType: string; }
 
 @Component({
   selector: 'app-profile',
@@ -25,32 +18,19 @@ export class ProfileComponent implements OnInit {
   errorMessage = '';
   profilePreview: string | ArrayBuffer | null = null;
   selectedFile: File | null = null;
+  uploadsUrl = environment.uploadsUrl;
 
   private baseUrl = `${environment.apiUrl}/Users`;
 
-  constructor(
-    private fb: FormBuilder,
-    private http: HttpClient,
-    private router: Router
-  ) { }
+  constructor(private fb: FormBuilder, private http: HttpClient, private router: Router) { }
 
   ngOnInit(): void {
     const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-    if (!storedUser?.userId) {
-      this.router.navigate(['/login']);
-      return;
-    }
+    if (!storedUser?.userId) { this.router.navigate(['/login']); return; }
 
     this.http.get<UserProfile>(`${this.baseUrl}/${storedUser.userId}`).subscribe({
-      next: (data) => {
-        this.user = data;
-        this.initForm();
-        this.isLoading = false;
-      },
-      error: () => {
-        this.errorMessage = 'Failed to load profile';
-        this.isLoading = false;
-      }
+      next: (data) => { this.user = data; this.initForm(); this.isLoading = false; },
+      error: () => { this.errorMessage = 'Failed to load profile'; this.isLoading = false; }
     });
   }
 
@@ -62,38 +42,29 @@ export class ProfileComponent implements OnInit {
       profileImage: ['']
     });
 
-    this.profilePreview = this.user.profileImage
-      ? `${environment.apiUrl}${this.user.profileImage}`
-      : null;
+    this.profilePreview = this.user.profileImage ? `${this.uploadsUrl}/${this.user.profileImage}` : null;
   }
 
-  onFileSelected(event: Event): void {
+  onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       this.selectedFile = input.files[0];
-
       const reader = new FileReader();
       reader.onload = () => (this.profilePreview = reader.result);
       reader.readAsDataURL(this.selectedFile);
     }
   }
 
-  onSubmit(): void {
+  onSubmit() {
     if (this.profileForm.invalid) return;
-
     const formData = new FormData();
     formData.append('id', this.user.id);
     formData.append('fullName', this.profileForm.value.fullName);
     formData.append('phoneNumber', this.profileForm.value.phoneNumber || '');
-    if (this.selectedFile) {
-      formData.append('profileImage', this.selectedFile);
-    }
+    if (this.selectedFile) formData.append('profileImage', this.selectedFile);
 
     this.http.put(`${this.baseUrl}/${this.user.id}`, formData).subscribe({
-      next: () => {
-        alert('Profile updated successfully!');
-        this.router.navigate(['/dashboard']);
-      },
+      next: () => { alert('Profile updated successfully!'); this.router.navigate(['/dashboard']); },
       error: () => (this.errorMessage = 'Update failed. Please try again.')
     });
   }

@@ -2,7 +2,7 @@
   <!-- Profile / Summary -->
   <div class="profile-card mat-elevation-z3">
     <img *ngIf="provider.logoUrl"
-         [src]="environment.apiUrl + provider.logoUrl"
+         [src]="uploadsUrl + '/' + provider.logoUrl"
          alt="{{ provider.businessName }}"
          class="profile-img" />
 
@@ -31,7 +31,7 @@
     <h3>Previous Work</h3>
     <div class="gallery">
       <img *ngIf="provider.imageUrl"
-           [src]="environment.apiUrl + provider.imageUrl"
+           [src]="uploadsUrl + '/' + provider.imageUrl"
            alt="Work image"
            class="gallery-img" />
     </div>
