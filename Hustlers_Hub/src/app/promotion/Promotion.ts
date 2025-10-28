@@ -15,7 +15,7 @@ export interface Promotion {
 
 @Injectable({ providedIn: 'root' })
 export class PromotionProvider {
-  private baseUrl = `${environment.apiUrl}/Bookings`
+  private baseUrl = `${environment.apiUrl}/Promoations`
 
   constructor(private http: HttpClient) { }
 

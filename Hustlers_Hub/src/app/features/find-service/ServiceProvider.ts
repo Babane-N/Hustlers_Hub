@@ -23,7 +23,7 @@ export interface ServiceProvider {
   providedIn: 'root'
 })
 export class ServiceProviderService {
-  private baseUrl = `${environment.apiUrl}/Businesses`;
+  private baseUrl = `${environment.apiUrl}/Services`;
   constructor(private http: HttpClient) { }
 
   getProviders(): Observable<ServiceProvider[]> {
