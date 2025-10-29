@@ -27,25 +27,24 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // ---------------------------
-// ✅ CORS: allow frontend origins
+// ✅ CORS Configuration
 // ---------------------------
+
+var allowedOrigins = new[]
+{
+    "https://purple-water-01a0ea703.3.azurestaticapps.net", // Frontend (Azure Static Web App)
+    "https://hustlershub-g3cjffaea3axckg3.southafricanorth-01.azurewebsites.net", // Backend App (optional)
+    "https://localhost:4200",
+    "http://localhost:4200"
+};
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
-        policy.WithOrigins(
-            // Production Static Web App
-            "https://purple-water-01a0ea703.3.azurestaticapps.net",
-
-            // Optional backend app domain (if calling API directly)
-            "https://hustlershub-g3cjffaea3axckg3.southafricanorth-01.azurewebsites.net",
-
-            // Local Angular dev
-            "https://localhost:4200",
-            "http://localhost:4200"
-        )
-        .AllowAnyHeader()
-        .AllowAnyMethod()
-    );
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials()); // ✅ optional if using authentication cookies or tokens
 });
 
 var app = builder.Build();
@@ -54,7 +53,6 @@ var app = builder.Build();
 // ✅ Middleware
 // ---------------------------
 
-// Swagger for development
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -63,6 +61,9 @@ if (app.Environment.IsDevelopment())
 
 // Enforce HTTPS
 app.UseHttpsRedirection();
+
+// ✅ Apply CORS before authorization
+app.UseCors("AllowFrontend");
 
 // Serve static files (wwwroot)
 app.UseStaticFiles();
@@ -79,9 +80,6 @@ app.UseStaticFiles(new StaticFileOptions
     FileProvider = new PhysicalFileProvider(uploadsPath),
     RequestPath = "/uploads"
 });
-
-// Apply CORS globally
-app.UseCors("AllowFrontend");
 
 app.UseAuthorization();
 
