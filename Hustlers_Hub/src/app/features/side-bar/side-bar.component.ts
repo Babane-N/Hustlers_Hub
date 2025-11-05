@@ -8,19 +8,13 @@ import { Router } from '@angular/router';
   styleUrls: ['./side-bar.component.scss']
 })
 export class SideBarComponent {
-<<<<<<< HEAD
   isHandset = false;
   userRole: string | null = null;
-=======
-  isOpened = true;
-  userRole = localStorage.getItem('userRole');
-  isLoggedIn = !!localStorage.getItem('authToken');
->>>>>>> parent of 334e381 (Sidebar Update)
 
   constructor(private router: Router) { }
 
   toggleSidebar(): void {
-    this.isOpened = !this.isOpened;
+    this.isHandset = !this.isHandset;
   }
 
   logout(): void {
