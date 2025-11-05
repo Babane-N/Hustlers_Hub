@@ -1,4 +1,5 @@
 ﻿using API.Data;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using System.Text.Json.Serialization;
@@ -6,10 +7,17 @@ using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 
 // ---------------------------
-// ✅ Database Configuration
+// ✅ Database Configuration (Azure SQL with SQL Authentication)
 // ---------------------------
+
+// Load connection string from appsettings.json
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Configure EF Core (no access tokens or Azure credentials)
 builder.Services.AddDbContext<HustlersHubDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    options.UseSqlServer(connectionString);
+});
 
 // ---------------------------
 // ✅ Controllers with JSON enum as string
@@ -52,20 +60,15 @@ var app = builder.Build();
 // ✅ Middleware Pipeline
 // ---------------------------
 
-// Swagger always enabled
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// Enforce HTTPS
 app.UseHttpsRedirection();
-
-// Apply CORS before routing
 app.UseCors("AllowFrontend");
 
-// Serve static files from wwwroot
+// Serve static and uploaded files
 app.UseStaticFiles();
 
-// Serve uploaded files from /uploads
 var uploadsPath = Path.Combine(builder.Environment.ContentRootPath, "Uploads");
 if (!Directory.Exists(uploadsPath))
 {
@@ -78,10 +81,7 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/uploads"
 });
 
-// Authorization (if needed)
 app.UseAuthorization();
-
-// Map API controllers
 app.MapControllers();
 
 // ✅ SPA fallback (for Angular/React routing)

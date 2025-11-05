@@ -17,10 +17,9 @@ export interface LoginRequest {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  // ✅ Use environment-based API URL instead of localhost
-  private apiUrl = `${environment}/Users`;
+  // ✅ Use the apiUrl from environment
+  private apiUrl = `${environment.apiUrl}/Users`;
 
-  // Reactive login status tracker
   private loggedInSubject = new BehaviorSubject<boolean>(this.hasToken());
   isLoggedIn$ = this.loggedInSubject.asObservable();
 
@@ -28,7 +27,7 @@ export class AuthService {
 
   // ✅ Register user
   register(user: RegisterRequest): Observable<any> {
-    return this.http.post(this.apiUrl, user);
+    return this.http.post<any>(`${this.apiUrl}/register`, user);
   }
 
   // ✅ Login user
@@ -36,21 +35,19 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/login`, credentials);
   }
 
-  // ✅ Store session info locally
+  // ✅ Store session info
   setSession(token: string, role: string): void {
     localStorage.setItem('authToken', token);
     localStorage.setItem('userRole', role);
     this.loggedInSubject.next(true);
   }
 
-  // ✅ Logout
   logout(): void {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userRole');
     this.loggedInSubject.next(false);
   }
 
-  // ✅ Token & role helpers
   getToken(): string | null {
     return localStorage.getItem('authToken');
   }
@@ -59,7 +56,6 @@ export class AuthService {
     return localStorage.getItem('userRole');
   }
 
-  // ✅ Authentication state
   isLoggedIn(): boolean {
     return this.loggedInSubject.value;
   }
@@ -68,7 +64,6 @@ export class AuthService {
     return this.isLoggedIn();
   }
 
-  // ✅ Internal token check
   private hasToken(): boolean {
     return !!localStorage.getItem('authToken');
   }
