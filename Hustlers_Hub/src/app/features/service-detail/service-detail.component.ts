@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { ServiceProvider, ServiceDetail, Review } from './service.detail';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -9,26 +9,51 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./service-detail.component.scss']
 })
 export class ServiceDetailComponent implements OnInit {
-  provider: any;
-  reviews: any[] = [];
-  uploadsUrl = environment.apiUrl;
+  service!: ServiceDetail;
+  reviews: Review[] = [];
+  uploadsUrl = environment.uploadsUrl;
 
-  constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) { }
+  isLoading = true;
+  errorMessage = '';
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private serviceProvider: ServiceProvider
+  ) { }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.http.get<any>(`${environment.apiUrl}/ServiceProviders/${id}`).subscribe({
-        next: (data) => {
-          this.provider = data;
-          this.reviews = data.reviews || [];
-        },
-        error: (err) => console.error('Error loading service:', err)
-      });
+    if (!id) {
+      this.errorMessage = 'Invalid service ID.';
+      this.isLoading = false;
+      return;
     }
+
+    // ✅ Fetch service details
+    this.serviceProvider.getServiceDetails(id).subscribe({
+      next: (data) => {
+        this.service = data;
+        this.isLoading = false;
+
+        // ✅ Load reviews for the business
+        if (data.businessName) {
+          this.serviceProvider.getBusinessReviews(data.id).subscribe({
+            next: (reviews) => (this.reviews = reviews),
+            error: (err) => console.error('Failed to load reviews:', err)
+          });
+        }
+      },
+      error: (err) => {
+        this.errorMessage = 'Failed to load service details.';
+        console.error(err);
+        this.isLoading = false;
+      }
+    });
   }
 
-  openBookingDialog(providerId: string) {
+  // ✅ Navigate to booking page
+  openBookingDialog(providerId: string): void {
     this.router.navigate(['/book', providerId]);
   }
 }
