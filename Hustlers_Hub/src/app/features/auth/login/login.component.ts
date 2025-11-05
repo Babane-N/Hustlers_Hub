@@ -35,7 +35,7 @@ export class LoginComponent {
     this.authService.login(credentials).subscribe({
       next: (res) => {
         // Set session using AuthService
-        this.authService.setSession(res.token, res.role);
+        //this.authService.setSession(res.token, res.role);
 
         // Store entire user data as one object under 'user' key
         localStorage.setItem('user', JSON.stringify({

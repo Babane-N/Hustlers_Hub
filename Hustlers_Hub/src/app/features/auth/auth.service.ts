@@ -1,71 +1,52 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs/operators';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { environment } from '../../../environments/environment';
 
-export interface RegisterRequest {
-  fullName: string;
-  email: string;
-  phoneNumber: string;
-  password: string;
-}
-
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class AuthService {
-  // ✅ Use the apiUrl from environment
-  private apiUrl = `${environment.apiUrl}/Users`;
-
-  private loggedInSubject = new BehaviorSubject<boolean>(this.hasToken());
-  isLoggedIn$ = this.loggedInSubject.asObservable();
+  private userTypeSubject = new BehaviorSubject<string | null>(null);
+  private token: string | null = null;
 
   constructor(private http: HttpClient) { }
 
-  // ✅ Register user
-  register(user: RegisterRequest): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/register`, user);
-  }
-
-  // ✅ Login user
-  login(credentials: LoginRequest): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/login`, credentials);
-  }
-
-  // ✅ Store session info
-  setSession(token: string, role: string): void {
-    localStorage.setItem('authToken', token);
-    localStorage.setItem('userRole', role);
-    this.loggedInSubject.next(true);
+  login(credentials: { email: string; password: string }): Observable<any> {
+    return this.http.post<any>('/api/auth/login', credentials).pipe(
+      map(response => {
+        this.token = response.token; // or omit if using secure cookies
+        this.userTypeSubject.next(response.userType);
+        return response;
+      })
+    );
   }
 
   logout(): void {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userRole');
-    this.loggedInSubject.next(false);
+    this.token = null;
+    this.userTypeSubject.next(null);
   }
 
   getToken(): string | null {
-    return localStorage.getItem('authToken');
+    return this.token;
   }
 
   getRole(): string | null {
-    return localStorage.getItem('userRole');
+    return this.userTypeSubject.value;
   }
 
-  isLoggedIn(): boolean {
-    return this.loggedInSubject.value;
+  getUserTypeObservable(): Observable<string | null> {
+    return this.userTypeSubject.asObservable();
   }
 
-  isAuthenticated(): boolean {
-    return this.isLoggedIn();
-  }
-
-  private hasToken(): boolean {
-    return !!localStorage.getItem('authToken');
+  // Optional: fetch user info from API if you want role verification on reload
+  loadUserInfo(): Observable<any> {
+    return this.http.get('/api/auth/me').pipe(
+      map((user: any) => {
+        this.userTypeSubject.next(user.userType);
+        return user;
+      })
+    );
   }
 }
 
