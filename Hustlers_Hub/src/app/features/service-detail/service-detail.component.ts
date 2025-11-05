@@ -9,12 +9,9 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./service-detail.component.scss']
 })
 export class ServiceDetailComponent implements OnInit {
-  service!: ServiceDetail;
+  provider!: ServiceDetail;   // non-null after load
   reviews: Review[] = [];
-  uploadsUrl = environment.uploadsUrl;
-
-  isLoading = true;
-  errorMessage = '';
+  uploadsUrl = environment.uploadsUrl; // point to correct folder
 
   constructor(
     private route: ActivatedRoute,
@@ -24,36 +21,18 @@ export class ServiceDetailComponent implements OnInit {
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    if (!id) {
-      this.errorMessage = 'Invalid service ID.';
-      this.isLoading = false;
-      return;
+    if (id) {
+      this.serviceProvider.getServiceWithReviews(id).subscribe({
+        next: ({ provider, reviews }) => {
+          this.provider = provider;
+          this.reviews = reviews;
+        },
+        error: err => console.error('Error loading service details:', err)
+      });
     }
-
-    // ✅ Fetch service details
-    this.serviceProvider.getServiceDetails(id).subscribe({
-      next: (data) => {
-        this.service = data;
-        this.isLoading = false;
-
-        // ✅ Load reviews for the business
-        if (data.businessName) {
-          this.serviceProvider.getBusinessReviews(data.id).subscribe({
-            next: (reviews) => (this.reviews = reviews),
-            error: (err) => console.error('Failed to load reviews:', err)
-          });
-        }
-      },
-      error: (err) => {
-        this.errorMessage = 'Failed to load service details.';
-        console.error(err);
-        this.isLoading = false;
-      }
-    });
   }
 
-  // ✅ Navigate to booking page
-  openBookingDialog(providerId: string): void {
+  openBookingDialog(providerId: string) {
     this.router.navigate(['/book', providerId]);
   }
 }

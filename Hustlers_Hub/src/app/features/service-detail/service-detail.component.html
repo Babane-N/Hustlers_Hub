@@ -2,8 +2,8 @@
   <!-- Profile / Summary -->
   <div class="profile-card mat-elevation-z3">
     <img *ngIf="provider.logoUrl"
-         [src]="uploadsUrl + provider.logoUrl"
-         alt="{{ provider.businessName }} Logo"
+         [src]="uploadsUrl + '/' + provider.logoUrl"
+         [alt]="provider.businessName + ' Logo'"
          class="profile-img" />
 
     <div class="info">
@@ -36,8 +36,8 @@
   <div class="gallery-section" *ngIf="provider.imageUrl">
     <h3>Previous Work</h3>
     <div class="gallery">
-      <img [src]="uploadsUrl + provider.imageUrl"
-           alt="Previous work image"
+      <img [src]="uploadsUrl + '/' + provider.imageUrl"
+           alt="Work image"
            class="gallery-img" />
     </div>
   </div>
@@ -46,11 +46,11 @@
   <div class="reviews-section">
     <h3>Client Reviews</h3>
 
-    <div *ngIf="reviews && reviews.length > 0; else noReviews">
+    <div *ngIf="reviews.length > 0; else noReviews">
       <div *ngFor="let review of reviews" class="review mat-elevation-z1">
         <strong>{{ review.reviewer }}</strong>
         <span class="stars">
-          <mat-icon *ngFor="let star of [1, 2, 3, 4, 5]">
+          <mat-icon *ngFor="let star of [1,2,3,4,5]">
             {{ star <= review.rating ? 'star' : 'star_border' }}
           </mat-icon>
         </span>
@@ -62,4 +62,9 @@
       <p>No reviews yet for this service.</p>
     </ng-template>
   </div>
+</div>
+
+<!-- Optional loading / fallback -->
+<div *ngIf="!provider">
+  <p>Loading service details...</p>
 </div>

@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, forkJoin } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
-// 📌 Service + Business details
+// Service + Business details
 export interface ServiceDetail {
   id: string;
   title: string;
@@ -13,6 +15,7 @@ export interface ServiceDetail {
   price: number;
   durationMinutes: number;
 
+  businessId: string;
   businessName: string;
   logoUrl?: string | null;
   businessLocation: string;
@@ -20,7 +23,7 @@ export interface ServiceDetail {
   isVerified: boolean;
 }
 
-// 📌 Reviews
+// Reviews
 export interface Review {
   id: string;
   reviewer: string;
@@ -35,17 +38,29 @@ export class ServiceProvider {
 
   constructor(private http: HttpClient) { }
 
-  // ✅ Get one service detail by ID
+  // Fetch service details by ID
   getServiceDetails(id: string): Observable<ServiceDetail> {
-    return this.http.get<ServiceDetail>(`${this.baseUrl}/${id}`);
+    return this.http.get<ServiceDetail>(`${this.baseUrl}/detail/${id}`);
   }
 
-  // ✅ Get reviews for a specific business
+  // Fetch reviews for a specific business
   getBusinessReviews(businessId: string): Observable<Review[]> {
-    return this.http.get<Review[]>(`${environment.apiUrl}/Reviews/business/${businessId}`);
+    return this.http.get<Review[]>(`${this.baseUrl}/reviews/business/${businessId}`);
   }
 
-  // ✅ Get all available services (for Find Service page)
+  // Combine service details + reviews
+  getServiceWithReviews(id: string): Observable<{ provider: ServiceDetail; reviews: Review[] }> {
+    return this.getServiceDetails(id).pipe(
+      map(provider => ({ provider, reviews: [] })), // initialize reviews empty
+      // fetch reviews separately
+      switchMap(({ provider }) =>
+        this.getBusinessReviews(provider.businessId).pipe(
+          map(reviews => ({ provider, reviews }))
+        )
+      )
+    );
+  }
+
   getAllProviders(): Observable<ServiceDetail[]> {
     return this.http.get<ServiceDetail[]>(this.baseUrl);
   }
