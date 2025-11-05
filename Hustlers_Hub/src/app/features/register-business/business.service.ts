@@ -9,6 +9,6 @@ export class BusinessService {
   constructor(private http: HttpClient) { }
 
   registerBusiness(formData: FormData) {
-    return this.http.post(`${this.baseUrl}/Businesses`, formData);
+    return this.http.post(`${this.baseUrl}`, formData);
   }
 }
