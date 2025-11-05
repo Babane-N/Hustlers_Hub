@@ -25,7 +25,7 @@ namespace API.Controllers
             _env = env;
         }
 
-        // ✅ GET businesses for a specific user (with Logo + Lat/Long)
+        // ✅ GET all businesses for a specific user
         [HttpGet("Users/{userId}")]
         public async Task<ActionResult<IEnumerable<object>>> GetBusinesses(Guid userId)
         {
@@ -73,17 +73,17 @@ namespace API.Controllers
                 .FirstOrDefaultAsync();
 
             if (business == null)
-                return NotFound();
+                return NotFound(new { message = "Business not found." });
 
             return Ok(business);
         }
 
-        // ✅ UPDATE existing business
+        // ✅ UPDATE business
         [HttpPut("{id}")]
         public async Task<IActionResult> PutBusiness(Guid id, Business business)
         {
             if (id != business.Id)
-                return BadRequest();
+                return BadRequest(new { message = "Invalid business ID." });
 
             _context.Entry(business).State = EntityState.Modified;
 
@@ -94,18 +94,22 @@ namespace API.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 if (!BusinessExists(id))
-                    return NotFound();
-                else
-                    throw;
+                    return NotFound(new { message = "Business not found." });
+                throw;
             }
 
             return NoContent();
         }
 
-        // ✅ CREATE new business with optional logo and Lat/Long
+        // ✅ CREATE new business (auto-insert service + update user role)
         [HttpPost]
         public async Task<ActionResult<Business>> PostBusiness([FromForm] BusinessCreateDto dto)
         {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == dto.UserId);
+            if (user == null)
+                return NotFound(new { message = "User not found." });
+
+            // Prepare new business
             var business = new Business
             {
                 Id = Guid.NewGuid(),
@@ -116,10 +120,11 @@ namespace API.Controllers
                 Longitude = dto.Longitude,
                 Description = dto.Description,
                 UserId = dto.UserId,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                IsVerified = false
             };
 
-            // 🔁 Save logo image if provided
+            // ✅ Handle optional logo upload
             if (dto.Logo != null && dto.Logo.Length > 0)
             {
                 var uploadsFolder = Path.Combine(_env.WebRootPath ?? "wwwroot", "uploads");
@@ -136,10 +141,51 @@ namespace API.Controllers
                 business.LogoUrl = $"/uploads/{fileName}";
             }
 
-            _context.Businesses.Add(business);
-            await _context.SaveChangesAsync();
+            // ✅ Wrap in transaction to keep data consistent
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                // Add business
+                _context.Businesses.Add(business);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetBusiness), new { id = business.Id }, business);
+                // ✅ Automatically create default service for new business
+                var service = new Service
+                {
+                    Id = Guid.NewGuid(),
+                    BusinessId = business.Id,
+                    Title = $"{business.BusinessName} Service",
+                    Description = $"Default service for {business.BusinessName}",
+                    Category = business.Category,
+                    Price = 0,
+                    ImageUrl = business.LogoUrl,
+                    DurationMinutes = 60,
+                };
+
+                _context.Services.Add(service);
+
+                // ✅ Update user role (Customer → Business)
+                if (user.UserType is UserType.Customer)
+                {
+                    user.UserType = UserType.Business;
+                    _context.Users.Update(user);
+                }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return Ok(new
+                {
+                    message = "Business created successfully, service added and user role updated.",
+                    businessId = business.Id,
+                    defaultServiceId = service.Id
+                });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, new { message = $"Error creating business: {ex.Message}" });
+            }
         }
 
         // ✅ DELETE business
@@ -148,7 +194,7 @@ namespace API.Controllers
         {
             var business = await _context.Businesses.FindAsync(id);
             if (business == null)
-                return NotFound();
+                return NotFound(new { message = "Business not found." });
 
             _context.Businesses.Remove(business);
             await _context.SaveChangesAsync();
@@ -162,7 +208,7 @@ namespace API.Controllers
         }
     }
 
-    // ✅ DTO for form-data creation
+    // ✅ DTO for business creation
     public class BusinessCreateDto
     {
         public string BusinessName { get; set; } = string.Empty;
@@ -171,8 +217,7 @@ namespace API.Controllers
         public string Description { get; set; } = string.Empty;
         public Guid UserId { get; set; }
         public IFormFile? Logo { get; set; }
-        public double? Latitude { get; set; }   // precise lat
+        public double? Latitude { get; set; }
         public double? Longitude { get; set; }
     }
 }
-
