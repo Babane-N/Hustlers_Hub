@@ -2,8 +2,8 @@
   <!-- Profile / Summary -->
   <div class="profile-card mat-elevation-z3">
     <img *ngIf="provider.logoUrl"
-         [src]="uploadsUrl + '/' + provider.logoUrl"
-         alt="{{ provider.businessName }}"
+         [src]="uploadsUrl + provider.logoUrl"
+         alt="{{ provider.businessName }} Logo"
          class="profile-img" />
 
     <div class="info">
@@ -12,11 +12,17 @@
         <mat-icon color="primary">verified</mat-icon> Verified
       </span>
 
-      <p class="service"><strong>Service:</strong> {{ provider.title }}</p>
-      <p class="location">
+      <p class="service" *ngIf="provider.title">
+        <strong>Service:</strong> {{ provider.title }}
+      </p>
+
+      <p class="location" *ngIf="provider.businessLocation">
         <mat-icon>location_on</mat-icon> {{ provider.businessLocation }}
       </p>
-      <p class="description">{{ provider.description }}</p>
+
+      <p class="description" *ngIf="provider.description">
+        {{ provider.description }}
+      </p>
 
       <button mat-raised-button
               color="primary"
@@ -30,9 +36,8 @@
   <div class="gallery-section" *ngIf="provider.imageUrl">
     <h3>Previous Work</h3>
     <div class="gallery">
-      <img *ngIf="provider.imageUrl"
-           [src]="uploadsUrl + '/' + provider.imageUrl"
-           alt="Work image"
+      <img [src]="uploadsUrl + provider.imageUrl"
+           alt="Previous work image"
            class="gallery-img" />
     </div>
   </div>
@@ -41,7 +46,7 @@
   <div class="reviews-section">
     <h3>Client Reviews</h3>
 
-    <div *ngIf="reviews.length > 0; else noReviews">
+    <div *ngIf="reviews && reviews.length > 0; else noReviews">
       <div *ngFor="let review of reviews" class="review mat-elevation-z1">
         <strong>{{ review.reviewer }}</strong>
         <span class="stars">
