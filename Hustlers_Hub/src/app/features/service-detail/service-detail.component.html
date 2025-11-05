@@ -1,36 +1,80 @@
-<div *ngIf="isLoading">Loading service details...</div>
+<div class="service-detail-container" *ngIf="provider && !isLoading; else loading">
+  <!-- Header / Hero Section -->
+  <div class="service-hero">
+    <div class="hero-left">
+      <img *ngIf="provider.logoUrl"
+           class="provider-logo"
+           [src]="uploadsUrl + '/' + provider.logoUrl"
+           [alt]="provider.businessName + ' Logo'">
+    </div>
 
-<div class="detail-container" *ngIf="provider && !isLoading">
-  <img *ngIf="provider.logoUrl"
-       [src]="uploadsUrl + '/' + provider.logoUrl"
-       [alt]="provider.businessName + ' Logo'">
-
-  <h2>{{ provider.businessName }}</h2>
-  <span *ngIf="provider.isVerified" class="verified-badge">Verified</span>
-
-  <p class="service" *ngIf="provider.title">
-    <strong>Service:</strong> {{ provider.title }}
-  </p>
-
-  <p class="location" *ngIf="provider.businessLocation">
-    <mat-icon>location_on</mat-icon> {{ provider.businessLocation }}
-  </p>
-
-  <p class="description" *ngIf="provider.description">{{ provider.description }}</p>
-
-  <button (click)="openBookingDialog(provider.id)">Book Now</button>
-
-  <!-- Reviews Section -->
-  <div class="reviews-section" *ngIf="reviews.length > 0">
-    <h3>Reviews</h3>
-    <div *ngFor="let review of reviews" class="review-card">
-      <strong>{{ review.reviewer }}</strong>
-      <span>Rating: {{ review.rating }}/5</span>
-      <p>{{ review.comment }}</p>
+    <div class="hero-info">
+      <h1>{{ provider.businessName }}</h1>
+      <span *ngIf="provider.isVerified" class="verified-badge">
+        <mat-icon>verified</mat-icon> Verified
+      </span>
+      <p class="category">{{ provider.category }}</p>
     </div>
   </div>
 
-  <div *ngIf="reviews.length === 0">
-    <p>No reviews yet for this provider.</p>
+  <!-- Service Description -->
+  <div class="service-body">
+    <div class="service-info-card">
+      <h2>{{ provider.title }}</h2>
+
+      <p class="description">{{ provider.description }}</p>
+
+      <div class="service-meta">
+        <p>
+          <mat-icon>schedule</mat-icon>
+          Duration: {{ provider.durationMinutes }} mins
+        </p>
+        <p>
+          <mat-icon>attach_money</mat-icon>
+          Price: {{ provider.price | currency:'ZAR' }}
+        </p>
+        <p *ngIf="provider.businessLocation">
+          <mat-icon>location_on</mat-icon>
+          {{ provider.businessLocation }}
+        </p>
+      </div>
+
+      <button class="book-btn" (click)="openBookingDialog(provider.id)">
+        <mat-icon>calendar_today</mat-icon> Book Now
+      </button>
+    </div>
+
+    <!-- Gallery (optional) -->
+    <div class="gallery" *ngIf="provider.imageUrl">
+      <img [src]="uploadsUrl + '/' + provider.imageUrl" alt="Service image">
+    </div>
+  </div>
+
+  <!-- Reviews Section -->
+  <div class="reviews-section">
+    <h3>Customer Reviews</h3>
+
+    <div *ngIf="reviews.length > 0; else noReviews">
+      <div class="review-card" *ngFor="let review of reviews">
+        <div class="review-header">
+          <strong>{{ review.reviewerName }}</strong>
+          <span class="rating">
+            <mat-icon *ngFor="let i of [].constructor(review.rating)">star</mat-icon>
+          </span>
+        </div>
+        <p class="comment">{{ review.comment }}</p>
+      </div>
+    </div>
+
+    <ng-template #noReviews>
+      <p class="no-reviews">No reviews yet for this provider.</p>
+    </ng-template>
   </div>
 </div>
+
+<ng-template #loading>
+  <div class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Loading service details...</p>
+  </div>
+</ng-template>
