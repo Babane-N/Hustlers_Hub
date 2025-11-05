@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { AuthService } from './auth.Service';
+// side-bar.component.ts
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-side-bar',
@@ -8,34 +8,23 @@ import { AuthService } from './auth.Service';
   styleUrls: ['./side-bar.component.scss']
 })
 export class SideBarComponent {
+<<<<<<< HEAD
   isHandset = false;
   userRole: string | null = null;
+=======
+  isOpened = true;
+  userRole = localStorage.getItem('userRole');
+  isLoggedIn = !!localStorage.getItem('authToken');
+>>>>>>> parent of 334e381 (Sidebar Update)
 
-  constructor(
-    private breakpointObserver: BreakpointObserver,
-    private authService: AuthService
-  ) { }
+  constructor(private router: Router) { }
 
-  ngOnInit(): void {
-    this.breakpointObserver.observe([Breakpoints.Handset])
-      .subscribe(result => this.isHandset = result.matches);
-
-    // ✅ Get user role (fetched from Azure-authenticated session or token)
-    this.authService.getUserInfo().subscribe({
-      next: (user) => {
-        this.userRole = user?.userType?.toString() || null;
-      },
-      error: () => {
-        this.userRole = null;
-      }
-    });
+  toggleSidebar(): void {
+    this.isOpened = !this.isOpened;
   }
 
-  logout() {
-    this.authService.logout();
-  }
-
-  closeIfMobile(drawer: any) {
-    if (this.isHandset) drawer.close();
+  logout(): void {
+    localStorage.clear();
+    this.router.navigate(['/home-page']);
   }
 }
