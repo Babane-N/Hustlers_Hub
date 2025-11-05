@@ -1,70 +1,36 @@
-<div class="detail-container" *ngIf="provider">
-  <!-- Profile / Summary -->
-  <div class="profile-card mat-elevation-z3">
-    <img *ngIf="provider.logoUrl"
-         [src]="uploadsUrl + '/' + provider.logoUrl"
-         [alt]="provider.businessName + ' Logo'"
-         class="profile-img" />
+<div *ngIf="isLoading">Loading service details...</div>
 
-    <div class="info">
-      <h2>{{ provider.businessName }}</h2>
-      <span *ngIf="provider.isVerified" class="verified-badge">
-        <mat-icon color="primary">verified</mat-icon> Verified
-      </span>
+<div class="detail-container" *ngIf="provider && !isLoading">
+  <img *ngIf="provider.logoUrl"
+       [src]="uploadsUrl + '/' + provider.logoUrl"
+       [alt]="provider.businessName + ' Logo'">
 
-      <p class="service" *ngIf="provider.title">
-        <strong>Service:</strong> {{ provider.title }}
-      </p>
+  <h2>{{ provider.businessName }}</h2>
+  <span *ngIf="provider.isVerified" class="verified-badge">Verified</span>
 
-      <p class="location" *ngIf="provider.businessLocation">
-        <mat-icon>location_on</mat-icon> {{ provider.businessLocation }}
-      </p>
+  <p class="service" *ngIf="provider.title">
+    <strong>Service:</strong> {{ provider.title }}
+  </p>
 
-      <p class="description" *ngIf="provider.description">
-        {{ provider.description }}
-      </p>
+  <p class="location" *ngIf="provider.businessLocation">
+    <mat-icon>location_on</mat-icon> {{ provider.businessLocation }}
+  </p>
 
-      <button mat-raised-button
-              color="primary"
-              (click)="openBookingDialog(provider.id)">
-        Book Now
-      </button>
+  <p class="description" *ngIf="provider.description">{{ provider.description }}</p>
+
+  <button (click)="openBookingDialog(provider.id)">Book Now</button>
+
+  <!-- Reviews Section -->
+  <div class="reviews-section" *ngIf="reviews.length > 0">
+    <h3>Reviews</h3>
+    <div *ngFor="let review of reviews" class="review-card">
+      <strong>{{ review.reviewer }}</strong>
+      <span>Rating: {{ review.rating }}/5</span>
+      <p>{{ review.comment }}</p>
     </div>
   </div>
 
-  <!-- Gallery -->
-  <div class="gallery-section" *ngIf="provider.imageUrl">
-    <h3>Previous Work</h3>
-    <div class="gallery">
-      <img [src]="uploadsUrl + '/' + provider.imageUrl"
-           alt="Work image"
-           class="gallery-img" />
-    </div>
+  <div *ngIf="reviews.length === 0">
+    <p>No reviews yet for this provider.</p>
   </div>
-
-  <!-- Reviews -->
-  <div class="reviews-section">
-    <h3>Client Reviews</h3>
-
-    <div *ngIf="reviews.length > 0; else noReviews">
-      <div *ngFor="let review of reviews" class="review mat-elevation-z1">
-        <strong>{{ review.reviewer }}</strong>
-        <span class="stars">
-          <mat-icon *ngFor="let star of [1,2,3,4,5]">
-            {{ star <= review.rating ? 'star' : 'star_border' }}
-          </mat-icon>
-        </span>
-        <p>{{ review.comment }}</p>
-      </div>
-    </div>
-
-    <ng-template #noReviews>
-      <p>No reviews yet for this service.</p>
-    </ng-template>
-  </div>
-</div>
-
-<!-- Optional loading / fallback -->
-<div *ngIf="!provider">
-  <p>Loading service details...</p>
 </div>
