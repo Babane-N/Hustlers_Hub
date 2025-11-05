@@ -1,175 +1,51 @@
 .sidenav-container {
   height: 100vh;
-  background-color: #fff3e6;
-  font-family: 'Segoe UI', sans-serif;
 }
 
-:host ::ng-deep mat-sidenav {
+.sidenav {
   width: 250px;
-  background-color: #fff3e6;
-  color: #7a4f25;
-
-  mat-toolbar {
-    background: linear-gradient(45deg, #8b4000, #a87450);
-    color: #ffe0b2;
-    font-weight: bold;
-    display: flex;
-    justify-content: center;
-  }
-
-  mat-nav-list {
-    padding: 0;
-  }
-
-  .mat-list-item {
-    display: flex !important;
-    align-items: center !important;
-    padding: 8px 16px !important;
-    gap: 12px !important;
-
-    .mat-icon {
-      font-size: 14px !important;
-      width: 14px !important;
-      height: 14px !important;
-      flex-shrink: 0 !important;
-      color: #7a4f25 !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-    }
-
-    .nav-text {
-      font-size: 14px !important;
-      line-height: 1.2 !important;
-      position: relative !important;
-      top: -3px !important;
-      white-space: nowrap !important;
-      display: flex !important;
-      align-items: center !important;
-    }
-  }
-
-  .submenu {
-    padding-left: 32px;
-    animation: slideDown 0.3s ease-in-out;
-
-    a[mat-list-item] {
-      font-size: 0.9rem;
-      color: #5d2c15;
-      border-left: 3px solid #ffa94d;
-      padding-left: 1rem;
-
-      &:hover {
-        background-color: #7a4f25;
-        color: #fff;
-      }
-    }
-  }
-
-  .login-item {
-    margin-top: auto;
-    padding: 12px 16px;
-    color: #ffa94d;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    gap: 10px;
-
-    mat-icon {
-      font-size: 16px !important;
-    }
-
-    &:hover {
-      background-color: #a87450;
-      color: #fff;
-
-      mat-icon {
-        color: #fff;
-      }
-    }
-  }
+  background-color: #fff;
+  border-right: 1px solid #eee;
 }
 
-:host ::ng-deep .custom-toolbar {
-  background-color: #fff3e6;
-  color: #333;
+.sidebar-header {
   display: flex;
   align-items: center;
-  padding: 0 1rem;
-
-  .app-title {
-    font-weight: bold;
-    font-size: 1.2rem;
-    margin-left: 0.5rem;
-    color: #7a4f25;
-  }
-
-  .spacer {
-    flex: 1 1 auto; // pushes profile icon to the right
-  }
-
-  .profile-button {
-    mat-icon {
-      font-size: 28px;
-      color: #7a4f25;
-      transition: color 0.3s ease;
-    }
-
-    &:hover mat-icon {
-      color: #a87450;
-    }
-  }
+  justify-content: space-between;
+  padding: 16px;
 }
 
-:host ::ng-deep mat-sidenav-content {
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background-color: #fff3e6;
-  color: #5d2c15;
-
-  .main-toolbar {
-    display: flex;
-    align-items: center;
-    background-color: #5d2c15;
-    color: #ffe0b2;
-    padding: 0 1rem;
-    font-weight: bold;
-
-    .toggle-btn {
-      margin-right: 1rem;
-      color: #ffe0b2;
-    }
-
-    .brand-title {
-      font-size: 1.2rem;
-    }
-  }
-
-  .main-content {
-    padding: 2rem;
-    overflow-y: auto;
-    flex-grow: 1;
-  }
+  align-items: center;
 }
 
-.active-link {
-  background-color: #a87450 !important;
-  color: #fff !important;
-
-  .mat-icon {
-    color: #fff !important;
-  }
+.app-title {
+  margin-left: 8px;
+  font-weight: 500;
 }
 
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
+.main-content {
+  padding: 16px;
+  background-color: #fafafa;
+  min-height: calc(100vh - 64px);
+}
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
+mat-nav-list a {
+  display: flex;
+  align-items: center;
+}
+
+mat-nav-list mat-icon {
+  margin-right: 8px;
+}
+
+/* Optional: Dark overlay when sidenav is open on mobile */
+@media (max-width: 768px) {
+  .sidenav-container {
+    background: rgba(0, 0, 0, 0.3);
   }
 }
