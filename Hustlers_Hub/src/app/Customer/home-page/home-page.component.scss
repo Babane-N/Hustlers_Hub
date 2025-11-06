@@ -20,6 +20,8 @@
       display: flex;
       justify-content: center;
       gap: 1rem;
+      // 🆕 allow wrapping on smaller screens
+      flex-wrap: wrap; // 🆕 added
 
       button {
         padding: 0.75rem 1.5rem;
@@ -44,5 +46,30 @@
 
   .tab-content {
     margin-top: 2rem;
+    // 🆕 responsive grid layout to maintain flexible card layout on all screens
+    display: grid; // 🆕 added
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); // 🆕 added
+    gap: 1.5rem; // 🆕 added
+  }
+  // 🆕 Responsive adjustments for mobile devices
+  @media (max-width: 768px) {
+    padding: 1rem; // 🆕 smaller padding
+
+    .hero {
+      padding: 2rem 1rem; // 🆕 tighter hero padding
+
+      h1 {
+        font-size: 1.8rem; // 🆕 smaller header text
+      }
+
+      .tab-toggle {
+        gap: 0.5rem; // 🆕 reduce space between buttons
+
+        button {
+          padding: 0.6rem 1rem;
+          font-size: 0.9rem; // 🆕 smaller text size
+        }
+      }
+    }
   }
 }

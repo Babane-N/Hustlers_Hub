@@ -17,7 +17,7 @@
   .subtitle {
     text-align: center;
     font-size: 1.1rem;
-    color: #7a4f25; // Warm muted brown
+    color: #7a4f25;
     margin-bottom: 1.5rem;
   }
 
@@ -44,7 +44,7 @@
       }
     }
   }
-  // Search, filter, sort controls styling
+
   .search-sort-filter {
     display: flex;
     flex-wrap: wrap;
@@ -60,7 +60,6 @@
       border-radius: 8px;
       background-color: #fff8f0;
       color: #5d2c15;
-      font-family: 'Segoe UI', sans-serif;
       min-width: 200px;
       box-shadow: 0 2px 6px rgba(168, 116, 80, 0.15);
       transition: border 0.2s ease, box-shadow 0.2s ease;
@@ -75,11 +74,16 @@
 
   .promo-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); // 🆕 flexible columns
     gap: 1.5rem;
+    // 🆕 make spacing and sizing smoother on smaller screens
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); // 🆕 adjust cards
+      gap: 1rem; // 🆕 tighter gap
+    }
 
     .promo-card {
-      background: #fff8f0; // Creamy card background
+      background: #fff8f0;
       border-radius: 12px;
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
       overflow: hidden;
@@ -118,6 +122,9 @@
         padding: 0 1rem 1rem;
         font-size: 0.85rem;
         color: #a57c5b;
+        // 🆕 ensure text wraps on mobile
+        flex-wrap: wrap;
+        row-gap: 0.25rem;
       }
 
       .promo-images {
@@ -125,7 +132,6 @@
         overflow-x: auto;
         gap: 0.5rem;
         padding: 0.5rem 1rem 0 1rem;
-        /* hide default scrollbar but keep scroll */
         scrollbar-width: thin;
         scrollbar-color: #a87450 transparent;
 
@@ -144,7 +150,7 @@
       }
 
       .promo-img {
-        flex: 0 0 auto; /* prevent shrinking */
+        flex: 0 0 auto;
         width: 140px;
         height: 100px;
         object-fit: cover;
@@ -156,7 +162,24 @@
         &:hover {
           border-color: #8b4000;
         }
+        // 🆕 reduce thumbnail size on small screens
+        @media (max-width: 600px) {
+          width: 100px;
+          height: 80px;
+        }
       }
+    }
+  }
+  // 🆕 general container responsiveness
+  @media (max-width: 768px) {
+    padding: 1rem; // 🆕 reduce outer padding
+    h2 {
+      font-size: 1.5rem; // 🆕 smaller heading
+    }
+
+    .create-promo-btn {
+      font-size: 1rem;
+      padding: 0.6rem 1.5rem;
     }
   }
 }
