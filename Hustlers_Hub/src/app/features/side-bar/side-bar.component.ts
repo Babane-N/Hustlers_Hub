@@ -21,7 +21,7 @@ export class SideBarComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // ✅ Detect handset layout
+    // 📱 Detect mobile layout
     this.breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
       this.isHandset = result.matches;
       if (this.isHandset) {
@@ -29,10 +29,10 @@ export class SideBarComponent implements OnInit {
       }
     });
 
-    // ✅ Fetch user role from Azure API (instead of localStorage)
-    this.authService.getUserProfile().subscribe({
-      next: (profile) => {
-        this.userRole = profile.userType;
+    // 🧠 Fetch user role directly from Azure API
+    this.authService.getCurrentUser().subscribe({
+      next: (user) => {
+        this.userRole = user.userType; // Backend enum: Customer, Business, Admin
         this.isLoggedIn = true;
       },
       error: () => {
@@ -55,3 +55,4 @@ export class SideBarComponent implements OnInit {
     this.router.navigate([path]);
   }
 }
+

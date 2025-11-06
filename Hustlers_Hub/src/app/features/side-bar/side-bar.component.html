@@ -5,7 +5,7 @@
                class="mat-elevation-z4">
     <mat-toolbar>Hustlers Hub</mat-toolbar>
 
-    <!-- ✅ CUSTOMER MENU -->
+    <!-- 🧍 CUSTOMER MENU -->
     <mat-nav-list *ngIf="userRole === 'Customer'">
       <a mat-list-item (click)="navigateTo('/home-page')">
         <mat-icon>home</mat-icon>
@@ -17,7 +17,7 @@
       </a>
     </mat-nav-list>
 
-    <!-- ✅ BUSINESS MENU -->
+    <!-- 🏢 BUSINESS MENU -->
     <mat-nav-list *ngIf="userRole === 'Business'">
       <a mat-list-item (click)="navigateTo('/dashboard')">
         <mat-icon>dashboard</mat-icon>
@@ -33,7 +33,7 @@
       </a>
     </mat-nav-list>
 
-    <!-- ✅ ADMIN MENU -->
+    <!-- 👨‍💼 ADMIN MENU -->
     <mat-nav-list *ngIf="userRole === 'Admin'">
       <a mat-list-item (click)="navigateTo('/admin/users')">
         <mat-icon>group</mat-icon>
@@ -45,7 +45,7 @@
       </a>
     </mat-nav-list>
 
-    <!-- ✅ LOGIN / LOGOUT -->
+    <!-- 🚪 LOGIN / LOGOUT -->
     <div class="login-item" *ngIf="!isLoggedIn" (click)="navigateTo('/login')">
       <mat-icon>login</mat-icon>
       <span>Login</span>
