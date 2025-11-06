@@ -20,6 +20,9 @@ export class AuthService {
   logout() {
     localStorage.clear();
   }
+  getUserProfile() {
+    return this.http.get<any>('https://your-azure-api-url/api/users/profile');
+  }
 
   getUserRole(): string | null {
     return localStorage.getItem('userRole');

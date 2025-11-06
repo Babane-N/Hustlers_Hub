@@ -1,127 +1,73 @@
 <mat-sidenav-container class="sidenav-container">
-  <!-- Sidebar -->
-  <mat-sidenav mode="side" [opened]="isOpened" class="sidenav" fixedInViewport>
-    <mat-toolbar color="primary">Menus</mat-toolbar>
-    <mat-nav-list>
+  <mat-sidenav #drawer
+               [mode]="isHandset ? 'over' : 'side'"
+               [(opened)]="isOpened"
+               class="mat-elevation-z4">
+    <mat-toolbar>Hustlers Hub</mat-toolbar>
 
-      <!-- Business Role -->
-      <ng-container *ngIf="userRole === 'Business'">
-        <a mat-list-item routerLink="/home" class="nav-item">
-          <mat-icon class="nav-icon">home</mat-icon>
-          <span class="nav-text">Home</span>
-        </a>
-
-        <a mat-list-item routerLink="/dashboard" class="nav-item">
-          <mat-icon class="nav-icon">dashboard</mat-icon>
-          <span class="nav-text">Dashboard</span>
-        </a>
-
-        <a mat-list-item routerLink="/bookings" class="nav-item">
-          <mat-icon class="nav-icon">event</mat-icon>
-          <span class="nav-text">Bookings</span>
-        </a>
-
-        <a mat-list-item routerLink="/promotion" class="nav-item">
-          <mat-icon class="nav-icon">campaign</mat-icon>
-          <span class="nav-text">Promotions</span>
-        </a>
-
-        <a mat-list-item routerLink="/business-switcher" class="nav-item">
-          <mat-icon class="nav-icon">swap_horiz</mat-icon>
-          <span class="nav-text">Switch Business</span>
-        </a>
-
-        <a mat-list-item routerLink="/profile" class="nav-item">
-          <mat-icon class="nav-icon">person</mat-icon>
-          <span class="nav-text">Profile</span>
-        </a>
-      </ng-container>
-
-      <!-- Customer Role -->
-      <ng-container *ngIf="userRole === 'Customer'">
-        <a mat-list-item routerLink="/home-page" class="nav-item">
-          <mat-icon class="nav-icon">home</mat-icon>
-          <span class="nav-text">Home</span>
-        </a>
-
-        <a mat-list-item routerLink="/promotions" class="nav-item">
-          <mat-icon class="nav-icon">campaign</mat-icon>
-          <span class="nav-text">Promotions</span>
-        </a>
-
-        <a mat-list-item routerLink="/my-bookings" class="nav-item">
-          <mat-icon class="nav-icon">event_note</mat-icon>
-          <span class="nav-text">My Bookings</span>
-        </a>
-
-        <a mat-list-item routerLink="/profile" class="nav-item">
-          <mat-icon class="nav-icon">person</mat-icon>
-          <span class="nav-text">Profile</span>
-        </a>
-      </ng-container>
-
-      <!-- Admin Role -->
-      <ng-container *ngIf="userRole === 'Admin'">
-        <a mat-list-item routerLink="/admin/users" class="nav-item">
-          <mat-icon class="nav-icon">supervisor_account</mat-icon>
-          <span class="nav-text">Manage Users</span>
-        </a>
-
-        <a mat-list-item routerLink="/admin/businesses" class="nav-item">
-          <mat-icon class="nav-icon">business</mat-icon>
-          <span class="nav-text">Manage Businesses</span>
-        </a>
-
-        <a mat-list-item routerLink="/admin/reports" class="nav-item">
-          <mat-icon class="nav-icon">bar_chart</mat-icon>
-          <span class="nav-text">Reports</span>
-        </a>
-      </ng-container>
-
-      <!-- Login/Logout inside sidebar -->
-      <ng-container>
-        <a *ngIf="!isLoggedIn" mat-list-item routerLink="/login" class="nav-item">
-          <mat-icon class="nav-icon">login</mat-icon>
-          <span class="nav-text">Login</span>
-        </a>
-        <a *ngIf="isLoggedIn" mat-list-item (click)="logout()" class="nav-item">
-          <mat-icon class="nav-icon">logout</mat-icon>
-          <span class="nav-text">Logout</span>
-        </a>
-      </ng-container>
+    <!-- ✅ CUSTOMER MENU -->
+    <mat-nav-list *ngIf="userRole === 'Customer'">
+      <a mat-list-item (click)="navigateTo('/home-page')">
+        <mat-icon>home</mat-icon>
+        <span class="nav-text">Home</span>
+      </a>
+      <a mat-list-item (click)="navigateTo('/bookings')">
+        <mat-icon>event</mat-icon>
+        <span class="nav-text">My Bookings</span>
+      </a>
     </mat-nav-list>
+
+    <!-- ✅ BUSINESS MENU -->
+    <mat-nav-list *ngIf="userRole === 'Business'">
+      <a mat-list-item (click)="navigateTo('/dashboard')">
+        <mat-icon>dashboard</mat-icon>
+        <span class="nav-text">Dashboard</span>
+      </a>
+      <a mat-list-item (click)="navigateTo('/services')">
+        <mat-icon>build</mat-icon>
+        <span class="nav-text">My Services</span>
+      </a>
+      <a mat-list-item (click)="navigateTo('/bookings')">
+        <mat-icon>calendar_today</mat-icon>
+        <span class="nav-text">Bookings</span>
+      </a>
+    </mat-nav-list>
+
+    <!-- ✅ ADMIN MENU -->
+    <mat-nav-list *ngIf="userRole === 'Admin'">
+      <a mat-list-item (click)="navigateTo('/admin/users')">
+        <mat-icon>group</mat-icon>
+        <span class="nav-text">Manage Users</span>
+      </a>
+      <a mat-list-item (click)="navigateTo('/admin/businesses')">
+        <mat-icon>store</mat-icon>
+        <span class="nav-text">Manage Businesses</span>
+      </a>
+    </mat-nav-list>
+
+    <!-- ✅ LOGIN / LOGOUT -->
+    <div class="login-item" *ngIf="!isLoggedIn" (click)="navigateTo('/login')">
+      <mat-icon>login</mat-icon>
+      <span>Login</span>
+    </div>
+    <div class="login-item" *ngIf="isLoggedIn" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Logout</span>
+    </div>
   </mat-sidenav>
 
-  <!-- Top Toolbar -->
   <mat-sidenav-content>
     <mat-toolbar class="custom-toolbar">
-      <!-- Sidebar toggle -->
-      <button mat-icon-button (click)="toggleSidebar()">
+      <button mat-icon-button (click)="toggleSidebar()" class="toggle-btn">
         <mat-icon>menu</mat-icon>
       </button>
-
-      <!-- App Title -->
       <span class="app-title">Hustlers Hub</span>
       <span class="spacer"></span>
-
-      <!-- Profile Icon with Dropdown -->
-      <button mat-icon-button [matMenuTriggerFor]="profileMenu">
+      <button mat-icon-button class="profile-button" (click)="navigateTo('/profile')">
         <mat-icon>account_circle</mat-icon>
       </button>
-
-      <mat-menu #profileMenu="matMenu">
-        <button mat-menu-item routerLink="/profile">
-          <mat-icon>person</mat-icon>
-          <span>Profile</span>
-        </button>
-        <button mat-menu-item (click)="logout()">
-          <mat-icon>logout</mat-icon>
-          <span>Logout</span>
-        </button>
-      </mat-menu>
     </mat-toolbar>
 
-    <!-- Main Content -->
     <div class="main-content">
       <router-outlet></router-outlet>
     </div>
