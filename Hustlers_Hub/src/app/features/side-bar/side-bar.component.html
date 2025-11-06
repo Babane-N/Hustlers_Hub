@@ -12,25 +12,45 @@
         <mat-icon>home</mat-icon>
         <span class="nav-text">Home</span>
       </a>
+      <a mat-list-item (click)="navigateTo('/promotions'); isMobile && toggleSidebar()">
+        <mat-icon>local_offer</mat-icon>
+        <span class="nav-text">Promotions</span>
+      </a>
       <a mat-list-item (click)="navigateTo('/bookings'); isMobile && toggleSidebar()">
         <mat-icon>event</mat-icon>
         <span class="nav-text">My Bookings</span>
+      </a>
+      <a mat-list-item (click)="navigateTo('/profile'); isMobile && toggleSidebar()">
+        <mat-icon>person</mat-icon>
+        <span class="nav-text">Profile</span>
       </a>
     </mat-nav-list>
 
     <!-- 🏢 BUSINESS MENU -->
     <mat-nav-list *ngIf="userRole === 'Business'">
-      <a mat-list-item (click)="navigateTo('/dashboard'); isMobile && toggleSidebar()">
-        <mat-icon>dashboard</mat-icon>
-        <span class="nav-text">Dashboard</span>
+      <a mat-list-item (click)="navigateTo('/home'); isMobile && toggleSidebar()">
+        <mat-icon>home</mat-icon>
+        <span class="nav-text"> Home</span>
       </a>
       <a mat-list-item (click)="navigateTo('/services'); isMobile && toggleSidebar()">
-        <mat-icon>build</mat-icon>
-        <span class="nav-text">My Services</span>
+        <mat-icon>build_circle</mat-icon>
+        <span class="nav-text"> Services</span>
+      </a>
+      <a mat-list-item (click)="navigateTo('/promotions'); isMobile && toggleSidebar()">
+        <mat-icon>campaign</mat-icon>
+        <span class="nav-text"> Promotions</span>
       </a>
       <a mat-list-item (click)="navigateTo('/bookings'); isMobile && toggleSidebar()">
         <mat-icon>calendar_today</mat-icon>
-        <span class="nav-text">Bookings</span>
+        <span class="nav-text"> Bookings</span>
+      </a>
+      <a mat-list-item (click)="navigateTo('/business-switcher'); isMobile && toggleSidebar()">
+        <mat-icon>sync_alt</mat-icon>
+        <span class="nav-text"> Business Switcher</span>
+      </a>
+      <a mat-list-item (click)="navigateTo('/dashboard'); isMobile && toggleSidebar()">
+        <mat-icon>dashboard_customize</mat-icon>
+        <span class="nav-text"> Manage Business</span>
       </a>
     </mat-nav-list>
 
@@ -41,8 +61,8 @@
         <span class="nav-text">Manage Users</span>
       </a>
       <a mat-list-item (click)="navigateTo('/admin/businesses'); isMobile && toggleSidebar()">
-        <mat-icon>store</mat-icon>
-        <span class="nav-text">Manage Businesses</span>
+        <mat-icon>storefront</mat-icon>
+        <span class="nav-text"> Manage Businesses</span>
       </a>
     </mat-nav-list>
 
@@ -75,3 +95,4 @@
     </div>
   </mat-sidenav-content>
 </mat-sidenav-container>
+
