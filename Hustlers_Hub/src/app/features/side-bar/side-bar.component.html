@@ -1,17 +1,18 @@
 <mat-sidenav-container class="sidenav-container">
+  <!-- Sidebar / Drawer -->
   <mat-sidenav #drawer
-               [mode]="isHandset ? 'over' : 'side'"
+               [mode]="isMobile ? 'over' : 'side'"
                [(opened)]="isOpened"
                class="mat-elevation-z4">
     <mat-toolbar>Hustlers Hub</mat-toolbar>
 
     <!-- 🧍 CUSTOMER MENU -->
     <mat-nav-list *ngIf="userRole === 'Customer'">
-      <a mat-list-item (click)="navigateTo('/home-page')">
+      <a mat-list-item (click)="navigateTo('/home-page'); isMobile && toggleSidebar()">
         <mat-icon>home</mat-icon>
         <span class="nav-text">Home</span>
       </a>
-      <a mat-list-item (click)="navigateTo('/bookings')">
+      <a mat-list-item (click)="navigateTo('/bookings'); isMobile && toggleSidebar()">
         <mat-icon>event</mat-icon>
         <span class="nav-text">My Bookings</span>
       </a>
@@ -19,15 +20,15 @@
 
     <!-- 🏢 BUSINESS MENU -->
     <mat-nav-list *ngIf="userRole === 'Business'">
-      <a mat-list-item (click)="navigateTo('/dashboard')">
+      <a mat-list-item (click)="navigateTo('/dashboard'); isMobile && toggleSidebar()">
         <mat-icon>dashboard</mat-icon>
         <span class="nav-text">Dashboard</span>
       </a>
-      <a mat-list-item (click)="navigateTo('/services')">
+      <a mat-list-item (click)="navigateTo('/services'); isMobile && toggleSidebar()">
         <mat-icon>build</mat-icon>
         <span class="nav-text">My Services</span>
       </a>
-      <a mat-list-item (click)="navigateTo('/bookings')">
+      <a mat-list-item (click)="navigateTo('/bookings'); isMobile && toggleSidebar()">
         <mat-icon>calendar_today</mat-icon>
         <span class="nav-text">Bookings</span>
       </a>
@@ -35,27 +36,28 @@
 
     <!-- 👨‍💼 ADMIN MENU -->
     <mat-nav-list *ngIf="userRole === 'Admin'">
-      <a mat-list-item (click)="navigateTo('/admin/users')">
+      <a mat-list-item (click)="navigateTo('/admin/users'); isMobile && toggleSidebar()">
         <mat-icon>group</mat-icon>
         <span class="nav-text">Manage Users</span>
       </a>
-      <a mat-list-item (click)="navigateTo('/admin/businesses')">
+      <a mat-list-item (click)="navigateTo('/admin/businesses'); isMobile && toggleSidebar()">
         <mat-icon>store</mat-icon>
         <span class="nav-text">Manage Businesses</span>
       </a>
     </mat-nav-list>
 
     <!-- 🚪 LOGIN / LOGOUT -->
-    <div class="login-item" *ngIf="!isLoggedIn" (click)="navigateTo('/login')">
+    <div class="login-item" *ngIf="!isLoggedIn" (click)="navigateTo('/login'); isMobile && toggleSidebar()">
       <mat-icon>login</mat-icon>
       <span>Login</span>
     </div>
-    <div class="login-item" *ngIf="isLoggedIn" (click)="logout()">
+    <div class="login-item" *ngIf="isLoggedIn" (click)="logout(); isMobile && toggleSidebar()">
       <mat-icon>logout</mat-icon>
       <span>Logout</span>
     </div>
   </mat-sidenav>
 
+  <!-- Main content -->
   <mat-sidenav-content>
     <mat-toolbar class="custom-toolbar">
       <button mat-icon-button (click)="toggleSidebar()" class="toggle-btn">

@@ -1,7 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from './auth.Service';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-side-bar',
@@ -9,50 +8,49 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
   styleUrls: ['./side-bar.component.scss']
 })
 export class SideBarComponent implements OnInit {
-  isHandset = false;
-  isOpened = true;
+  isOpened = true;               // Desktop default
+  isMobile = false;              // Mobile detection
   userRole: string | null = null;
   isLoggedIn = false;
 
-  constructor(
-    private router: Router,
-    private authService: AuthService,
-    private breakpointObserver: BreakpointObserver
-  ) { }
+  constructor(private router: Router, private authService: AuthService) { }
 
   ngOnInit(): void {
-    // 📱 Detect mobile layout
-    this.breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
-      this.isHandset = result.matches;
-      if (this.isHandset) {
-        this.isOpened = false;
-      }
-    });
+    this.userRole = this.authService.getRole();
+    this.isLoggedIn = this.authService.isLoggedIn();
+    this.checkScreenSize();
 
-    // 🧠 Fetch user role directly from Azure API
-    this.authService.getCurrentUser().subscribe({
-      next: (user) => {
-        this.userRole = user.userType; // Backend enum: Customer, Business, Admin
-        this.isLoggedIn = true;
-      },
-      error: () => {
-        this.isLoggedIn = false;
-      }
+    // Optional: subscribe to login state changes
+    this.authService.isLoggedIn$.subscribe(status => {
+      this.isLoggedIn = status;
+      this.userRole = this.authService.getRole();
     });
   }
 
+  // Detect screen resize
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.checkScreenSize();
+  }
+
+  private checkScreenSize() {
+    this.isMobile = window.innerWidth < 768;
+    this.isOpened = !this.isMobile;
+  }
+
+  // Toggle sidebar manually
   toggleSidebar(): void {
     this.isOpened = !this.isOpened;
   }
 
+  // Navigate helper
+  navigateTo(route: string): void {
+    this.router.navigate([route]);
+  }
+
+  // Logout
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/home-page']);
   }
-
-  navigateTo(path: string): void {
-    if (this.isHandset) this.isOpened = false;
-    this.router.navigate([path]);
-  }
 }
-
