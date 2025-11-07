@@ -29,16 +29,17 @@
     </select>
   </div>
 
-  <!-- 📢 Promotions List -->
+  <!-- 📢 Promotions Grid -->
   <div class="promo-list">
     <div class="promo-card" *ngFor="let promo of filteredPromotions">
 
       <!-- 🖼️ Promo Images -->
-      <div class="promo-images" *ngIf="promo?.images && promo.images.length > 0; else noImage">
+      <div class="promo-images" *ngIf="promo.images && promo.images.length > 0; else noImage">
         <img *ngFor="let img of promo.images"
              [src]="img"
              alt="{{ promo.title }}"
-             class="promo-img" />
+             class="promo-img"
+             (error)="setDefaultImage($event)" />
       </div>
 
       <!-- 🔁 Fallback for No Image -->
@@ -57,4 +58,3 @@
     </div>
   </div>
 </div>
-
