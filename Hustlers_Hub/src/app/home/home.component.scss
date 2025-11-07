@@ -1,13 +1,14 @@
 .home-container {
   padding: 2rem;
   font-family: 'Segoe UI', sans-serif;
-  background-color: #fff3e6; // Dark orange background
-  color: #fff3e6;
-
+  background-color: #fff3e6; // Creamy vanilla background
+  color: #5d2c15; // Cocoa brown text
+  transition: all 0.3s ease-in-out;
+  // 🌅 HERO SECTION
   .hero {
     text-align: center;
     background: linear-gradient(to right, #b24c0f, #8b4000); // Warm orange gradient
-    color: #ffe0b2; // Light gold text
+    color: #ffe0b2;
     padding: 4rem 2rem;
     border-radius: 12px;
     margin-bottom: 2rem;
@@ -15,6 +16,7 @@
     h1 {
       font-size: 2.5rem;
       margin-bottom: 0.5rem;
+      line-height: 1.2;
     }
 
     p {
@@ -27,6 +29,7 @@
       display: flex;
       justify-content: center;
       gap: 1rem;
+      flex-wrap: wrap; // ✅ allows buttons to wrap on smaller screens
 
       .btn {
         text-decoration: none;
@@ -34,10 +37,12 @@
         border-radius: 8px;
         font-weight: bold;
         transition: background 0.3s ease, color 0.3s ease;
+        min-width: 140px; // keeps buttons consistent
+        text-align: center;
 
         &.primary {
           background-color: #fff3e6;
-          color: #8B4000;
+          color: #8b4000;
         }
 
         &.secondary {
@@ -53,23 +58,21 @@
       }
     }
   }
-
+  // ✨ FEATURES SECTION
   .features {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    gap: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); // ✅ auto-fit responsive
+    gap: 1.5rem;
+    justify-content: center;
 
     .feature-card {
-      background: #fff3e6; // Creamy vanilla card
+      background: #fff3e6;
       padding: 1.5rem;
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      flex: 1 1 30%;
-      min-width: 250px;
       text-align: center;
       text-decoration: none;
-      color: #5d2c15; // Cocoa text
+      color: #5d2c15;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
 
       &:hover {
@@ -87,6 +90,72 @@
         font-size: 0.95rem;
         color: #7a3d1d;
       }
+    }
+  }
+  // 📱 MOBILE & TABLET RESPONSIVENESS
+  @media (max-width: 1024px) {
+    padding: 1.5rem;
+
+    .hero {
+      padding: 3rem 1.5rem;
+
+      h1 {
+        font-size: 2.2rem;
+      }
+
+      p {
+        font-size: 1.1rem;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero {
+      padding: 2.5rem 1rem;
+
+      h1 {
+        font-size: 1.9rem;
+      }
+
+      p {
+        font-size: 1rem;
+      }
+
+      .hero-actions {
+        flex-direction: column;
+        align-items: center;
+
+        .btn {
+          width: 80%;
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 1rem;
+
+    .hero {
+      padding: 2rem 1rem;
+
+      h1 {
+        font-size: 1.6rem;
+      }
+
+      p {
+        font-size: 0.95rem;
+      }
+
+      .hero-actions .btn {
+        width: 100%;
+        padding: 0.7rem 1rem;
+        font-size: 0.95rem;
+      }
+    }
+
+    .features {
+      grid-template-columns: 1fr; // ✅ single-column on small screens
     }
   }
 }
