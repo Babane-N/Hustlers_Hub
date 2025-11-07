@@ -3,17 +3,14 @@ import { Router } from '@angular/router';
 import { Promotion, PromotionProvider } from './Promotion';
 import { environment } from '../../environments/environment';
 
-interface PromotionImage {
-  imageUrl: string;
-  // Add other properties here if your API returns more for images
-}
-
 @Component({
   selector: 'app-promotion',
   templateUrl: './promotion.component.html',
   styleUrls: ['./promotion.component.scss']
 })
 export class PromotionComponent implements OnInit {
+  environment = environment; // Expose to template
+
   promotions: (Promotion & { images: string[] })[] = [];
   searchTerm = '';
   filterCategory = '';
@@ -40,24 +37,25 @@ export class PromotionComponent implements OnInit {
   }
 
   loadPromotions(): void {
-    const baseUrl = `${environment.apiUrl}`
+    const baseUrl = `${environment.apiUrl}`;
 
-    this.promotionService.getPromotions().subscribe(data => {
-      this.promotions = data.map(p => ({
-        ...p,
-        // map image URLs to absolute URLs
-        images: Array.isArray(p.images)
-          ? p.images.map(url => url.startsWith('http') ? url : baseUrl + url)
-          : [],
-        expiresAt: p.expiresAt || new Date(),
-        postedBy: p.postedBy || 'Babane_N'
-      }));
-
-      console.log('Promotions loaded:', this.promotions);
+    this.promotionService.getPromotions().subscribe({
+      next: (data) => {
+        this.promotions = data.map(p => ({
+          ...p,
+          images: Array.isArray(p.images)
+            ? p.images.map(url => url?.startsWith('http') ? url : baseUrl + url)
+            : [],
+          expiresAt: p.expiresAt ? new Date(p.expiresAt) : new Date(),
+          postedBy: p.postedBy || 'Unknown User'
+        }));
+        console.log('Promotions loaded:', this.promotions);
+      },
+      error: (err) => {
+        console.error('Error loading promotions:', err);
+      }
     });
   }
-
-
 
   getUserId(): string {
     const userJson = localStorage.getItem('user');
@@ -85,8 +83,8 @@ export class PromotionComponent implements OnInit {
     if (
       this.formData.title?.trim() &&
       this.formData.description?.trim() &&
-      this.selectedFiles.length > 0 &&
-      this.formData.category?.trim()
+      this.formData.category?.trim() &&
+      this.selectedFiles.length > 0
     ) {
       const userId = this.getUserId();
       if (!userId) {
@@ -95,10 +93,13 @@ export class PromotionComponent implements OnInit {
       }
 
       const formDataToSend = new FormData();
-      formDataToSend.append('title', this.formData.title!.trim());
-      formDataToSend.append('description', this.formData.description!.trim());
-      formDataToSend.append('category', this.formData.category!.trim());
-      formDataToSend.append('expiresAt', this.formData.expiresAt?.toISOString() ?? new Date().toISOString());
+      formDataToSend.append('title', this.formData.title.trim());
+      formDataToSend.append('description', this.formData.description.trim());
+      formDataToSend.append('category', this.formData.category.trim());
+      formDataToSend.append(
+        'expiresAt',
+        this.formData.expiresAt?.toISOString() ?? new Date().toISOString()
+      );
       formDataToSend.append('postedById', userId);
 
       this.selectedFiles.forEach(file => {
@@ -111,7 +112,7 @@ export class PromotionComponent implements OnInit {
           this.resetForm();
           this.showCreateForm = false;
         },
-        error: err => {
+        error: (err) => {
           console.error('Error saving promotion:', err);
           alert('Error saving promotion.');
         }
@@ -186,3 +187,4 @@ export class PromotionComponent implements OnInit {
     this.selectedFiles = [];
   }
 }
+

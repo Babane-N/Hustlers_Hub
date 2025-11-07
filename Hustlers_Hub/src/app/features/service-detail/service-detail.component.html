@@ -4,8 +4,10 @@
     <div class="hero-left">
       <img *ngIf="provider.logoUrl"
            class="provider-logo"
-           [src]="uploadsUrl + '/' + provider.logoUrl"
-           [alt]="provider.businessName + ' Logo'">
+           [src]="provider.logoUrl
+          ? environment.uploadsUrl + '/' + provider.logoUrl
+          : 'assets/default.png'"
+           [alt]="provider.businessName + ' Logo'" />
     </div>
 
     <div class="hero-info">
@@ -46,7 +48,7 @@
 
     <!-- Gallery (optional) -->
     <div class="gallery" *ngIf="provider.imageUrl">
-      <img [src]="uploadsUrl + '/' + provider.imageUrl" alt="Service image">
+      <img [src]="environment.uploadsUrl + '/' + provider.imageUrl" alt="Service image" />
     </div>
   </div>
 
@@ -78,3 +80,4 @@
     <p>Loading service details...</p>
   </div>
 </ng-template>
+

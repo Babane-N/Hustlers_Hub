@@ -16,6 +16,8 @@ export class FindServiceComponent implements OnInit, AfterViewInit {
   viewMode: 'list' | 'map' = 'list';
   center: google.maps.LatLngLiteral = { lat: -26.2041, lng: 28.0473 };
   zoom = 11;
+  environment = environment; // expose it to the template
+
 
   @ViewChild('locationInput') locationInput!: ElementRef<HTMLInputElement>;
   uploadsUrl = environment.apiUrl;

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ServiceProvider, ServiceDetail, Review } from './service.detail';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-service-detail',
@@ -8,6 +9,8 @@ import { ServiceProvider, ServiceDetail, Review } from './service.detail';
   styleUrls: ['./service-detail.component.scss']
 })
 export class ServiceDetailComponent implements OnInit {
+  environment = environment; // expose it to the template
+
   provider: ServiceDetail | null = null;    // Holds the service provider details
   reviews: Review[] = [];                   // Holds reviews for the provider
   uploadsUrl = 'https://api.example.com/uploads'; // Replace with your actual uploads URL

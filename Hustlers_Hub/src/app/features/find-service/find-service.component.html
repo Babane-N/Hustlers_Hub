@@ -47,9 +47,12 @@
        (click)="goFindServiceDetail(provider)"
        style="cursor: pointer;">
 
-    <img *ngIf="provider.logoUrl"
-         [src]="provider.logoUrl"
-         alt="Business Logo"
+    <img [src]="provider.logoUrl
+    ? (provider.logoUrl.startsWith('http')
+        ? provider.logoUrl
+        : environment.uploadsUrl + '/' + provider.logoUrl)
+    : 'assets/default.png'"
+         alt="{{ provider.businessName }} Logo"
          class="profile-pic" />
 
     <h3>{{ provider.businessName }}</h3>

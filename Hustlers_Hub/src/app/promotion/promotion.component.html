@@ -2,19 +2,24 @@
   <h2>Community Promotions</h2>
   <p class="subtitle">Discover events, deals, and local happenings</p>
 
+  <!-- 🧩 Create Promotion Button -->
   <div class="create-promo-btn-container">
     <button class="btn create-promo-btn" (click)="goToAdCreator()">
       + Create Promotion
     </button>
   </div>
 
-  <!-- Search, Filter, Sort Controls -->
+  <!-- 🔍 Search, Filter, Sort Controls -->
   <div class="search-sort-filter">
-    <input type="text" [(ngModel)]="searchTerm" placeholder="Search title or description..." />
+    <input type="text"
+           [(ngModel)]="searchTerm"
+           placeholder="Search title or description..." />
 
     <select [(ngModel)]="filterCategory">
       <option value="">All Categories</option>
-      <option *ngFor="let cat of uniqueCategories" [value]="cat">{{ cat }}</option>
+      <option *ngFor="let cat of uniqueCategories" [value]="cat">
+        {{ cat }}
+      </option>
     </select>
 
     <select [(ngModel)]="sortBy">
@@ -24,24 +29,32 @@
     </select>
   </div>
 
+  <!-- 📢 Promotions List -->
   <div class="promo-list">
     <div class="promo-card" *ngFor="let promo of filteredPromotions">
 
-      <!-- Carousel / Multiple Images -->
-      <div class="promo-images">
+      <!-- 🖼️ Promo Images -->
+      <div class="promo-images" *ngIf="promo?.images && promo.images.length > 0; else noImage">
         <img *ngFor="let img of promo.images"
-             [src]="img"
+             [src]="environment.uploadsUrl + '/' + img"
              alt="{{ promo.title }}"
              class="promo-img" />
       </div>
 
+      <!-- 🔁 Fallback for No Image -->
+      <ng-template #noImage>
+        <img src="assets/default.png" alt="No image available" class="promo-img" />
+      </ng-template>
+
+      <!-- 📝 Promo Info -->
       <h3>{{ promo.title }}</h3>
       <p>{{ promo.description }}</p>
       <div class="promo-meta">
         <span>👤 {{ promo.postedBy }}</span>
-        <span>⏳ {{ promo.expiresAt | date:'mediumDate' }}</span>
+        <span>⏳ {{ promo.expiresAt | date: 'mediumDate' }}</span>
         <span>📂 {{ promo.category }}</span>
       </div>
     </div>
   </div>
 </div>
+
