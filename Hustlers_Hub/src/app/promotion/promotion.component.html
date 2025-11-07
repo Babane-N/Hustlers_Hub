@@ -34,16 +34,15 @@
     <div class="promo-card" *ngFor="let promo of filteredPromotions">
 
       <!-- 🖼️ Promo Images -->
-      <div class="promo-images">
-        <img *ngFor="let img of promo.images; else defaultImage"
+      <div class="promo-images" *ngIf="promo?.images && promo.images.length > 0; else noImage">
+        <img *ngFor="let img of promo.images"
              [src]="img"
              alt="{{ promo.title }}"
-             class="promo-img"
-             (error)="img='assets/default.png'" />
+             class="promo-img" />
       </div>
 
       <!-- 🔁 Fallback for No Image -->
-      <ng-template #defaultImage>
+      <ng-template #noImage>
         <img src="assets/default.png" alt="No image available" class="promo-img" />
       </ng-template>
 
@@ -52,7 +51,7 @@
       <p>{{ promo.description }}</p>
       <div class="promo-meta">
         <span>👤 {{ promo.postedBy }}</span>
-        <span>⏳ {{ promo.expiresAt | date:'mediumDate' }}</span>
+        <span>⏳ {{ promo.expiresAt | date: 'mediumDate' }}</span>
         <span>📂 {{ promo.category }}</span>
       </div>
     </div>

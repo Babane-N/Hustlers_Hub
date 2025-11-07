@@ -9,8 +9,7 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./service-detail.component.scss']
 })
 export class ServiceDetailComponent implements OnInit {
-  environment = environment; // expose it to the template
-
+  private baseUrl = `${environment.apiUrl}/Services`;
   provider: ServiceDetail | null = null;    // Holds the service provider details
   reviews: Review[] = [];                   // Holds reviews for the provider
   uploadsUrl = 'https://api.example.com/uploads'; // Replace with your actual uploads URL
