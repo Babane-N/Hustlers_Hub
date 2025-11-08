@@ -64,9 +64,9 @@
 
     <!-- Only show service image if imageUrl exists and is not hidden -->
     <div class="service-images" *ngIf="provider.imageUrl && !provider.hiddenImage">
-      <img [src]="provider.imageUrl"
+      <img *ngIf="getServiceImage(provider)"
+           [src]="getServiceImage(provider)"
            alt="{{ provider.businessName }} Image"
-           class="service-img"
            (error)="hideImage(provider)" />
     </div>
 
