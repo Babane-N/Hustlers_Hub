@@ -47,8 +47,8 @@
        (click)="goFindServiceDetail(provider)"
        style="cursor: pointer;">
 
-    <img [src]="getLogoUrl(provider)"
-         (error)="setDefaultImage($event)"
+    <img *ngIf="getLogoUrl(provider)"
+         [src]="getLogoUrl(provider)"
          alt="{{ provider.businessName }} Logo"
          class="profile-pic" />
 

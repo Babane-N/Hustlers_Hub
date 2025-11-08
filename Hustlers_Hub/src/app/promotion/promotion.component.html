@@ -38,8 +38,7 @@
         <ng-container *ngFor="let img of promo.images">
           <img [src]="img"
                alt="{{ promo.title }}"
-               class="promo-img"
-               (error)="setDefaultImage($event)" />
+               class="promo-img"/>
         </ng-container>
       </div>
 
