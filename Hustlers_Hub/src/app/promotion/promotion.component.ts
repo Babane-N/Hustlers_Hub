@@ -36,28 +36,38 @@ export class PromotionComponent implements OnInit {
     this.loadPromotions();
   }
 
+  /** ✅ Load promotions and normalize image URLs */
   loadPromotions(): void {
-    const baseUrl = environment.apiUrl; // Ensure ends with /api
+    const baseUrl = environment.apiUrl;
 
-    this.promotionService.getPromotions().subscribe(data => {
-      this.promotions = data.map(p => ({
-        ...p,
-        images: Array.isArray(p.images)
-          ? p.images.map(img => img.startsWith('http') ? img : `${baseUrl}/promotions/${img}`)
-          : [],
-        expiresAt: p.expiresAt ? new Date(p.expiresAt) : new Date(),
-        postedBy: p.postedBy || this.getUserFullName()
-      }));
-
-      console.log('Promotions loaded:', this.promotions);
+    this.promotionService.getPromotions().subscribe({
+      next: (data) => {
+        this.promotions = data.map(p => ({
+          ...p,
+          images: Array.isArray(p.images)
+            ? p.images.map(img =>
+              img.startsWith('http')
+                ? img
+                : `${baseUrl}/promotions/${img}`
+            )
+            : [],
+          expiresAt: p.expiresAt ? new Date(p.expiresAt) : new Date(),
+          postedBy: p.postedBy || this.getUserFullName()
+        }));
+        console.log('✅ Promotions loaded:', this.promotions);
+      },
+      error: (err) => console.error('❌ Error loading promotions:', err)
     });
   }
 
+  /** ✅ Returns main image or null (no fallback/default image) */
   getPromotionImageUrl(promo: Promotion & { images: string[] }): string | null {
-    return promo.images && promo.images.length > 0 ? promo.images[0] : null; // null = no image
+    if (!promo.images || promo.images.length === 0) return null;
+    return promo.images[0];
   }
 
-  getUserId(): string {
+  /** ✅ Get logged-in user ID from localStorage */
+  private getUserId(): string {
     const userJson = localStorage.getItem('user');
     if (!userJson) return '';
     try {
@@ -68,7 +78,8 @@ export class PromotionComponent implements OnInit {
     }
   }
 
-  getUserFullName(): string {
+  /** ✅ Get full name of logged-in user */
+  private getUserFullName(): string {
     const userJson = localStorage.getItem('user');
     if (!userJson) return 'Anonymous';
     try {
@@ -79,6 +90,7 @@ export class PromotionComponent implements OnInit {
     }
   }
 
+  /** ✅ Submit a new promotion */
   submitPromotion(): void {
     if (
       this.formData.title?.trim() &&
@@ -106,12 +118,13 @@ export class PromotionComponent implements OnInit {
 
       this.promotionService.postPromotion(formDataToSend).subscribe({
         next: () => {
+          alert('✅ Promotion posted successfully!');
           this.loadPromotions();
           this.resetForm();
           this.showCreateForm = false;
         },
         error: err => {
-          console.error('Error saving promotion:', err);
+          console.error('❌ Error saving promotion:', err);
           alert('Error saving promotion.');
         }
       });
@@ -120,6 +133,7 @@ export class PromotionComponent implements OnInit {
     }
   }
 
+  /** ✅ Handle image file selection */
   onFilesSelected(event: Event): void {
     const target = event.target as HTMLInputElement;
     if (target.files) {
@@ -127,20 +141,29 @@ export class PromotionComponent implements OnInit {
     }
   }
 
+  /** ✅ Open the creation modal */
   openCreatePromoModal(): void {
     this.showCreateForm = true;
   }
 
+  /** ✅ Close modal and reset form */
   cancelCreate(): void {
     this.showCreateForm = false;
     this.resetForm();
   }
 
+  /** ✅ Navigate to Ad Creator page */
+  goToAdCreator(): void {
+    this.router.navigate(['/adcreator']);
+  }
+
+  /** ✅ Unique categories for filtering dropdown */
   get uniqueCategories(): string[] {
     const categories = this.promotions.map(p => p.category);
     return Array.from(new Set(categories));
   }
 
+  /** ✅ Filter + sort promotions dynamically */
   get filteredPromotions(): (Promotion & { images: string[] })[] {
     let filtered = [...this.promotions];
 
@@ -170,10 +193,12 @@ export class PromotionComponent implements OnInit {
     return filtered;
   }
 
-  goToAdCreator(): void {
-    this.router.navigate(['/adcreator']);
+  /** ✅ Navigate to Create Promotion page (for button click) */
+  goToCreatePromotion(): void {
+    this.router.navigate(['/dashboard/create-promotion']);
   }
 
+  /** ✅ Reset form */
   private resetForm(): void {
     this.formData = {
       title: '',
@@ -185,3 +210,4 @@ export class PromotionComponent implements OnInit {
     this.selectedFiles = [];
   }
 }
+
