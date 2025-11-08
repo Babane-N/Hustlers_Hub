@@ -42,14 +42,13 @@ export class FindServiceComponent implements OnInit, AfterViewInit {
       next: (data) => {
         this.serviceProviders = data.map(p => ({
           ...p,
-          // Fix double /uploads issue and handle relative vs absolute URLs
+          // Fix duplicate /uploads by removing leading /uploads from imageUrl if present
           imageUrl: p.imageUrl
-            ? (p.imageUrl.startsWith('/uploads')
-              ? `${this.uploadsUrl.replace(/\/+$/, '')}${p.imageUrl}`
-              : p.imageUrl.startsWith('http')
-                ? p.imageUrl
+            ? p.imageUrl.startsWith('http')
+              ? p.imageUrl
+              : p.imageUrl.startsWith('/uploads')
+                ? `${this.uploadsUrl.replace(/\/+$/, '')}/${p.imageUrl.replace(/^\/uploads\/?/, '')}`
                 : `${this.uploadsUrl.replace(/\/+$/, '')}/${p.imageUrl.replace(/^\/+/, '')}`
-            )
             : null,
           hiddenImage: false
         }));
@@ -117,10 +116,9 @@ export class FindServiceComponent implements OnInit, AfterViewInit {
     provider.hiddenImage = true;
   }
 
-  // Get final image URL or null if hidden
+  // Optional helper to get final image URL, returns null if hidden
   getServiceImage(provider: ServiceProvider): string | null {
     if (!provider.imageUrl || provider.hiddenImage) return null;
     return provider.imageUrl;
   }
 }
-
