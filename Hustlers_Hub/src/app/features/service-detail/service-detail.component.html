@@ -4,10 +4,9 @@
     <div class="hero-left">
       <img *ngIf="provider.logoUrl"
            class="provider-logo"
-           [src]="provider.logoUrl
-          ? environment.uploadsUrl + '/' + provider.logoUrl
-          : 'assets/default.png'"
-           [alt]="provider.businessName + ' Logo'" />
+           [src]="provider.logoUrl.startsWith('/uploads') ? environment.uploadsUrl + provider.logoUrl : provider.logoUrl"
+           [alt]="provider.businessName + ' Logo'"
+           (error)="provider.logoUrl = 'assets/default.png'" />
     </div>
 
     <div class="hero-info">
@@ -23,7 +22,6 @@
   <div class="service-body">
     <div class="service-info-card">
       <h2>{{ provider.title }}</h2>
-
       <p class="description">{{ provider.description }}</p>
 
       <div class="service-meta">
@@ -46,9 +44,11 @@
       </button>
     </div>
 
-    <!-- Gallery (optional) -->
+    <!-- Gallery -->
     <div class="gallery" *ngIf="provider.imageUrl">
-      <img [src]="environment.uploadsUrl + '/' + provider.imageUrl" alt="Service image" />
+      <img [src]="provider.imageUrl.startsWith('/uploads') ? environment.uploadsUrl + provider.imageUrl : provider.imageUrl"
+           alt="Service image"
+           (error)="provider.imageUrl = 'assets/default.png'" />
     </div>
   </div>
 
@@ -80,4 +80,3 @@
     <p>Loading service details...</p>
   </div>
 </ng-template>
-

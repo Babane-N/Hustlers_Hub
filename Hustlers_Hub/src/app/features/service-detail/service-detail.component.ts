@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ServiceProvider, ServiceDetail, Review } from './service.detail';
+import { ServiceDetail, Review, ServiceProvider } from './service.detail';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -10,10 +10,10 @@ import { environment } from '../../../environments/environment';
 })
 export class ServiceDetailComponent implements OnInit {
   environment = environment;
-  provider: ServiceDetail | null = null;    // Holds the service provider details
-  reviews: Review[] = [];                   // Holds reviews for the provider
-  uploadsUrl = 'https://api.example.com/uploads'; // Replace with your actual uploads URL
-  isLoading = true;                         // Optional: show loading state
+  provider: ServiceDetail & { hiddenImage?: boolean } | null = null; // include hiddenImage dynamically
+  reviews: Review[] = [];
+  uploadsUrl = environment.uploadsUrl;
+  isLoading = true;
 
   constructor(
     private route: ActivatedRoute,
@@ -33,9 +33,27 @@ export class ServiceDetailComponent implements OnInit {
   private loadProvider(serviceId: string): void {
     this.serviceService.getServiceDetails(serviceId).subscribe({
       next: (service) => {
+        if (service) {
+          // Fix image URLs
+          service.logoUrl = service.logoUrl
+            ? service.logoUrl.startsWith('/uploads')
+              ? `${this.uploadsUrl.replace(/\/+$/, '')}${service.logoUrl}`
+              : service.logoUrl.startsWith('http')
+                ? service.logoUrl
+                : `${this.uploadsUrl.replace(/\/+$/, '')}/${service.logoUrl.replace(/^\/+/, '')}`
+            : null;
+
+          service.logoUrl = service.imageUrl
+            ? service.imageUrl.startsWith('/uploads')
+              ? `${this.uploadsUrl.replace(/\/+$/, '')}${service.imageUrl}`
+              : service.imageUrl.startsWith('http')
+                ? service.imageUrl
+                : `${this.uploadsUrl.replace(/\/+$/, '')}/${service.imageUrl.replace(/^\/+/, '')}`
+            : null;
+        }
+
         this.provider = service;
 
-        // Only fetch reviews if businessId exists
         if (service.businessId) {
           this.loadReviews(service.businessId);
         } else {
@@ -62,8 +80,16 @@ export class ServiceDetailComponent implements OnInit {
     });
   }
 
+  hideImage(): void {
+    if (this.provider) this.provider.hiddenImage = true;
+  }
+
+  getServiceImage(): string | null {
+    if (!this.provider || !this.provider.imageUrl || this.provider.hiddenImage) return null;
+    return this.provider.imageUrl;
+  }
+
   openBookingDialog(serviceId: string): void {
-    // TODO: implement booking dialog logic
     console.log('Open booking dialog for service ID:', serviceId);
   }
 }
