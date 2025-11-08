@@ -1,131 +1,65 @@
 <div class="promo-container">
-  <h2>Current Promotions</h2>
-  <p class="subtitle">Discover exciting offers, special deals, and time-limited promotions.</p>
+  <h2>Promotions</h2>
+  <p class="subtitle">Discover the latest deals, offers, and highlights from our service providers.</p>
 
-  <!-- Create Button -->
-  <div class="create-promo-btn-container">
-    <button class="create-promo-btn" (click)="openCreatePromoModal()">+ Create Promotion</button>
-  </div>
-
-  <!-- Search / Sort / Filter -->
   <div class="search-sort-filter">
     <input type="text"
            placeholder="Search promotions..."
            [(ngModel)]="searchTerm" />
 
-    <select [(ngModel)]="filterCategory">
+    <select [(ngModel)]="selectedCategory">
       <option value="">All Categories</option>
-      <option *ngFor="let cat of uniqueCategories" [value]="cat">{{ cat }}</option>
+      <option value="Services">Services</option>
+      <option value="Events">Events</option>
+      <option value="Products">Products</option>
+      <option value="Other">Other</option>
     </select>
 
-    <select [(ngModel)]="sortBy">
-      <option value="expiresAt">Sort by Expiry</option>
-      <option value="title">Sort by Title</option>
-      <option value="postedBy">Sort by Poster</option>
+    <select [(ngModel)]="sortOrder">
+      <option value="">Sort by</option>
+      <option value="newest">Newest First</option>
+      <option value="oldest">Oldest First</option>
     </select>
   </div>
 
-  <!-- Promotions List -->
-  <div class="promo-list">
-    <div class="promo-card"
-         *ngFor="let promo of filteredPromotions">
-      <!-- Image or Placeholder -->
-      <ng-container *ngIf="getPromotionImageUrl(promo); else noImage">
-        <img [src]="getPromotionImageUrl(promo)"
-             alt="{{ promo.title }}"
-             (error)="promo.images = []" />
+  <div *ngIf="isLoading" class="text-center">Loading promotions...</div>
+
+  <div class="promo-list" *ngIf="!isLoading && filteredPromotions().length > 0">
+    <div class="promo-card" *ngFor="let promo of filteredPromotions()">
+      <!-- main image -->
+      <ng-container *ngIf="(promo.images ?? []).length > 0; else noImage">
+        <img [src]="promo.images![0]"
+             alt="{{ promo.title }} Image"
+             class="promo-main-img"
+             (error)="handleImageError(promo, promo.images![0])" />
       </ng-container>
 
       <ng-template #noImage>
-        <div class="promo-placeholder">No image available</div>
+        <div class="promo-placeholder">
+          No image available
+        </div>
       </ng-template>
 
-      <!-- Promo Content -->
       <h3>{{ promo.title }}</h3>
       <p>{{ promo.description }}</p>
 
-      <!-- Horizontal image scroller if multiple -->
-      <div class="promo-images" *ngIf="promo.images.length > 1">
-        <img *ngFor="let img of promo.images"
-             class="promo-img"
-             [src]="img"
-             [alt]="promo.title"
-             (error)="img = ''" />
+      <div class="promo-meta">
+        <span>{{ promo.category }}</span>
+        <span>{{ promo.createdAt | date: 'mediumDate' }}</span>
       </div>
 
-      <!-- Meta Info -->
-      <div class="promo-meta">
-        <span>Category: {{ promo.category }}</span>
-        <span>Posted by: {{ promo.postedBy }}</span>
-        <span>Expires: {{ promo.expiresAt | date: 'mediumDate' }}</span>
+      <div class="promo-images" *ngIf="(promo.images ?? []).length > 1">
+        <img *ngFor="let img of promo.images!.slice(1)"
+             [src]="img"
+             alt="{{ promo.title }} Image"
+             class="promo-img"
+             (error)="handleImageError(promo, img)" />
       </div>
     </div>
   </div>
 
-  <!-- Create Promotion Modal -->
-  <div *ngIf="showCreateForm"
-       class="create-promo-modal fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-    <div class="bg-white p-6 rounded-2xl shadow-lg w-full max-w-lg">
-      <h3 class="text-2xl font-semibold text-[#5d2c15] mb-4 text-center">
-        Create New Promotion
-      </h3>
-
-      <form (ngSubmit)="submitPromotion()">
-        <div class="mb-3">
-          <input type="text"
-                 [(ngModel)]="formData.title"
-                 name="title"
-                 placeholder="Title"
-                 required
-                 class="w-full p-2 border rounded" />
-        </div>
-
-        <div class="mb-3">
-          <textarea [(ngModel)]="formData.description"
-                    name="description"
-                    placeholder="Description"
-                    required
-                    class="w-full p-2 border rounded"></textarea>
-        </div>
-
-        <div class="mb-3">
-          <input type="text"
-                 [(ngModel)]="formData.category"
-                 name="category"
-                 placeholder="Category"
-                 required
-                 class="w-full p-2 border rounded" />
-        </div>
-
-        <div class="mb-3">
-          <label class="block mb-1 font-medium">Expiration Date:</label>
-          <input type="date"
-                 [(ngModel)]="formData.expiresAt"
-                 name="expiresAt"
-                 required
-                 class="w-full p-2 border rounded" />
-        </div>
-
-        <div class="mb-4">
-          <label class="block mb-1 font-medium">Upload Images:</label>
-          <input type="file"
-                 multiple
-                 (change)="onFilesSelected($event)"
-                 class="w-full p-2 border rounded bg-[#fff8f0]" />
-        </div>
-
-        <div class="flex justify-between mt-6">
-          <button type="submit"
-                  class="bg-[#8b4000] text-[#fff3e6] px-4 py-2 rounded-3xl font-bold hover:bg-[#a87450] transition">
-            Post Promotion
-          </button>
-          <button type="button"
-                  (click)="cancelCreate()"
-                  class="bg-gray-300 text-gray-800 px-4 py-2 rounded-3xl font-bold hover:bg-gray-400 transition">
-            Cancel
-          </button>
-        </div>
-      </form>
-    </div>
+  <div *ngIf="!isLoading && filteredPromotions().length === 0" class="text-center">
+    No promotions found.
   </div>
 </div>
+
