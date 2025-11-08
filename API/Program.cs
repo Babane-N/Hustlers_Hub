@@ -39,6 +39,7 @@ builder.Services.AddSwaggerGen();
 // ---------------------------
 var allowedOrigins = new[]
 {
+    "https://www.hustlershub.tech",
     "https://purple-water-01a0ea703.3.azurestaticapps.net",
     "https://hustlershub-g3cjffaea3axckg3.southafricanorth-01.azurewebsites.net",
     "https://localhost:4200",

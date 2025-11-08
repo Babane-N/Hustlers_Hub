@@ -16,11 +16,10 @@ export class FindServiceComponent implements OnInit, AfterViewInit {
   viewMode: 'list' | 'map' = 'list';
   center: google.maps.LatLngLiteral = { lat: -26.2041, lng: 28.0473 };
   zoom = 11;
-  environment = environment; // expose it to the template
 
+  uploadsUrl = environment.uploadsUrl; // for images
 
   @ViewChild('locationInput') locationInput!: ElementRef<HTMLInputElement>;
-  uploadsUrl = environment.apiUrl;
 
   constructor(private router: Router, private providerService: ServiceProviderService) { }
 
@@ -48,11 +47,17 @@ export class FindServiceComponent implements OnInit, AfterViewInit {
     }
   }
 
-  toggleView(mode: 'list' | 'map') { this.viewMode = mode; }
+  toggleView(mode: 'list' | 'map') {
+    this.viewMode = mode;
+  }
 
-  goToRegisterBusiness() { this.router.navigate(['/register-business']); }
+  goToRegisterBusiness() {
+    this.router.navigate(['/register-business']);
+  }
 
-  get uniqueServices(): string[] { return [...new Set(this.serviceProviders.map(p => p.category))]; }
+  get uniqueServices(): string[] {
+    return [...new Set(this.serviceProviders.map(p => p.category))];
+  }
 
   get filteredProviders(): ServiceProvider[] {
     let result = [...this.serviceProviders];
@@ -77,5 +82,18 @@ export class FindServiceComponent implements OnInit, AfterViewInit {
 
   goFindServiceDetail(provider: ServiceProvider) {
     if (provider?.id) this.router.navigate(['/service-detail', provider.id]);
+  }
+
+  // ✅ New helper for image URLs with fallback
+  getLogoUrl(provider: ServiceProvider): string {
+    if (!provider.logoUrl) return 'assets/default.png';
+    return provider.logoUrl.startsWith('http')
+      ? provider.logoUrl
+      : `${this.uploadsUrl}/${provider.logoUrl}`;
+  }
+
+  // Optional: fallback for broken images
+  setDefaultImage(event: Event) {
+    (event.target as HTMLImageElement).src = 'assets/default.png';
   }
 }

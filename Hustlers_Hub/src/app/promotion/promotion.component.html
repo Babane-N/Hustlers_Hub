@@ -33,13 +33,14 @@
   <div class="promo-list">
     <div class="promo-card" *ngFor="let promo of filteredPromotions">
 
-      <!-- 🖼️ Promo Images -->
+      <!-- 🖼️ Promo Images Carousel -->
       <div class="promo-images" *ngIf="promo.images && promo.images.length > 0; else noImage">
-        <img *ngFor="let img of promo.images"
-             [src]="img"
-             alt="{{ promo.title }}"
-             class="promo-img"
-             (error)="setDefaultImage($event)" />
+        <ng-container *ngFor="let img of promo.images">
+          <img [src]="img"
+               alt="{{ promo.title }}"
+               class="promo-img"
+               (error)="setDefaultImage($event)" />
+        </ng-container>
       </div>
 
       <!-- 🔁 Fallback for No Image -->
@@ -48,13 +49,16 @@
       </ng-template>
 
       <!-- 📝 Promo Info -->
-      <h3>{{ promo.title }}</h3>
-      <p>{{ promo.description }}</p>
-      <div class="promo-meta">
-        <span>👤 {{ promo.postedBy }}</span>
-        <span>⏳ {{ promo.expiresAt | date: 'mediumDate' }}</span>
-        <span>📂 {{ promo.category }}</span>
+      <div class="promo-info">
+        <h3>{{ promo.title }}</h3>
+        <p>{{ promo.description }}</p>
+        <div class="promo-meta">
+          <span>👤 {{ promo.postedBy }}</span>
+          <span>⏳ {{ promo.expiresAt | date: 'mediumDate' }}</span>
+          <span>📂 {{ promo.category }}</span>
+        </div>
       </div>
+
     </div>
   </div>
 </div>

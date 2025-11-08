@@ -1,4 +1,4 @@
-<!-- Hero Heading Section -->
+<<!-- Hero Heading Section -->
 <div class="hero-heading">
   <h2>Local Hustlers, Trusted Services</h2>
   <p class="slogan">Empowering small businesses near you, one connection at a time.</p>
@@ -40,18 +40,15 @@
   </div>
 </div>
 
-<!-- Results -->
+<!-- Results List -->
 <div *ngIf="viewMode==='list'" class="results-grid">
   <div class="service-card"
        *ngFor="let provider of filteredProviders"
        (click)="goFindServiceDetail(provider)"
        style="cursor: pointer;">
 
-    <img [src]="provider.logoUrl
-    ? (provider.logoUrl.startsWith('http')
-        ? provider.logoUrl
-        : environment.uploadsUrl + '/' + provider.logoUrl)
-    : 'assets/default.png'"
+    <img [src]="getLogoUrl(provider)"
+         (error)="setDefaultImage($event)"
          alt="{{ provider.businessName }} Logo"
          class="profile-pic" />
 
@@ -64,7 +61,7 @@
   </div>
 </div>
 
-<!-- Map -->
+<!-- Map View -->
 <div *ngIf="viewMode==='map'" class="map-container">
   <google-map height="500px" width="100%"
               [center]="center"
@@ -76,4 +73,3 @@
     </map-marker>
   </google-map>
 </div>
-

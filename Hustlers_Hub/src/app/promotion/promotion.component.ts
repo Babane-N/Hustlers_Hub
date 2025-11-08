@@ -3,23 +3,18 @@ import { Router } from '@angular/router';
 import { Promotion, PromotionProvider } from './Promotion';
 import { environment } from '../../environments/environment';
 
-interface PromotionImage {
-  imageUrl: string;
-  // Add other properties here if your API returns more for images
-}
-
 @Component({
   selector: 'app-promotion',
   templateUrl: './promotion.component.html',
   styleUrls: ['./promotion.component.scss']
 })
 export class PromotionComponent implements OnInit {
-  environment = environment; // expose it to the template
+  environment = environment;
 
   promotions: (Promotion & { images: string[] })[] = [];
   searchTerm = '';
   filterCategory = '';
-  sortBy = 'expiresAt';
+  sortBy: 'title' | 'postedBy' | 'expiresAt' = 'expiresAt';
   showCreateForm = false;
 
   formData: Partial<Promotion> = {
@@ -42,17 +37,17 @@ export class PromotionComponent implements OnInit {
   }
 
   loadPromotions(): void {
-    const baseUrl = `${environment.apiUrl}`
+    const baseUrl = environment.apiUrl;
 
     this.promotionService.getPromotions().subscribe(data => {
       this.promotions = data.map(p => ({
         ...p,
-        // map image URLs to absolute URLs
+        // Ensure Images from API is mapped correctly
         images: Array.isArray(p.images)
           ? p.images.map(url => url.startsWith('http') ? url : baseUrl + url)
           : [],
-        expiresAt: p.expiresAt || new Date(),
-        postedBy: p.postedBy || 'Babane_N'
+        expiresAt: p.expiresAt ? new Date(p.expiresAt) : new Date(),
+        postedBy: p.postedBy || this.getUserFullName()
       }));
 
       console.log('Promotions loaded:', this.promotions);
@@ -63,7 +58,6 @@ export class PromotionComponent implements OnInit {
     const target = event.target as HTMLImageElement;
     target.src = 'assets/default.png';
   }
-
 
   getUserId(): string {
     const userJson = localStorage.getItem('user');
@@ -91,8 +85,8 @@ export class PromotionComponent implements OnInit {
     if (
       this.formData.title?.trim() &&
       this.formData.description?.trim() &&
-      this.selectedFiles.length > 0 &&
-      this.formData.category?.trim()
+      this.formData.category?.trim() &&
+      this.selectedFiles.length > 0
     ) {
       const userId = this.getUserId();
       if (!userId) {
@@ -101,11 +95,12 @@ export class PromotionComponent implements OnInit {
       }
 
       const formDataToSend = new FormData();
-      formDataToSend.append('title', this.formData.title!.trim());
-      formDataToSend.append('description', this.formData.description!.trim());
-      formDataToSend.append('category', this.formData.category!.trim());
-      formDataToSend.append('expiresAt', this.formData.expiresAt?.toISOString() ?? new Date().toISOString());
-      formDataToSend.append('postedById', userId);
+      formDataToSend.append('Title', this.formData.title!.trim());
+      formDataToSend.append('Description', this.formData.description!.trim());
+      formDataToSend.append('Category', this.formData.category!.trim());
+      formDataToSend.append('ExpiresAt', this.formData.expiresAt?.toISOString() ?? new Date().toISOString());
+      formDataToSend.append('PostedById', userId);
+      formDataToSend.append('IsBoosted', 'false');
 
       this.selectedFiles.forEach(file => {
         formDataToSend.append('Images', file, file.name);
