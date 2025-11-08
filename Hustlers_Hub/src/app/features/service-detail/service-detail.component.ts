@@ -14,6 +14,8 @@ export class ServiceDetailComponent implements OnInit {
   reviews: Review[] = [];
   isLoading = true;
 
+  uploadsUrl = environment.uploadsUrl;
+
   constructor(
     private route: ActivatedRoute,
     private serviceService: ServiceProvider
@@ -22,55 +24,88 @@ export class ServiceDetailComponent implements OnInit {
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.loadProvider(id);
+      this.loadServiceFromAll(id);
     } else {
-      console.error('Service ID is missing in route.');
+      console.error('❌ Service ID is missing in route.');
       this.isLoading = false;
     }
   }
 
-  private loadProvider(serviceId: string): void {
-    this.serviceService.getServiceDetails(serviceId).subscribe({
-      next: (service) => {
-        // ✅ Ensure image URLs are consistent
-        if (service.imageUrl && !service.imageUrl.startsWith('http')) {
-          service.imageUrl = `${environment.uploadsUrl}/${service.imageUrl.replace(/^\/+/, '')}`;
-        }
+  /**
+   * ✅ Loads all services from the table and finds the one matching the ID
+   * This matches how FindServiceComponent retrieves data.
+   */
+  private loadServiceFromAll(serviceId: string): void {
+    this.serviceService.getAllProviders().subscribe({
+      next: (services) => {
+        const service = services.find(s => s.id === serviceId);
+        if (service) {
+          // ✅ Fix both image and logo URLs
+          service.logoUrl = this.resolveImageUrl(service.imageUrl);
+          service.logoUrl = this.resolveImageUrl(service.logoUrl);
 
-        if (service.logoUrl && !service.logoUrl.startsWith('http')) {
-          service.logoUrl = `${environment.uploadsUrl}/${service.logoUrl.replace(/^\/+/, '')}`;
-        }
-
-        this.provider = service;
-
-        // Load reviews only if businessId exists
-        if (service.businessId) {
-          this.loadReviews(service.businessId);
+          this.provider = service;
+          if (service.businessId) {
+            this.loadReviews(service.businessId);
+          } else {
+            this.isLoading = false;
+          }
         } else {
+          console.warn(`⚠️ Service with ID ${serviceId} not found.`);
           this.isLoading = false;
         }
       },
       error: (err) => {
-        console.error('Failed to load service:', err);
+        console.error('❌ Failed to load service list:', err);
         this.isLoading = false;
       }
     });
   }
 
+  /**
+   * ✅ Loads reviews for this provider's business
+   */
   private loadReviews(businessId: string): void {
     this.serviceService.getBusinessReviews(businessId).subscribe({
       next: (reviews) => {
-        this.reviews = reviews;
+        this.reviews = reviews || [];
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Failed to load reviews:', err);
+        console.error('❌ Failed to load reviews:', err);
         this.isLoading = false;
       }
     });
   }
 
+  /**
+   * ✅ Prevents double `/uploads` or missing domain
+   */
+  private resolveImageUrl(imagePath?: string | null): string | null {
+    if (!imagePath) return null;
+
+    // Absolute URL already valid
+    if (imagePath.startsWith('http')) return imagePath;
+
+    // Starts with /uploads → prepend uploadsUrl only once
+    if (imagePath.startsWith('/uploads')) {
+      return `${this.uploadsUrl.replace(/\/+$/, '')}${imagePath}`;
+    }
+
+    // Filename only → prepend /uploads/
+    return `${this.uploadsUrl.replace(/\/+$/, '')}/uploads/${imagePath.replace(/^\/+/, '')}`;
+  }
+
+  /**
+   * ✅ Gracefully hides broken images
+   */
+  hideImage(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img) img.style.display = 'none';
+  }
+
   openBookingDialog(serviceId: string): void {
-    console.log('Open booking dialog for service ID:', serviceId);
+    console.log('🗓️ Open booking dialog for service ID:', serviceId);
+    // TODO: integrate booking modal
   }
 }
