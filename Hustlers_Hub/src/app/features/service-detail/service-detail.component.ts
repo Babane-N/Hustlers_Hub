@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ServiceDetail, Review, ServiceProvider } from './service.detail';
+import { ServiceProvider, ServiceDetail, Review } from './service.detail';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -10,9 +10,8 @@ import { environment } from '../../../environments/environment';
 })
 export class ServiceDetailComponent implements OnInit {
   environment = environment;
-  provider: ServiceDetail & { hiddenImage?: boolean } | null = null; // include hiddenImage dynamically
+  provider: ServiceDetail | null = null;
   reviews: Review[] = [];
-  uploadsUrl = environment.uploadsUrl;
   isLoading = true;
 
   constructor(
@@ -33,27 +32,18 @@ export class ServiceDetailComponent implements OnInit {
   private loadProvider(serviceId: string): void {
     this.serviceService.getServiceDetails(serviceId).subscribe({
       next: (service) => {
-        if (service) {
-          // Fix image URLs
-          service.logoUrl = service.logoUrl
-            ? service.logoUrl.startsWith('/uploads')
-              ? `${this.uploadsUrl.replace(/\/+$/, '')}${service.logoUrl}`
-              : service.logoUrl.startsWith('http')
-                ? service.logoUrl
-                : `${this.uploadsUrl.replace(/\/+$/, '')}/${service.logoUrl.replace(/^\/+/, '')}`
-            : null;
+        // ✅ Ensure image URLs are consistent
+        if (service.imageUrl && !service.imageUrl.startsWith('http')) {
+          service.imageUrl = `${environment.uploadsUrl}/${service.imageUrl.replace(/^\/+/, '')}`;
+        }
 
-          service.logoUrl = service.imageUrl
-            ? service.imageUrl.startsWith('/uploads')
-              ? `${this.uploadsUrl.replace(/\/+$/, '')}${service.imageUrl}`
-              : service.imageUrl.startsWith('http')
-                ? service.imageUrl
-                : `${this.uploadsUrl.replace(/\/+$/, '')}/${service.imageUrl.replace(/^\/+/, '')}`
-            : null;
+        if (service.logoUrl && !service.logoUrl.startsWith('http')) {
+          service.logoUrl = `${environment.uploadsUrl}/${service.logoUrl.replace(/^\/+/, '')}`;
         }
 
         this.provider = service;
 
+        // Load reviews only if businessId exists
         if (service.businessId) {
           this.loadReviews(service.businessId);
         } else {
@@ -78,15 +68,6 @@ export class ServiceDetailComponent implements OnInit {
         this.isLoading = false;
       }
     });
-  }
-
-  hideImage(): void {
-    if (this.provider) this.provider.hiddenImage = true;
-  }
-
-  getServiceImage(): string | null {
-    if (!this.provider || !this.provider.imageUrl || this.provider.hiddenImage) return null;
-    return this.provider.imageUrl;
   }
 
   openBookingDialog(serviceId: string): void {
