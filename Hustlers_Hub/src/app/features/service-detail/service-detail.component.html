@@ -59,7 +59,7 @@
     <div *ngIf="reviews.length > 0; else noReviews">
       <div class="review-card" *ngFor="let review of reviews">
         <div class="review-header">
-          <strong>{{ review.reviewer }}</strong>
+          <strong>{{ review.customerName }}</strong>
           <span class="rating">
             <mat-icon *ngFor="let i of [].constructor(review.rating)">star</mat-icon>
           </span>
