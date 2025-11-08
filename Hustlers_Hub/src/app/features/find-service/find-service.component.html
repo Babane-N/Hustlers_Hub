@@ -1,4 +1,4 @@
-<<!-- Hero Heading Section -->
+<!-- Hero Heading Section -->
 <div class="hero-heading">
   <h2>Local Hustlers, Trusted Services</h2>
   <p class="slogan">Empowering small businesses near you, one connection at a time.</p>
@@ -47,27 +47,22 @@
        (click)="goFindServiceDetail(provider)"
        style="cursor: pointer;">
 
-    <!-- Logo -->
-    <img *ngIf="provider.imageUrl && !provider.hiddenImage"
-         [src]="provider.imageUrl"
-         alt="{{ provider.businessName }} Image"
-         class="service-img"
-         (error)="hideImage(provider)" />
+    <!-- Service Image -->
+    <div class="service-img-container" *ngIf="provider.imageUrl && !provider.hiddenImage">
+      <img [src]="getServiceImage(provider)"
+           alt="{{ provider.businessName }} Image"
+           class="service-img"
+           (error)="hideImage(provider)" />
+    </div>
 
     <!-- Service Info -->
-    <h3>{{ provider.businessName }}</h3>
-    <p class="service">{{ provider.category }}</p>
-    <p class="location">
-      <mat-icon>location_on</mat-icon> {{ provider.businessLocation }}
-    </p>
-    <p class="bio">{{ provider.description }}</p>
-
-    <!-- Only show service image if imageUrl exists and is not hidden -->
-    <div class="service-images" *ngIf="provider.imageUrl && !provider.hiddenImage">
-      <img *ngIf="getServiceImage(provider)"
-           [src]="getServiceImage(provider)"
-           alt="{{ provider.businessName }} Image"
-           (error)="hideImage(provider)" />
+    <div class="service-info">
+      <h3>{{ provider.businessName }}</h3>
+      <p class="service">{{ provider.category }}</p>
+      <p class="location">
+        <mat-icon>location_on</mat-icon> {{ provider.businessLocation }}
+      </p>
+      <p class="bio">{{ provider.description }}</p>
     </div>
 
   </div>
