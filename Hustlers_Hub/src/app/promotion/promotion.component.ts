@@ -42,9 +42,12 @@ export class PromotionComponent implements OnInit {
     this.promotionService.getPromotions().subscribe(data => {
       this.promotions = data.map(p => ({
         ...p,
-        // Ensure Images from API is mapped correctly
         images: Array.isArray(p.images)
-          ? p.images.map(url => url.startsWith('http') ? url : baseUrl + url)
+          ? p.images.map(fileName =>
+            fileName.startsWith('http')
+              ? fileName
+              : `${baseUrl}/api/promotions/${fileName}` // ✅ Correct backend path
+          )
           : [],
         expiresAt: p.expiresAt ? new Date(p.expiresAt) : new Date(),
         postedBy: p.postedBy || this.getUserFullName()
@@ -52,11 +55,6 @@ export class PromotionComponent implements OnInit {
 
       console.log('Promotions loaded:', this.promotions);
     });
-  }
-
-  setDefaultImage(event: Event): void {
-    const target = event.target as HTMLImageElement;
-    target.src = 'assets/default.png';
   }
 
   getUserId(): string {
@@ -187,3 +185,4 @@ export class PromotionComponent implements OnInit {
     this.selectedFiles = [];
   }
 }
+
