@@ -42,7 +42,7 @@ export class FindServiceComponent implements OnInit, AfterViewInit {
       next: (data) => {
         this.serviceProviders = data.map(p => ({
           ...p,
-          // Only prepend uploadsUrl if it does not already start with '/uploads'
+          // Fix double /uploads issue and handle relative vs absolute URLs
           imageUrl: p.imageUrl
             ? (p.imageUrl.startsWith('/uploads')
               ? `${this.uploadsUrl.replace(/\/+$/, '')}${p.imageUrl}`
@@ -117,7 +117,7 @@ export class FindServiceComponent implements OnInit, AfterViewInit {
     provider.hiddenImage = true;
   }
 
-  // Optional helper to get final image URL, returns null if broken
+  // Get final image URL or null if hidden
   getServiceImage(provider: ServiceProvider): string | null {
     if (!provider.imageUrl || provider.hiddenImage) return null;
     return provider.imageUrl;
