@@ -47,17 +47,29 @@
        (click)="goFindServiceDetail(provider)"
        style="cursor: pointer;">
 
-    <img *ngIf="getLogoUrl(provider)"
-         [src]="getLogoUrl(provider)"
-         alt="{{ provider.businessName }} Logo"
-         class="profile-pic" />
+    <!-- Logo -->
+    <img *ngIf="provider.imageUrl && !provider.hiddenImage"
+         [src]="provider.imageUrl"
+         alt="{{ provider.businessName }} Image"
+         class="service-img"
+         (error)="hideImage(provider)" />
 
+    <!-- Service Info -->
     <h3>{{ provider.businessName }}</h3>
     <p class="service">{{ provider.category }}</p>
     <p class="location">
       <mat-icon>location_on</mat-icon> {{ provider.businessLocation }}
     </p>
     <p class="bio">{{ provider.description }}</p>
+
+    <!-- Only show service image if imageUrl exists and is not hidden -->
+    <div class="service-images" *ngIf="provider.imageUrl && !provider.hiddenImage">
+      <img [src]="provider.imageUrl"
+           alt="{{ provider.businessName }} Image"
+           class="service-img"
+           (error)="hideImage(provider)" />
+    </div>
+
   </div>
 </div>
 

@@ -1,7 +1,21 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ServiceProviderService, ServiceProvider } from './ServiceProvider';
+import { ServiceProviderService } from './ServiceProvider';
 import { environment } from '../../../environments/environment';
+
+export interface ServiceProvider {
+  id: string;
+  title: string;
+  category: string;
+  description?: string;
+  businessName: string;
+  businessLocation?: string;
+  latitude?: number;
+  longitude?: number;
+  logoUrl?: string | null;
+  imageUrl?: string | null; // ✅ single image per service
+  hiddenImage?: boolean; // hide broken image
+}
 
 @Component({
   selector: 'app-find-service',
@@ -17,7 +31,7 @@ export class FindServiceComponent implements OnInit, AfterViewInit {
   center: google.maps.LatLngLiteral = { lat: -26.2041, lng: 28.0473 };
   zoom = 11;
 
-  uploadsUrl = environment.uploadsUrl; // for images
+  uploadsUrl = environment.uploadsUrl;
 
   @ViewChild('locationInput') locationInput!: ElementRef<HTMLInputElement>;
 
@@ -25,7 +39,12 @@ export class FindServiceComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.providerService.getProviders().subscribe({
-      next: (data) => this.serviceProviders = data,
+      next: (data) => {
+        this.serviceProviders = data.map(p => ({
+          ...p,
+          imageUrl: p.imageUrl ? (p.imageUrl.startsWith('http') ? p.imageUrl : `${this.uploadsUrl}/${p.imageUrl}`) : null
+        }));
+      },
       error: (err) => console.error('Error loading providers:', err)
     });
   }
@@ -66,7 +85,7 @@ export class FindServiceComponent implements OnInit, AfterViewInit {
       result = result.filter(p =>
         p.businessName.toLowerCase().includes(term) ||
         p.category.toLowerCase().includes(term) ||
-        p.businessLocation?.toLowerCase().includes(term)
+        (p.businessLocation?.toLowerCase().includes(term) ?? false)
       );
     }
     if (this.selectedService) result = result.filter(p => p.category === this.selectedService);
@@ -84,16 +103,8 @@ export class FindServiceComponent implements OnInit, AfterViewInit {
     if (provider?.id) this.router.navigate(['/service-detail', provider.id]);
   }
 
-  // ✅ New helper for image URLs with fallback
-  getLogoUrl(provider: ServiceProvider): string {
-    if (!provider.logoUrl) return 'assets/default.png';
-    return provider.logoUrl.startsWith('http')
-      ? provider.logoUrl
-      : `${this.uploadsUrl}/${provider.logoUrl}`;
-  }
-
-  // Optional: fallback for broken images
-  setDefaultImage(event: Event) {
-    (event.target as HTMLImageElement).src = 'assets/default.png';
+  // ✅ hide broken service images
+  hideImage(provider: ServiceProvider) {
+    provider.hiddenImage = true;
   }
 }
