@@ -36,38 +36,43 @@ export class PromotionComponent implements OnInit {
     this.loadPromotions();
   }
 
-  /** ✅ Load promotions and normalize image URLs */
+  // ✅ Fetch promotions and map image URLs
   loadPromotions(): void {
-    const baseUrl = environment.apiUrl;
+    const baseUrl = environment.apiUrl.replace(/\/api$/, ''); // remove /api if present
 
     this.promotionService.getPromotions().subscribe({
-      next: (data) => {
+      next: data => {
         this.promotions = data.map(p => ({
           ...p,
           images: Array.isArray(p.images)
-            ? p.images.map(img =>
-              img.startsWith('http')
-                ? img
-                : `${baseUrl}/promotions/${img}`
-            )
+            ? p.images.map(img => img.startsWith('http') ? img : `${baseUrl}${img}`)
             : [],
           expiresAt: p.expiresAt ? new Date(p.expiresAt) : new Date(),
           postedBy: p.postedBy || this.getUserFullName()
         }));
+
         console.log('✅ Promotions loaded:', this.promotions);
       },
-      error: (err) => console.error('❌ Error loading promotions:', err)
+      error: err => {
+        console.error('❌ Error loading promotions:', err);
+      }
     });
   }
 
-  /** ✅ Returns main image or null (no fallback/default image) */
+  // ✅ Generate proper image URL or none
   getPromotionImageUrl(promo: Promotion & { images: string[] }): string | null {
-    if (!promo.images || promo.images.length === 0) return null;
-    return promo.images[0];
+    if (promo.images && promo.images.length > 0) {
+      const img = promo.images[0];
+      if (img.startsWith('http')) return img;
+
+      const baseUrl = environment.apiUrl.replace(/\/api$/, '');
+      return `${baseUrl}${img}`;
+    }
+    return null; // no image displayed
   }
 
-  /** ✅ Get logged-in user ID from localStorage */
-  private getUserId(): string {
+  // ✅ User info helpers
+  getUserId(): string {
     const userJson = localStorage.getItem('user');
     if (!userJson) return '';
     try {
@@ -78,8 +83,7 @@ export class PromotionComponent implements OnInit {
     }
   }
 
-  /** ✅ Get full name of logged-in user */
-  private getUserFullName(): string {
+  getUserFullName(): string {
     const userJson = localStorage.getItem('user');
     if (!userJson) return 'Anonymous';
     try {
@@ -90,7 +94,7 @@ export class PromotionComponent implements OnInit {
     }
   }
 
-  /** ✅ Submit a new promotion */
+  // ✅ Submit a new promotion
   submitPromotion(): void {
     if (
       this.formData.title?.trim() &&
@@ -118,7 +122,6 @@ export class PromotionComponent implements OnInit {
 
       this.promotionService.postPromotion(formDataToSend).subscribe({
         next: () => {
-          alert('✅ Promotion posted successfully!');
           this.loadPromotions();
           this.resetForm();
           this.showCreateForm = false;
@@ -133,7 +136,7 @@ export class PromotionComponent implements OnInit {
     }
   }
 
-  /** ✅ Handle image file selection */
+  // ✅ File selection
   onFilesSelected(event: Event): void {
     const target = event.target as HTMLInputElement;
     if (target.files) {
@@ -141,29 +144,22 @@ export class PromotionComponent implements OnInit {
     }
   }
 
-  /** ✅ Open the creation modal */
+  // ✅ Modal controls
   openCreatePromoModal(): void {
     this.showCreateForm = true;
   }
 
-  /** ✅ Close modal and reset form */
   cancelCreate(): void {
     this.showCreateForm = false;
     this.resetForm();
   }
 
-  /** ✅ Navigate to Ad Creator page */
-  goToAdCreator(): void {
-    this.router.navigate(['/adcreator']);
-  }
-
-  /** ✅ Unique categories for filtering dropdown */
+  // ✅ Filters
   get uniqueCategories(): string[] {
     const categories = this.promotions.map(p => p.category);
     return Array.from(new Set(categories));
   }
 
-  /** ✅ Filter + sort promotions dynamically */
   get filteredPromotions(): (Promotion & { images: string[] })[] {
     let filtered = [...this.promotions];
 
@@ -193,12 +189,11 @@ export class PromotionComponent implements OnInit {
     return filtered;
   }
 
-  /** ✅ Navigate to Create Promotion page (for button click) */
-  goToCreatePromotion(): void {
-    this.router.navigate(['/dashboard/create-promotion']);
+  goToAdCreator(): void {
+    this.router.navigate(['/adcreator']);
   }
 
-  /** ✅ Reset form */
+  // ✅ Reset form
   private resetForm(): void {
     this.formData = {
       title: '',
