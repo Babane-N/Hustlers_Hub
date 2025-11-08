@@ -2,11 +2,13 @@
   <!-- Header / Hero Section -->
   <div class="service-hero">
     <div class="hero-left">
-      <img *ngIf="provider.logoUrl"
+      <img *ngIf="provider.imageUrl"
            class="provider-logo"
-           [src]="provider.logoUrl.startsWith('/uploads') ? environment.uploadsUrl + provider.logoUrl : provider.logoUrl"
+           [src]="provider.imageUrl.startsWith('/uploads')
+                    ? environment.uploadsUrl + provider.imageUrl
+                    : provider.imageUrl"
            [alt]="provider.businessName + ' Logo'"
-           (error)="provider.logoUrl = 'assets/default.png'" />
+           (error)="provider.imageUrl = 'assets/default.png'" />
     </div>
 
     <div class="hero-info">
@@ -46,7 +48,9 @@
 
     <!-- Gallery -->
     <div class="gallery" *ngIf="provider.imageUrl">
-      <img [src]="provider.imageUrl.startsWith('/uploads') ? environment.uploadsUrl + provider.imageUrl : provider.imageUrl"
+      <img [src]="provider.imageUrl.startsWith('/uploads')
+                   ? environment.uploadsUrl + provider.imageUrl
+                   : provider.imageUrl"
            alt="Service image"
            (error)="provider.imageUrl = 'assets/default.png'" />
     </div>
@@ -80,3 +84,4 @@
     <p>Loading service details...</p>
   </div>
 </ng-template>
+
