@@ -1,21 +1,21 @@
 <div class="service-detail-container" *ngIf="provider && !isLoading; else loading">
-  <!-- HEADER SECTION -->
+  <!-- Header / Hero Section -->
   <div class="service-hero">
+    <!-- Removed hero-left logo section -->
+
     <div class="hero-info">
-      <h1 class="business-name">
+      <h1>
         {{ provider.businessName }}
         <span *ngIf="provider.isVerified" class="verified-badge">
-          <mat-icon class="verified-icon">verified</mat-icon>
-          Verified
+          <mat-icon>verified</mat-icon> Verified
         </span>
       </h1>
       <p class="category">{{ provider.category }}</p>
     </div>
   </div>
 
-  <!-- MAIN CONTENT -->
+  <!-- Service Description -->
   <div class="service-body">
-    <!-- SERVICE DETAILS -->
     <div class="service-info-card">
       <h2>{{ provider.title }}</h2>
       <p class="description">{{ provider.description }}</p>
@@ -28,24 +28,21 @@
       </div>
 
       <button class="book-btn" (click)="openBookingDialog(provider.id)">
-        <mat-icon>calendar_today</mat-icon>
-        Book Now
+        <mat-icon>calendar_today</mat-icon> Book Now
       </button>
     </div>
 
-    <!-- GALLERY SECTION -->
+    <!-- Gallery (supports multiple images) -->
     <div class="gallery" *ngIf="provider.imageUrl && provider.imageUrl.length > 0">
       <div class="gallery-grid">
-        <img *ngFor="let image of provider.imageUrl"
-             [src]="image.startsWith('/uploads')
-            ? environment.uploadsUrl + image
-            : image"
+        <img *ngFor="let img of provider.imageUrl"
+             [src]="img.startsWith('/uploads') ? environment.uploadsUrl + img : img"
              alt="Service image"/>
       </div>
     </div>
   </div>
 
-  <!-- REVIEWS SECTION -->
+  <!-- Reviews Section -->
   <div class="reviews-section">
     <h3>Customer Reviews</h3>
 
@@ -67,7 +64,6 @@
   </div>
 </div>
 
-<!-- LOADING STATE -->
 <ng-template #loading>
   <div class="loading-container">
     <mat-spinner></mat-spinner>
