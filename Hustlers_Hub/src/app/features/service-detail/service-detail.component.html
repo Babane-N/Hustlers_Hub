@@ -5,7 +5,7 @@
       <img *ngIf="provider.logoUrl"
            class="provider-logo"
            [src]="provider.logoUrl.startsWith('/uploads') ? environment.uploadsUrl + provider.logoUrl : provider.logoUrl"
-           [alt]="provider.businessName + ' Logo'"/>
+           [alt]="provider.businessName + ' Logo'" />
     </div>
 
     <div class="hero-info">
@@ -38,7 +38,7 @@
     </div>
 
     <!-- Gallery supporting multiple images -->
-    <div class="gallery" *ngIf="provider.imageUrl && provider.imageUrl.length">
+    <div class="gallery" *ngIf="provider.imageUrl?.length">
       <div class="gallery-grid">
         <img *ngFor="let img of provider.imageUrl"
              [src]="img.startsWith('/uploads') ? environment.uploadsUrl + img : img"
