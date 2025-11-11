@@ -1,40 +1,26 @@
 <div class="service-detail-container" *ngIf="provider && !isLoading; else loading">
-  <!-- Header / Hero Section -->
+  <!-- HEADER SECTION -->
   <div class="service-hero">
-    <div class="hero-left">
-      <img *ngIf="provider.imageUrl"
-           class="provider-logo"
-           [src]="provider.imageUrl.startsWith('/uploads')
-                    ? environment.uploadsUrl + provider.imageUrl
-                    : provider.imageUrl"
-           [alt]="provider.businessName + ' Logo'"
-           (error)="provider.imageUrl = 'assets/default.png'" />
-    </div>
-
     <div class="hero-info">
-      <h1>{{ provider.businessName }}</h1>
-      <span *ngIf="provider.isVerified" class="verified-badge">
-        <mat-icon>verified</mat-icon> Verified
-      </span>
+      <h1 class="business-name">
+        {{ provider.businessName }}
+        <span *ngIf="provider.isVerified" class="verified-badge">
+          <mat-icon class="verified-icon">verified</mat-icon>
+          Verified
+        </span>
+      </h1>
       <p class="category">{{ provider.category }}</p>
     </div>
   </div>
 
-  <!-- Service Description -->
+  <!-- MAIN CONTENT -->
   <div class="service-body">
+    <!-- SERVICE DETAILS -->
     <div class="service-info-card">
       <h2>{{ provider.title }}</h2>
       <p class="description">{{ provider.description }}</p>
 
       <div class="service-meta">
-        <p>
-          <mat-icon>schedule</mat-icon>
-          Duration: {{ provider.durationMinutes }} mins
-        </p>
-        <p>
-          <mat-icon>attach_money</mat-icon>
-          Price: {{ provider.price | currency:'ZAR' }}
-        </p>
         <p *ngIf="provider.businessLocation">
           <mat-icon>location_on</mat-icon>
           {{ provider.businessLocation }}
@@ -42,21 +28,24 @@
       </div>
 
       <button class="book-btn" (click)="openBookingDialog(provider.id)">
-        <mat-icon>calendar_today</mat-icon> Book Now
+        <mat-icon>calendar_today</mat-icon>
+        Book Now
       </button>
     </div>
 
-    <!-- Gallery -->
-    <div class="gallery" *ngIf="provider.imageUrl">
-      <img [src]="provider.imageUrl.startsWith('/uploads')
-                   ? environment.uploadsUrl + provider.imageUrl
-                   : provider.imageUrl"
-           alt="Service image"
-           (error)="provider.imageUrl = 'assets/default.png'" />
+    <!-- GALLERY SECTION -->
+    <div class="gallery" *ngIf="provider.imageUrl && provider.imageUrl.length > 0">
+      <div class="gallery-grid">
+        <img *ngFor="let image of provider.imageUrl"
+             [src]="image.startsWith('/uploads')
+            ? environment.uploadsUrl + image
+            : image"
+             alt="Service image"/>
+      </div>
     </div>
   </div>
 
-  <!-- Reviews Section -->
+  <!-- REVIEWS SECTION -->
   <div class="reviews-section">
     <h3>Customer Reviews</h3>
 
@@ -78,10 +67,10 @@
   </div>
 </div>
 
+<!-- LOADING STATE -->
 <ng-template #loading>
   <div class="loading-container">
     <mat-spinner></mat-spinner>
     <p>Loading service details...</p>
   </div>
 </ng-template>
-

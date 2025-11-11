@@ -1,4 +1,4 @@
-<!-- Hero Heading Section -->
+<!-- Hero Section -->
 <div class="hero-heading">
   <h2>Local Hustlers, Trusted Services</h2>
   <p class="slogan">Empowering small businesses near you, one connection at a time.</p>
@@ -58,13 +58,19 @@
     <!-- Service Info -->
     <div class="service-info">
       <h3>{{ provider.businessName }}</h3>
+
+      <!-- ✅ Verified text below business name -->
+      <p *ngIf="provider.isVerified" class="verified-text">
+        <mat-icon class="verified-icon">check_circle</mat-icon>
+        Verified
+      </p>
+
       <p class="service">{{ provider.category }}</p>
       <p class="location">
         <mat-icon>location_on</mat-icon> {{ provider.businessLocation }}
       </p>
       <p class="bio">{{ provider.description }}</p>
     </div>
-
   </div>
 </div>
 
@@ -80,3 +86,4 @@
     </map-marker>
   </google-map>
 </div>
+

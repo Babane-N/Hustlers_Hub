@@ -13,8 +13,9 @@ export interface ServiceProvider {
   latitude?: number;
   longitude?: number;
   logoUrl?: string | null;
-  imageUrl?: string | null; // single image per service
-  hiddenImage?: boolean; // hide broken image
+  imageUrl?: string | null;
+  hiddenImage?: boolean;
+  isVerified?: boolean; // ✅ Added field
 }
 
 @Component({
@@ -42,7 +43,6 @@ export class FindServiceComponent implements OnInit, AfterViewInit {
       next: (data) => {
         this.serviceProviders = data.map(p => ({
           ...p,
-          // Fix duplicate /uploads by removing leading /uploads from imageUrl if present
           imageUrl: p.imageUrl
             ? p.imageUrl.startsWith('http')
               ? p.imageUrl
@@ -50,7 +50,8 @@ export class FindServiceComponent implements OnInit, AfterViewInit {
                 ? `${this.uploadsUrl.replace(/\/+$/, '')}/${p.imageUrl.replace(/^\/uploads\/?/, '')}`
                 : `${this.uploadsUrl.replace(/\/+$/, '')}/${p.imageUrl.replace(/^\/+/, '')}`
             : null,
-          hiddenImage: false
+          hiddenImage: false,
+          isVerified: p.isVerified ?? false // ✅ Default to false if missing
         }));
       },
       error: (err) => console.error('Error loading providers:', err)
@@ -111,14 +112,13 @@ export class FindServiceComponent implements OnInit, AfterViewInit {
     if (provider?.id) this.router.navigate(['/service-detail', provider.id]);
   }
 
-  // Hide broken service images
   hideImage(provider: ServiceProvider) {
     provider.hiddenImage = true;
   }
 
-  // Optional helper to get final image URL, returns null if hidden
   getServiceImage(provider: ServiceProvider): string | null {
     if (!provider.imageUrl || provider.hiddenImage) return null;
     return provider.imageUrl;
   }
 }
+
