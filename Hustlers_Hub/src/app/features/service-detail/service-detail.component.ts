@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { ServiceProvider } from '../find-service/ServiceProvider';
 import { ServiceProviderService } from '../find-service/ServiceProvider';
 import { environment } from '../../../environments/environment';
+import { BookingDialogComponent } from '../booking-dialog/booking-dialog.component'; // ✅ import your dialog component
 
 export interface Review {
   id: string;
@@ -27,7 +29,8 @@ export class ServiceDetailComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private providerService: ServiceProviderService
+    private providerService: ServiceProviderService,
+    private dialog: MatDialog // ✅ inject MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -59,7 +62,6 @@ export class ServiceDetailComponent implements OnInit {
         this.provider = service;
         this.isLoading = false;
 
-        // Load reviews only if businessId is present
         if (service?.businessId) {
           this.loadReviews(service.businessId);
         }
@@ -78,18 +80,32 @@ export class ServiceDetailComponent implements OnInit {
     });
   }
 
-  // Hide broken images
   hideImage(provider: ServiceProvider) {
     provider.hiddenImage = true;
   }
 
-  // Return visible image URL or null
   getServiceImage(provider: ServiceProvider): string | null {
     if (!provider.imageUrl || provider.hiddenImage) return null;
     return provider.imageUrl;
   }
 
+  // ✅ OPEN BOOKING DIALOG
   openBookingDialog(serviceId: string): void {
-    console.log('Open booking dialog for service ID:', serviceId);
+    if (!serviceId) {
+      console.error('Missing service ID for booking.');
+      return;
+    }
+
+    const dialogRef = this.dialog.open(BookingDialogComponent, {
+      width: '480px',
+      data: { serviceId }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Booking completed successfully');
+      }
+    });
   }
 }
+
