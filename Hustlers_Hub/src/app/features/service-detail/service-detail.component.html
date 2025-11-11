@@ -1,7 +1,12 @@
 <div class="service-detail-container" *ngIf="provider && !isLoading; else loading">
   <!-- Header / Hero Section -->
   <div class="service-hero">
-    <!-- Removed hero-left logo section -->
+    <div class="hero-left">
+      <img *ngIf="provider.logoUrl"
+           class="provider-logo"
+           [src]="provider.logoUrl.startsWith('/uploads') ? environment.uploadsUrl + provider.logoUrl : provider.logoUrl"
+           [alt]="provider.businessName + ' Logo'"/>
+    </div>
 
     <div class="hero-info">
       <h1>
@@ -32,12 +37,12 @@
       </button>
     </div>
 
-    <!-- Gallery (supports multiple images) -->
-    <div class="gallery" *ngIf="provider.imageUrl && provider.imageUrl.length > 0">
+    <!-- Gallery supporting multiple images -->
+    <div class="gallery" *ngIf="provider.imageUrl && provider.imageUrl.length">
       <div class="gallery-grid">
         <img *ngFor="let img of provider.imageUrl"
              [src]="img.startsWith('/uploads') ? environment.uploadsUrl + img : img"
-             alt="Service image"/>
+             alt="Service image" />
       </div>
     </div>
   </div>
