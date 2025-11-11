@@ -1,10 +1,9 @@
 <div class="service-detail-container" *ngIf="provider && !isLoading; else loading">
   <!-- Header / Hero Section -->
   <div class="service-hero">
-    <div class="hero-left">
-      <img *ngIf="provider.logoUrl"
-           class="provider-logo"
-           [src]="provider.logoUrl.startsWith('/uploads') ? environment.uploadsUrl + provider.logoUrl : provider.logoUrl"
+    <div class="hero-left" *ngIf="provider.logoUrl">
+      <img class="provider-logo"
+           [src]="provider.logoUrl"
            [alt]="provider.businessName + ' Logo'" />
     </div>
 
@@ -25,11 +24,8 @@
       <h2>{{ provider.title }}</h2>
       <p class="description">{{ provider.description }}</p>
 
-      <div class="service-meta">
-        <p *ngIf="provider.businessLocation">
-          <mat-icon>location_on</mat-icon>
-          {{ provider.businessLocation }}
-        </p>
+      <div class="service-meta" *ngIf="provider.businessLocation">
+        <p><mat-icon>location_on</mat-icon> {{ provider.businessLocation }}</p>
       </div>
 
       <button class="book-btn" (click)="openBookingDialog(provider.id)">
@@ -37,11 +33,11 @@
       </button>
     </div>
 
-    <!-- Gallery supporting multiple images -->
+    <!-- Gallery -->
     <div class="gallery" *ngIf="provider.imageUrl?.length">
       <div class="gallery-grid">
         <img *ngFor="let img of provider.imageUrl"
-             [src]="img.startsWith('/uploads') ? environment.uploadsUrl + img : img"
+             [src]="img"
              alt="Service image" />
       </div>
     </div>
@@ -56,7 +52,7 @@
         <div class="review-header">
           <strong>{{ review.customerName }}</strong>
           <span class="rating">
-            <mat-icon *ngFor="let i of [].constructor(review.rating)">star</mat-icon>
+            <mat-icon *ngFor="let star of [].constructor(review.rating)">star</mat-icon>
           </span>
         </div>
         <p class="comment">{{ review.comment }}</p>
@@ -75,3 +71,4 @@
     <p>Loading service details...</p>
   </div>
 </ng-template>
+
