@@ -17,6 +17,9 @@ import { BusinessSwitcherComponent } from './features/business-switcher/business
 import { HomePageComponent } from './Customer/home-page/home-page.component';
 import { BookingDialogComponent } from './features/booking-dialog/booking-dialog.component';
 import { MyBookingsComponent } from './Customer/my-bookings/my-bookings.component';
+import { AdminComponent } from './Admin/admin/admin.component';
+import { AdminBusinessComponent } from './Admin/admin-business/admin-business.component';
+import { PendingBusinessesComponent } from './Admin/pending-businesses/pending-businesses.component';
 
 const routes: Routes = [
   { path: '', component: HomePageComponent },
@@ -30,6 +33,8 @@ const routes: Routes = [
   { path: 'bookings', component: BookingsComponent },
   { path: 'my-bookings', component: MyBookingsComponent },
   { path: 'profile', component: ProfileComponent },
+  { path: 'admin', component: AdminComponent },
+
   {
     path: 'dashboard',
     component: DashboardComponent,
@@ -59,6 +64,18 @@ const routes: Routes = [
     component: BookingDialogComponent,
     canActivate: [RoleGuard],
     data: {roles: ['Customer', 'Business', 'Admin']}
+  },
+  {
+    path: 'admin',
+    component: AdminComponent,
+    canActivate: [RoleGuard],
+    data: {roles: ['Admin']}
+  },
+  {
+    path: 'pending-businesses',
+    component: PendingBusinessesComponent,
+    canActivate: [RoleGuard],
+    data: {roles: ['Admin']}
   },
 ];
 

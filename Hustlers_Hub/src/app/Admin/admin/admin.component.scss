@@ -1,0 +1,97 @@
+.admin-dashboard {
+  padding: 20px;
+}
+
+.title {
+  font-size: 26px;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+.action-grid {
+  margin-top: 30px;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* --------------------------------------------- */
+/* 🟦 Transparent Glass Card With Border */
+/* --------------------------------------------- */
+.glass {
+  background: rgba(255, 255, 255, 0.02); /* more transparent */
+  backdrop-filter: blur(14px);
+  border-radius: 14px;
+  padding: 22px;
+  border: 1.5px solid rgba(255, 255, 255, 0.18); /* subtle border */
+
+  transition: all 0.35s ease;
+  cursor: pointer;
+  /* smooth shadow */
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0.0);
+}
+
+/* Hover Motion */
+.glass:hover {
+  transform: translateY(-6px);
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.25);
+}
+
+
+/* --------------------------------------------- */
+/* Text Styling */
+/* --------------------------------------------- */
+.card h4,
+.action-card h3 {
+  margin: 12px 0 6px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.card p,
+.action-card p {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+
+/* --------------------------------------------- */
+/* Icons */
+/* --------------------------------------------- */
+.icon {
+  font-size: 34px;
+  margin-bottom: 12px;
+  opacity: 0.85;
+}
+
+/* Example icons using built-in emojis or custom fonts */
+.icon.users::before {
+  content: "👥";
+}
+
+.icon.pending::before {
+  content: "⏳";
+}
+
+.icon.businesses::before {
+  content: "🏢";
+}
+
+.icon.approved::before {
+  content: "✔️";
+}
+
+.icon.verified::before {
+  content: "🔐";
+}
+
+.icon.unverified::before {
+  content: "❓";
+}

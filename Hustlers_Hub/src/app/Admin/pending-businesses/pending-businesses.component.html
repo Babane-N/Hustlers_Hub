@@ -1,0 +1,31 @@
+<div class="approval-container">
+
+  <h2>Pending Business Approvals</h2>
+
+  <div *ngIf="loading" class="loading">Loading pending businesses...</div>
+  <div *ngIf="errorMsg" class="error">{{ errorMsg }}</div>
+
+  <div *ngIf="!loading && pendingBusinesses.length === 0" class="empty">
+    No pending business approvals.
+  </div>
+
+  <div class="list">
+    <div class="business-card" *ngFor="let item of pendingBusinesses">
+
+      <img [src]="item.logoUrl || 'assets/default-logo.png'" class="logo" />
+
+      <div class="details">
+        <h3>{{ item.businessName }}</h3>
+        <p>{{ item.description }}</p>
+        <small>Owner: {{ item.ownerName }}</small>
+      </div>
+
+      <div class="actions">
+        <button class="approve" (click)="approve(item.id)">Approve</button>
+        <button class="reject" (click)="reject(item.id)">Reject</button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

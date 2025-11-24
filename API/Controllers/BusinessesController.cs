@@ -25,7 +25,89 @@ namespace API.Controllers
             _env = env;
         }
 
-        // ✅ GET all businesses for a specific user
+        // ***************************************************************
+        // 🔵 NEW: GET pending businesses requiring admin approval
+        // ***************************************************************
+        [HttpGet("Pending")]
+        public async Task<ActionResult<IEnumerable<object>>> GetPending()
+        {
+            var pending = await _context.Businesses
+                .Where(b => !b.IsApproved)
+                .Select(b => new
+                {
+                    b.Id,
+                    b.BusinessName,
+                    b.Category,
+                    b.Description,
+                    b.Location,
+                    b.CreatedAt,
+                    b.UserId,
+                    b.IsApproved,
+                    LogoUrl = string.IsNullOrEmpty(b.LogoUrl) ? null : b.LogoUrl
+                })
+                .ToListAsync();
+
+            return Ok(pending);
+        }
+
+
+        // ***************************************************************
+        // 🔵 NEW: ADMIN APPROVE → INSERT INTO SERVICES
+        // ***************************************************************
+        [HttpPost("Approve/{id}")]
+        public async Task<IActionResult> ApproveBusiness(Guid id)
+        {
+            var business = await _context.Businesses.FindAsync(id);
+
+            if (business == null)
+                return NotFound(new { message = "Business not found." });
+
+            if (business.IsApproved)
+                return BadRequest(new { message = "Business already approved." });
+
+            business.IsApproved = true;
+
+            // Create service entry
+            var service = new Service
+            {
+                Id = Guid.NewGuid(),
+                BusinessId = business.Id,
+                Title = $"{business.BusinessName} Service",
+                Description = business.Description,
+                Category = business.Category,
+                Price = 0,
+                ImageUrl = business.LogoUrl,
+                DurationMinutes = 60
+            };
+
+            _context.Services.Add(service);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Business approved and added to services." });
+        }
+
+
+        // ***************************************************************
+        // 🔵 NEW: ADMIN REJECT → DELETE BUSINESS
+        // ***************************************************************
+        [HttpDelete("Reject/{id}")]
+        public async Task<IActionResult> RejectBusiness(Guid id)
+        {
+            var business = await _context.Businesses.FindAsync(id);
+
+            if (business == null)
+                return NotFound(new { message = "Business not found." });
+
+            _context.Businesses.Remove(business);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Business rejected and deleted." });
+        }
+
+
+        // *****************************************************************
+        // GET businesses for user
+        // *****************************************************************
         [HttpGet("Users/{userId}")]
         public async Task<ActionResult<IEnumerable<object>>> GetBusinesses(Guid userId)
         {
@@ -42,7 +124,7 @@ namespace API.Controllers
                     b.Description,
                     b.UserId,
                     b.CreatedAt,
-                    b.IsVerified,
+                    b.IsApproved,
                     LogoUrl = string.IsNullOrEmpty(b.LogoUrl) ? null : b.LogoUrl
                 })
                 .ToListAsync();
@@ -50,7 +132,10 @@ namespace API.Controllers
             return Ok(businesses);
         }
 
-        // ✅ GET single business by ID
+
+        // *****************************************************************
+        // GET Single business
+        // *****************************************************************
         [HttpGet("{id}")]
         public async Task<ActionResult<object>> GetBusiness(Guid id)
         {
@@ -67,7 +152,7 @@ namespace API.Controllers
                     b.Description,
                     b.UserId,
                     b.CreatedAt,
-                    b.IsVerified,
+                    b.IsApproved,
                     LogoUrl = string.IsNullOrEmpty(b.LogoUrl) ? null : b.LogoUrl
                 })
                 .FirstOrDefaultAsync();
@@ -78,7 +163,10 @@ namespace API.Controllers
             return Ok(business);
         }
 
-        // ✅ UPDATE business
+
+        // *****************************************************************
+        // UPDATE
+        // *****************************************************************
         [HttpPut("{id}")]
         public async Task<IActionResult> PutBusiness(Guid id, Business business)
         {
@@ -101,7 +189,36 @@ namespace API.Controllers
             return NoContent();
         }
 
-        // ✅ CREATE new business (auto-insert service + update user role)
+        // *****************************************************************
+        // 🔵 ADMIN DASHBOARD — Counts Overview
+        // *****************************************************************
+        [HttpGet("Dashboard")]
+        public async Task<IActionResult> GetDashboardStats()
+        {
+            var totalUsers = await _context.Users.CountAsync();
+
+            var totalBusinesses = await _context.Businesses.CountAsync();
+            var pending = await _context.Businesses.CountAsync(b => !b.IsApproved);
+            var approved = await _context.Businesses.CountAsync(b => b.IsApproved);
+
+            var verified = await _context.Businesses.CountAsync(b => b.IsVerified);
+            var unverified = await _context.Businesses.CountAsync(b => !b.IsVerified);
+
+            return Ok(new
+            {
+                totalUsers,
+                totalBusinesses,
+                pending,
+                approved,
+                verified,
+                unverified
+            });
+        }
+
+
+        // *****************************************************************
+        // CREATE business (NO LONGER auto-creates service)
+        // *****************************************************************
         [HttpPost]
         public async Task<ActionResult<Business>> PostBusiness([FromForm] BusinessCreateDto dto)
         {
@@ -109,7 +226,6 @@ namespace API.Controllers
             if (user == null)
                 return NotFound(new { message = "User not found." });
 
-            // Prepare new business
             var business = new Business
             {
                 Id = Guid.NewGuid(),
@@ -121,10 +237,10 @@ namespace API.Controllers
                 Description = dto.Description,
                 UserId = dto.UserId,
                 CreatedAt = DateTime.UtcNow,
-                IsVerified = false
+                IsApproved = false // WAITING FOR ADMIN
             };
 
-            // ✅ Handle optional logo upload
+            // LOGO UPLOAD
             if (dto.Logo != null && dto.Logo.Length > 0)
             {
                 var uploadsFolder = Path.Combine(_env.WebRootPath ?? "wwwroot", "uploads");
@@ -141,54 +257,28 @@ namespace API.Controllers
                 business.LogoUrl = $"/uploads/{fileName}";
             }
 
-            // ✅ Wrap in transaction to keep data consistent
-            using var transaction = await _context.Database.BeginTransactionAsync();
-            try
+            _context.Businesses.Add(business);
+
+            // Update user role
+            if (user.UserType == UserType.Customer)
             {
-                // Add business
-                _context.Businesses.Add(business);
-                await _context.SaveChangesAsync();
-
-                // ✅ Automatically create default service for new business
-                var service = new Service
-                {
-                    Id = Guid.NewGuid(),
-                    BusinessId = business.Id,
-                    Title = $"{business.BusinessName} Service",
-                    Description = $"Default service for {business.BusinessName}",
-                    Category = business.Category,
-                    Price = 0,
-                    ImageUrl = business.LogoUrl,
-                    DurationMinutes = 60,
-                };
-
-                _context.Services.Add(service);
-
-                // ✅ Update user role (Customer → Business)
-                if (user.UserType is UserType.Customer)
-                {
-                    user.UserType = UserType.Business;
-                    _context.Users.Update(user);
-                }
-
-                await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
-
-                return Ok(new
-                {
-                    message = "Business created successfully, service added and user role updated.",
-                    businessId = business.Id,
-                    defaultServiceId = service.Id
-                });
+                user.UserType = UserType.Business;
+                _context.Users.Update(user);
             }
-            catch (Exception ex)
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
             {
-                await transaction.RollbackAsync();
-                return StatusCode(500, new { message = $"Error creating business: {ex.Message}" });
-            }
+                message = "Business submitted for approval.",
+                businessId = business.Id
+            });
         }
 
-        // ✅ DELETE business
+
+        // *****************************************************************
+        // DELETE
+        // *****************************************************************
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBusiness(Guid id)
         {
@@ -202,13 +292,14 @@ namespace API.Controllers
             return NoContent();
         }
 
+
         private bool BusinessExists(Guid id)
         {
             return _context.Businesses.Any(e => e.Id == id);
         }
     }
 
-    // ✅ DTO for business creation
+    // DTO
     public class BusinessCreateDto
     {
         public string BusinessName { get; set; } = string.Empty;

@@ -1,0 +1,70 @@
+.approval-container {
+  padding: 20px;
+}
+
+.loading, .error, .empty {
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.business-card {
+  display: flex;
+  gap: 15px;
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.3);
+  align-items: center;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.business-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.logo {
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.details {
+  flex: 1;
+}
+
+.actions button {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.approve {
+  background: #16a34a;
+  color: white;
+}
+
+.approve:hover {
+  background: #15803d;
+}
+
+.reject {
+  background: #dc2626;
+  color: white;
+}
+
+.reject:hover {
+  background: #b91c1c;
+}
