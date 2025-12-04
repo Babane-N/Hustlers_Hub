@@ -237,7 +237,14 @@ namespace API.Controllers
                 Description = dto.Description,
                 UserId = dto.UserId,
                 CreatedAt = DateTime.UtcNow,
-                IsApproved = false // WAITING FOR ADMIN
+                IsApproved = false,
+
+                // ---------------------------
+                // NEW FIELDS
+                // ---------------------------
+                BusinessType = dto.BusinessType,             // "verified" or "unverified"
+                RegistrationNumber = dto.RegistrationNumber, // CIPC number
+                IsVerified = dto.BusinessType == "verified"  // boolean flag
             };
 
             // LOGO UPLOAD
@@ -259,7 +266,7 @@ namespace API.Controllers
 
             _context.Businesses.Add(business);
 
-            // Update user role
+            // Promote user to Business role
             if (user.UserType == UserType.Customer)
             {
                 user.UserType = UserType.Business;
@@ -271,9 +278,12 @@ namespace API.Controllers
             return Ok(new
             {
                 message = "Business submitted for approval.",
-                businessId = business.Id
+                businessId = business.Id,
+                businessType = business.BusinessType,
+                isVerified = business.IsVerified
             });
         }
+
 
 
         // *****************************************************************
@@ -310,5 +320,7 @@ namespace API.Controllers
         public IFormFile? Logo { get; set; }
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
+        public string BusinessType { get; set; } = string.Empty; // verified / unverified
+        public string? RegistrationNumber { get; set; }
     }
 }

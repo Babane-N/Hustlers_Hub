@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./register-business.component.scss']
 })
 export class RegisterBusinessComponent implements AfterViewInit {
+
   @ViewChild('addressInput') addressInput!: ElementRef<HTMLInputElement>;
 
   businessForm: FormGroup;
@@ -17,7 +18,9 @@ export class RegisterBusinessComponent implements AfterViewInit {
   logoPreview: string | null = null;
   selectedLogoFile: File | null = null;
 
-  center: google.maps.LatLngLiteral = { lat: -26.2041, lng: 28.0473 }; // Johannesburg default
+  isVerified = false; // Toggles CIPC field
+
+  center: google.maps.LatLngLiteral = { lat: -26.2041, lng: 28.0473 };
   selectedPosition: google.maps.LatLngLiteral | null = null;
   zoom = 14;
 
@@ -27,12 +30,15 @@ export class RegisterBusinessComponent implements AfterViewInit {
     private router: Router
   ) {
     this.businessForm = this.fb.group({
+      businessType: ['', Validators.required], // verified or unverified
+      registrationNumber: [''],               // only required when verified
+
       businessName: ['', Validators.required],
       category: ['', Validators.required],
       location: [''],
       description: ['', Validators.required],
       latitude: [null],
-      longitude: [null]
+      longitude: [null],
     });
   }
 
@@ -59,8 +65,29 @@ export class RegisterBusinessComponent implements AfterViewInit {
     });
   }
 
+  // -------------------------------
+  // Verified Business Toggle Logic
+  // -------------------------------
+  onBusinessTypeChange() {
+    const type = this.businessForm.get('businessType')?.value;
+
+    if (type === 'verified') {
+      this.isVerified = true;
+      this.businessForm.get('registrationNumber')?.setValidators([Validators.required]);
+    } else {
+      this.isVerified = false;
+      this.businessForm.get('registrationNumber')?.clearValidators();
+    }
+
+    this.businessForm.get('registrationNumber')?.updateValueAndValidity();
+  }
+
+  // -------------------------------
+  // Logo upload logic
+  // -------------------------------
   onLogoSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
+
     if (input.files && input.files[0]) {
       this.selectedLogoFile = input.files[0];
 
@@ -72,6 +99,9 @@ export class RegisterBusinessComponent implements AfterViewInit {
     }
   }
 
+  // -------------------------------
+  // Map selection logic
+  // -------------------------------
   onMapClick(event: google.maps.MapMouseEvent) {
     if (event.latLng) {
       this.selectedPosition = event.latLng.toJSON();
@@ -82,6 +112,9 @@ export class RegisterBusinessComponent implements AfterViewInit {
     }
   }
 
+  // -------------------------------
+  // Submit form
+  // -------------------------------
   onSubmit(): void {
     if (this.businessForm.invalid || !this.getUserId()) {
       this.errorMessage = 'Please complete the form and ensure you are logged in.';
@@ -92,6 +125,9 @@ export class RegisterBusinessComponent implements AfterViewInit {
     this.errorMessage = '';
 
     const formData = new FormData();
+    formData.append('businessType', this.businessForm.value.businessType);
+    formData.append('registrationNumber', this.businessForm.value.registrationNumber || '');
+
     formData.append('businessName', this.businessForm.value.businessName);
     formData.append('category', this.businessForm.value.category);
     formData.append('location', this.businessForm.value.location || '');
@@ -115,9 +151,11 @@ export class RegisterBusinessComponent implements AfterViewInit {
     });
   }
 
+  // -------------------------------
+  // Get user id
+  // -------------------------------
   private getUserId(): string {
     const user = localStorage.getItem('user');
     return user ? JSON.parse(user)?.userId : '';
   }
 }
-

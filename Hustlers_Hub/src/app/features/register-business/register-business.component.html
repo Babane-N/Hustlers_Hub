@@ -2,6 +2,25 @@
   <h2>Register Your Business</h2>
 
   <form [formGroup]="businessForm" (ngSubmit)="onSubmit()">
+
+    <!-- Business Type -->
+    <div class="form-group">
+      <label>Business Type</label>
+      <select formControlName="businessType" (change)="onBusinessTypeChange()">
+        <option value="" disabled>Select type</option>
+        <option value="verified">Verified Business</option>
+        <option value="unverified">Unverified Business</option>
+      </select>
+    </div>
+
+    <!-- Conditional: Only show for VERIFIED businesses -->
+    <div class="form-group" *ngIf="isVerified">
+      <label>CIPC Registration Number</label>
+      <input type="text"
+             formControlName="registrationNumber"
+             placeholder="e.g. 2023/123456/07" />
+    </div>
+
     <!-- Business Name -->
     <div class="form-group">
       <label>Business Name</label>
@@ -13,21 +32,67 @@
       <label>Category</label>
       <select formControlName="category">
         <option value="" disabled>Select category</option>
-        <option>Electrician</option>
+
+        <!-- ★ Popular Local Services -->
         <option>Plumber</option>
-        <option>Cleaner</option>
-        <option>House Builder</option>
+        <option>Electrician</option>
         <option>Car Mechanic</option>
         <option>Painter</option>
-        <option>Fitness Trainer</option>
         <option>Tutor</option>
+        <option>Fitness Trainer</option>
+        <option>Cleaner</option>
+        <option>Barber</option>
+        <option>Salon / Hairdresser</option>
+        <option>Makeup Artist</option>
+
+        <!-- ★ Construction & Home Services -->
+        <option>House Builder</option>
+        <option>Carpenter</option>
+        <option>Welder / Steelwork</option>
+        <option>Tiling</option>
+        <option>Plastering</option>
+        <option>Landscaping / Gardening</option>
+        <option>Security Installation</option>
+
+        <!-- ★ Events & Media -->
+        <option>Photography</option>
+        <option>Videography</option>
+        <option>DJ / Music</option>
+        <option>Events Planner</option>
+        <option>Catering</option>
+        <option>Decor Services</option>
+
+        <!-- ★ Retail & Online -->
+        <option>Online Store</option>
+        <option>Fashion / Tailoring</option>
+        <option>Shoe Repair</option>
+        <option>Phone Repairs</option>
+
+        <!-- ★ Tech & Business -->
+        <option>Technology Services</option>
+        <option>Software Developer</option>
+        <option>IT Support</option>
+        <option>Digital Marketing</option>
+        <option>Graphic Designer</option>
+
+        <!-- ★ General -->
+        <option>Food</option>
+        <option>Gaming</option>
+        <option>Logistics / Delivery</option>
+        <option>Consulting</option>
+
+        <!-- Final fallback -->
+        <option>Other</option>
       </select>
     </div>
 
-    <!-- Address (Google Places Autocomplete) -->
+    <!-- Address -->
     <div class="form-group">
       <label>Address</label>
-      <input type="text" formControlName="location" #addressInput placeholder="Type your address" />
+      <input type="text"
+             formControlName="location"
+             #addressInput
+             placeholder="Type your address" />
     </div>
 
     <!-- Map -->
@@ -38,7 +103,8 @@
                   height="300px"
                   width="100%"
                   (mapClick)="onMapClick($event)">
-        <map-marker *ngIf="selectedPosition" [position]="selectedPosition"></map-marker>
+        <map-marker *ngIf="selectedPosition"
+                    [position]="selectedPosition"></map-marker>
       </google-map>
     </div>
 
@@ -62,7 +128,7 @@
 
     <!-- Submit -->
     <button type="submit" [disabled]="isSubmitting">
-      {{ isSubmitting ? 'Submitting...' : 'Register Business' }}
+      {{ isSubmitting ? "Submitting..." : "Register Business" }}
     </button>
   </form>
 </div>

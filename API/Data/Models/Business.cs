@@ -25,6 +25,8 @@ namespace API.Data.Models
         public string? LogoUrl { get; set; } // Business Logo (optional)
 
         public bool IsVerified { get; set; } = false;
+        public string BusinessType { get; set; } = string.Empty; // verified / unverified
+        public string? RegistrationNumber { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
