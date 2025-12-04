@@ -63,4 +63,40 @@
       text-decoration: none;
     }
   }
+
+  .social-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 15px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      color: white;
+
+      .icon {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    .google-btn {
+      background-color: #db4437;
+    }
+
+    .facebook-btn {
+      background-color: #4267B2;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+  }
 }

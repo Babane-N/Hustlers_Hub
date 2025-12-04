@@ -43,7 +43,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { TopBarComponent } from './features/shared/top-bar/top-bar.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { GoogleMapsModule } from '@angular/google-maps';
-
+import { SocialLoginModule, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
+import { GoogleLoginProvider, FacebookLoginProvider } from '@abacritt/angularx-social-login';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 
 
@@ -91,10 +93,28 @@ import { GoogleMapsModule } from '@angular/google-maps';
     MatDialogModule,
     ReactiveFormsModule,
     MatMenuModule,
-    GoogleMapsModule
+    GoogleMapsModule,
+    SocialLoginModule,
+    BrowserAnimationsModule 
   ],
   providers: [
-    provideAnimationsAsync()
+    provideAnimationsAsync(),
+    {
+      provide: 'SocialAuthServiceConfig',
+      useValue: {
+        autoLogin: false,
+        providers: [
+          {
+            id: GoogleLoginProvider.PROVIDER_ID,
+            provider: new GoogleLoginProvider('1234567890-abc123def456.apps.googleusercontent.com')
+          },
+          {
+            id: FacebookLoginProvider.PROVIDER_ID,
+            provider: new FacebookLoginProvider('987654321098765')
+          }
+        ],
+      } as SocialAuthServiceConfig,
+    }
   ],
   bootstrap: [AppComponent]
 })

@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
+import { SocialAuthService, SocialUser } from '@abacritt/angularx-social-login';
 
 @Component({
   selector: 'app-register',
@@ -15,7 +16,12 @@ export class RegisterComponent {
   registrationError = '';
   private baseUrl = `${environment.apiUrl}/Users`;
 
-  constructor(private fb: FormBuilder, private router: Router, private http: HttpClient) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private http: HttpClient,
+    private socialAuthService: SocialAuthService
+  ) {
     this.registerForm = this.fb.group({
       fullName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -37,11 +43,73 @@ export class RegisterComponent {
     this.registrationError = '';
 
     const { fullName, email, phoneNumber, password } = this.registerForm.value;
-    const userPayload = { fullName, email, password, phoneNumber, userType: 0, createdAt: new Date().toISOString() };
+    const userPayload = {
+      fullName,
+      email,
+      password,
+      phoneNumber,
+      userType: 0,
+      createdAt: new Date().toISOString()
+    };
 
     this.http.post(this.baseUrl, userPayload).subscribe({
-      next: () => { this.router.navigate(['/home-page']); this.isLoading = false; },
-      error: (err) => { console.error(err); this.registrationError = err.error || 'Registration failed.'; this.isLoading = false; }
+      next: () => {
+        this.router.navigate(['/home-page']);
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.registrationError = err.error || 'Registration failed.';
+        this.isLoading = false;
+      }
     });
+  }
+
+  // Google login
+  onGoogleSignIn(event: any) {
+    const user = event as SocialUser | undefined;
+    if (!user) {
+      console.error('Google sign-in failed: user is undefined');
+      this.registrationError = 'Google sign-in failed';
+      return;
+    }
+
+    this.http.post(`${environment.apiUrl}/auth/google`, { token: user.idToken }).subscribe({
+      next: (res: any) => {
+        localStorage.setItem('token', res.token);
+        this.router.navigate(['/home-page']);
+      },
+      error: (err) => {
+        console.error(err);
+        this.registrationError = err?.error?.message || 'Google registration failed';
+      }
+    });
+  }
+
+  // Facebook login
+  onFacebookSignIn(event: any) {
+    const user = event as SocialUser | undefined;
+    if (!user) {
+      console.error('Facebook sign-in failed: user is undefined');
+      this.registrationError = 'Facebook sign-in failed';
+      return;
+    }
+
+    this.http.post(`${environment.apiUrl}/auth/facebook`, { token: user.authToken }).subscribe({
+      next: (res: any) => {
+        localStorage.setItem('token', res.token);
+        this.router.navigate(['/home-page']);
+      },
+      error: (err) => {
+        console.error(err);
+        this.registrationError = err?.error?.message || 'Facebook registration failed';
+      }
+    });
+  }
+
+  // Unified social login error handler
+  handleSocialError(err: any, provider: string) {
+    console.error(`${provider} login error:`, err);
+    this.registrationError = err?.error?.message || `${provider} registration failed`;
   }
 }

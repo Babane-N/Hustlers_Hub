@@ -2,6 +2,7 @@
   <h2>Login to Hustlers Hub</h2>
 
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <!-- Email -->
     <div class="form-group">
       <label>Email</label>
       <input type="email" formControlName="email" />
@@ -10,6 +11,7 @@
       </small>
     </div>
 
+    <!-- Password -->
     <div class="form-group">
       <label>Password</label>
       <input type="password" formControlName="password" />
@@ -18,13 +20,26 @@
       </small>
     </div>
 
+    <!-- Error Message -->
     <div *ngIf="loginError" class="error">{{ loginError }}</div>
 
-    <button type="submit" [disabled]="isLoading">
+    <!-- Login Button -->
+    <button type="submit" [disabled]="isLoading" class="btn btn-primary">
       {{ isLoading ? 'Logging in...' : 'Login' }}
     </button>
   </form>
 
   <p class="signup-redirect">Don't have an account? <a routerLink="/register">Register</a></p>
-</div>
 
+  <!-- Social Login Buttons -->
+  <!-- Google Login -->
+  <asl-google-signin-button (signInSuccess)="onGoogleSignIn($event)"
+                            (signInFailure)="handleSocialError($event, 'Google')">
+  </asl-google-signin-button>
+
+  <!-- Facebook Login -->
+  <asl-facebook-signin-button (signInSuccess)="onFacebookSignIn($event)"
+                              (signInFailure)="handleSocialError($event, 'Facebook')">
+  </asl-facebook-signin-button>
+
+</div>
