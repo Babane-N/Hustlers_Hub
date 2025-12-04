@@ -23,7 +23,6 @@ import { HomePageComponent } from './Customer/home-page/home-page.component';
 import { RegisterBusinessComponent } from './features/register-business/register-business.component';
 import { BusinessSwitcherComponent } from './features/business-switcher/business-switcher.component';
 import { MyBookingsComponent } from './Customer/my-bookings/my-bookings.component';
-import { AdminBusinessComponent } from './Admin/admin-business/admin-business.component';
 import { PendingBusinessesComponent } from './Admin/pending-businesses/pending-businesses.component';
 
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -72,7 +71,6 @@ import { GoogleMapsModule } from '@angular/google-maps';
     BusinessSwitcherComponent,
     TopBarComponent,
     MyBookingsComponent,
-    AdminBusinessComponent,
     PendingBusinessesComponent
   ],
   imports: [

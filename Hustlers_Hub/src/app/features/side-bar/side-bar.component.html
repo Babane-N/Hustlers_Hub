@@ -55,12 +55,16 @@
     </mat-nav-list>
 
     <!-- 👨‍💼 ADMIN MENU -->
+    <a mat-list-item (click)="navigateTo('/admin'); isMobile && toggleSidebar()">
+      <mat-icon>home</mat-icon>
+      <span class="nav-text"> Home</span>
+    </a>
     <mat-nav-list *ngIf="userRole === 'Admin'">
       <a mat-list-item (click)="navigateTo('/admin/users'); isMobile && toggleSidebar()">
         <mat-icon>group</mat-icon>
         <span class="nav-text">Manage Users</span>
       </a>
-      <a mat-list-item (click)="navigateTo('/admin/businesses'); isMobile && toggleSidebar()">
+      <a mat-list-item (click)="navigateTo('/pending-businesses'); isMobile && toggleSidebar()">
         <mat-icon>storefront</mat-icon>
         <span class="nav-text"> Manage Businesses</span>
       </a>

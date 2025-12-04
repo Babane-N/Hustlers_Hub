@@ -54,10 +54,10 @@ export class LoginComponent {
             this.router.navigate(['/home-page']);
             break;
           case 'Admin':
-            this.router.navigate(['/admin/users']);
+            this.router.navigate(['/admin']);
             break;
           default:
-            this.router.navigate(['/dashboard']);
+            this.router.navigate(['/home-page']);
         }
 
         this.isLoading = false;
