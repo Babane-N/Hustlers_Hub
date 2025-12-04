@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Data;
 using API.Data.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,7 @@ namespace API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly HustlersHubDbContext _context;
+        private readonly PasswordHasher<User> _passwordHasher = new PasswordHasher<User>();
 
         public UsersController(HustlersHubDbContext context)
         {
@@ -27,16 +29,21 @@ namespace API.Controllers
             if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
                 return BadRequest("Email and password are required.");
 
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == request.Email && u.PasswordHash == request.Password);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
 
             if (user == null)
+                return Unauthorized("Invalid email or password.");
+
+            // 🔐 Verify hashed password
+            var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
+
+            if (result != PasswordVerificationResult.Success)
                 return Unauthorized("Invalid email or password.");
 
             return Ok(new
             {
                 token = Guid.NewGuid(),
-                role = user.UserType.ToString(), // Convert enum to string
+                role = user.UserType.ToString(),
                 userId = user.Id,
                 email = user.Email
             });
@@ -67,10 +74,12 @@ namespace API.Controllers
                 FullName = dto.FullName,
                 Email = dto.Email,
                 PhoneNumber = dto.PhoneNumber,
-                PasswordHash = dto.Password, // 🔐 Replace with hashing in production
                 UserType = dto.UserType,
                 CreatedAt = DateTime.UtcNow
             };
+
+            // 🔐 Hash password before saving
+            user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
@@ -78,16 +87,14 @@ namespace API.Controllers
             return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
         }
 
-
-
-        // ✅ GET ALL: api/Users
+        // GET ALL
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
             return await _context.Users.ToListAsync();
         }
 
-        // ✅ GET BY ID: api/Users/{id}
+        // GET BY ID
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(Guid id)
         {
@@ -98,7 +105,7 @@ namespace API.Controllers
             return user;
         }
 
-        // ✅ UPDATE: api/Users/{id}
+        // UPDATE
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(Guid id, User user)
         {
@@ -122,7 +129,7 @@ namespace API.Controllers
             return NoContent();
         }
 
-        // ✅ DELETE: api/Users/{id}
+        // DELETE
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
@@ -141,7 +148,6 @@ namespace API.Controllers
             return _context.Users.Any(e => e.Id == id);
         }
 
-        // DTO for login
         public class LoginRequest
         {
             public string Email { get; set; } = string.Empty;
