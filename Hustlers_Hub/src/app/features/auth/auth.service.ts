@@ -8,6 +8,7 @@ export interface RegisterRequest {
   email: string;
   phoneNumber: string;
   password: string;
+  userType: number; // 👈 Add this if needed
 }
 
 export interface LoginRequest {
@@ -17,25 +18,25 @@ export interface LoginRequest {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  // ✅ Use the apiUrl from environment
-  private apiUrl = `${environment.apiUrl}/Users`;
+  // 🔥 Updated to /api/auth
+  private apiUrl = `${environment.apiUrl}/auth`;
 
   private loggedInSubject = new BehaviorSubject<boolean>(this.hasToken());
   isLoggedIn$ = this.loggedInSubject.asObservable();
 
   constructor(private http: HttpClient) { }
 
-  // ✅ Register user
+  // 🔥 Register user -> /api/auth/register
   register(user: RegisterRequest): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/register`, user);
   }
 
-  // ✅ Login user
+  // 🔥 Login user -> /api/auth/login
   login(credentials: LoginRequest): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/login`, credentials);
   }
 
-  // ✅ Store session info
+  // 🔐 Save token + role
   setSession(token: string, role: string): void {
     localStorage.setItem('authToken', token);
     localStorage.setItem('userRole', role);
@@ -68,4 +69,3 @@ export class AuthService {
     return !!localStorage.getItem('authToken');
   }
 }
-

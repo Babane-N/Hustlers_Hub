@@ -38,7 +38,7 @@
   </asl-google-signin-button>
 
   <!-- Facebook Login -->
-  <asl-facebook-signin-button (signInSuccess)="onFacebookSignIn($event)"
+  <asl-facebook-signin-button (click)="onFacebookSignIn()"
                               (signInFailure)="handleSocialError($event, 'Facebook')">
   </asl-facebook-signin-button>
 

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';   // Your backend service
 import { SocialAuthService, GoogleLoginProvider, FacebookLoginProvider, SocialUser } from '@abacritt/angularx-social-login';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -72,27 +73,33 @@ export class LoginComponent {
   // ----------------------------
   // 🔵 GOOGLE LOGIN
   // ----------------------------
-onGoogleSignIn(user: any) {
-  const socialUser = user as SocialUser;
-  this.http.post('/api/auth/google', { token: socialUser.idToken }).subscribe({
-    next: (res: any) => {
-      localStorage.setItem('token', res.token);
-      this.router.navigate(['/home-page']);
-    },
-    error: (err) => {
-      console.error(err);
-      this.loginError = err?.error?.message || 'Google login failed';
-    }
-  });
-}
+  onGoogleSignIn(user: any) {
+    const socialUser = user as SocialUser;
+
+    this.http.post(`${environment.apiUrl}/auth/google`, { token: socialUser.idToken })
+      .subscribe({
+        next: (res: any) => {
+          localStorage.setItem('token', res.token);
+          this.router.navigate(['/home-page']);
+        },
+        error: (err) => {
+          console.error(err);
+          this.loginError = err?.error?.message || 'Google login failed';
+        }
+      });
+  }
+
 
   // ----------------------------
   // 🔵 FACEBOOK LOGIN
   // ----------------------------
-  onFacebookSignIn(user: any) {
+  onFacebookSignIn() {
     this.socialAuth.signIn(FacebookLoginProvider.PROVIDER_ID)
       .then(user => {
-        return this.http.post('/api/auth/facebook', { token: user.authToken }).toPromise();
+        return this.http.post(
+          `${environment.apiUrl}/auth/facebook`,
+          { token: user.authToken }
+        ).toPromise();
       })
       .then((res: any) => {
         localStorage.setItem('token', res.token);
@@ -104,7 +111,6 @@ onGoogleSignIn(user: any) {
       });
   }
 
-  // Unified social login error handler
   handleSocialError(err: any, provider: string) {
     console.error(`${provider} login error:`, err);
     this.loginError = err?.error?.message || `${provider} login failed`;
