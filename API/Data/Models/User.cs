@@ -25,8 +25,8 @@ namespace API.Data.Models
         public string? ProfileImage {  get; set; }
 
         public DateTime? CreatedAt { get; set; }
-        public string AuthProvider { get; set; }  // Google, Facebook, etc.
-        public string ProviderUserId { get; set; }
+        public string? AuthProvider { get; set; }  // Google, Facebook, etc.
+        public string? ProviderUserId { get; set; }
 
         //Nevigation
         public ICollection<Business> Businesses { get; set; }
