@@ -42,7 +42,8 @@ namespace API.Controllers
                 Email = dto.Email,
                 PhoneNumber = dto.PhoneNumber,
                 UserType = dto.UserType,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                AuthProvider = "Local"   
             };
 
             user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
