@@ -14,7 +14,7 @@ export class RegisterComponent {
   registerForm: FormGroup;
   isLoading = false;
   registrationError = '';
-  private baseUrl = `${environment.apiUrl}/Users`;
+  private baseUrl = `${environment.apiUrl}/auth/register`;
 
   constructor(
     private fb: FormBuilder,
@@ -48,22 +48,22 @@ export class RegisterComponent {
       email,
       password,
       phoneNumber,
-      userType: 0,
-      createdAt: new Date().toISOString()
+      userType: 0 // Customer
     };
 
-    this.http.post(this.baseUrl, userPayload).subscribe({
+    this.http.post(`${environment.apiUrl}/auth/register`, userPayload).subscribe({
       next: () => {
         this.router.navigate(['/home-page']);
         this.isLoading = false;
       },
       error: (err) => {
         console.error(err);
-        this.registrationError = err.error || 'Registration failed.';
+        this.registrationError = err?.error || 'Registration failed.';
         this.isLoading = false;
       }
     });
   }
+
 
   // Google login
   onGoogleSignIn(event: any) {
