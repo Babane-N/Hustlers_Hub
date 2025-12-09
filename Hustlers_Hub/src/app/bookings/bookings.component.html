@@ -5,22 +5,70 @@
   <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
 
   <div *ngIf="hasBookings; else noBookings" class="bookings-grid">
-    <div class="booking-card clickable"
-         *ngFor="let booking of bookings"
-         (click)="viewBookingDetails(booking)">
+
+    <div class="booking-card" *ngFor="let booking of bookings">
+
+      <!-- HEADER -->
       <div class="booking-header">
         <div class="customer-name">{{ booking.customerName }}</div>
         <div class="booking-date">{{ booking.bookingDate | date:'short' }}</div>
       </div>
+
+      <!-- SERVICE -->
       <div class="booking-service">{{ booking.serviceTitle }}</div>
+
+      <!-- LOCATION -->
       <div class="booking-location">📍 {{ booking.location }}</div>
-      <div class="booking-status" [ngClass]="getStatusClass(booking.status)">
+
+      <!-- STATUS -->
+      <div class="booking-status"
+           [ngClass]="getStatusClass(booking.status)">
         {{ booking.status }}
       </div>
+
+      <!-- SCHEDULED DATE -->
+      <div class="scheduled-info" *ngIf="booking.bookingDate">
+        🗓 Scheduled: <strong>{{ booking.bookingDate | date:'medium' }}</strong>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="card-actions">
+        <button class="btn view-btn" (click)="viewBookingDetails(booking)">
+          View
+        </button>
+
+        <button class="btn schedule-btn"
+                *ngIf="booking.status === 'Pending'"
+                (click)="openScheduleModal(booking)">
+          Schedule
+        </button>
+      </div>
+
     </div>
+
   </div>
 
   <ng-template #noBookings>
     <p>No bookings received yet.</p>
   </ng-template>
+</div>
+
+
+
+<!-- SCHEDULE MODAL -->
+<div class="modal-overlay" *ngIf="showScheduleModal">
+  <div class="modal-box">
+    <h3>Schedule Booking</h3>
+
+    <label>Select Date & Time</label>
+    <input type="datetime-local"
+           [(ngModel)]="selectedScheduleDate"
+           class="modal-input" />
+
+    <div class="modal-buttons">
+      <button class="modal-btn confirm" (click)="confirmSchedule()">Confirm</button>
+      <button class="modal-btn cancel" (click)="closeScheduleModal()">Cancel</button>
+    </div>
+
+  </div>
 </div>

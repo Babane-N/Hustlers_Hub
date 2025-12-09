@@ -28,7 +28,6 @@
     border-radius: 12px;
     padding: 1rem;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
-    cursor: pointer;
     border: 1px solid #e0e0e0;
 
     &:hover {
@@ -90,6 +89,115 @@
       &.status-cancelled {
         background: #ffebee;
         color: #f44336;
+      }
+    }
+
+    .scheduled-info {
+      margin: 0.5rem 0;
+      font-size: 0.85rem;
+      color: #555;
+    }
+
+    .card-actions {
+      margin-top: 0.8rem;
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+
+      .btn {
+        padding: 0.4rem 0.9rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .view-btn {
+        background: #e0e0e0;
+
+        &:hover {
+          background: #d5d5d5;
+        }
+      }
+
+      .schedule-btn {
+        background: #2196f3;
+        color: white;
+
+        &:hover {
+          background: #1976d2;
+        }
+      }
+    }
+  }
+}
+
+/* MODAL */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(3px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-box {
+  background: #ffffff;
+  width: 350px;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+
+  .modal-input {
+    width: 100%;
+    padding: 0.5rem;
+    margin: 0.8rem 0 1.2rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 0.95rem;
+  }
+
+  .modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.8rem;
+
+    .modal-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      border: none;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .confirm {
+      background: #4caf50;
+      color: #fff;
+
+      &:hover {
+        background: #3d8c41;
+      }
+    }
+
+    .cancel {
+      background: #e0e0e0;
+
+      &:hover {
+        background: #d5d5d5;
       }
     }
   }

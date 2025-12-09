@@ -9,22 +9,33 @@ export interface Booking {
   bookingDate: string;
   status: string;
 
-  // 🔹 Optional extra fields from backend
+  // 🔹 Extra fields from backend
   description?: string;
   contactNumber?: string;
   location?: string;
   latitude?: number;
   longitude?: number;
 
-  // 🔹 Flattened fields (if API projects them)
+  // 🔹 Flattened fields (if API sends them)
   serviceTitle?: string;
   customerName?: string;
   businessName?: string;
 
-  // 🔹 Nested relationships (if API includes them)
-  service?: { id: string; title: string };
-  customer?: { id: string; fullName: string };
-  business?: { id: string; businessName: string };
+  // 🔹 Nested relationships
+  service?: {
+    id: string;
+    title: string;
+  };
+
+  customer?: {
+    id: string;
+    fullName: string;
+  };
+
+  business?: {
+    id: string;
+    businessName: string;
+  };
 }
 
 @Injectable({
@@ -35,11 +46,33 @@ export class BookingService {
 
   constructor(private http: HttpClient) { }
 
+  /**
+   * Get bookings for a business
+   */
   getBookingsByBusiness(businessId: string): Observable<Booking[]> {
     return this.http.get<Booking[]>(`${this.baseUrl}/business/${businessId}`);
   }
 
+  /**
+   * Get bookings created by a specific customer
+   */
   getBookingsByCustomer(customerId: string): Observable<Booking[]> {
     return this.http.get<Booking[]>(`${this.baseUrl}/customer/${customerId}`);
+  }
+
+
+  getBookingById(id: string): Observable<Booking> {
+    return this.http.get<Booking>(`${this.baseUrl}/${id}`);
+  }
+
+  scheduleBooking(id: string, newDate: string): Observable<any> {
+    return this.http.put(`${this.baseUrl}/${id}`, {
+      bookingDate: newDate,
+      status: 'Confirmed'
+    });
+  }
+
+  updateBookingStatus(id: string, status: string): Observable<any> {
+    return this.http.put(`${this.baseUrl}/${id}/status`, { status });
   }
 }

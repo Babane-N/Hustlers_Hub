@@ -64,6 +64,18 @@ export class AuthService {
       return null;
     }
   }
+  getUser(): any {
+    const payload = this.getUserInfoFromToken();
+    if (!payload) return null;
+
+    // Example payload structure: { sub: "userId", role: "Business", businessId: "GUID" }
+    return {
+      id: payload.sub,
+      userType: payload.role,
+      businessId: payload.businessId, // optional if included in token
+      business: payload.business // optional nested object
+    };
+  }
 
   getUserId(): string | null {
     const user = this.getUserInfoFromToken();
