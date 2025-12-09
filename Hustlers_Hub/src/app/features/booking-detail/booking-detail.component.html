@@ -1,0 +1,47 @@
+<div class="booking-detail-container" *ngIf="!isLoading && booking; else loadingOrError">
+
+  <h2 class="title">Booking Details</h2>
+
+  <div class="detail-card">
+    <div class="row">
+      <span class="label">Service:</span>
+      <span class="value">{{ booking.serviceTitle }}</span>
+    </div>
+
+    <div class="row">
+      <span class="label">Business:</span>
+      <span class="value">{{ booking.businessName }}</span>
+    </div>
+
+    <div class="row">
+      <span class="label">Status:</span>
+      <span class="value status" [ngClass]="booking.status.toLowerCase()">
+        {{ booking.status }}
+      </span>
+    </div>
+
+    <div class="row">
+      <span class="label">Scheduled Date:</span>
+      <span class="value">
+        {{ booking.scheduledDate ? (booking.scheduledDate | date:'medium') : 'Not Scheduled yet' }}
+      </span>
+    </div>
+
+    <div class="row">
+      <span class="label">Location:</span>
+      <span class="value">{{ booking.location }}</span>
+    </div>
+
+    <div class="row">
+      <span class="label">Description:</span>
+      <span class="value">{{ booking.description }}</span>
+    </div>
+  </div>
+
+</div>
+
+<ng-template #loadingOrError>
+  <div *ngIf="isLoading" class="loading">Loading booking details...</div>
+  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+</ng-template>
+

@@ -1,0 +1,59 @@
+.booking-detail-container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.detail-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.label {
+  font-weight: 600;
+  color: #555;
+}
+
+.value {
+  color: #333;
+}
+
+.status.pending {
+  color: #e69500;
+}
+
+.status.confirmed {
+  color: #007bff;
+}
+
+.status.completed {
+  color: #28a745;
+}
+
+.status.cancelled {
+  color: #dc3545;
+}
+
+.loading,
+.error {
+  text-align: center;
+  margin-top: 40px;
+}

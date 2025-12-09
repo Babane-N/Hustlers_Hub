@@ -19,6 +19,7 @@ import { BookingDialogComponent } from './features/booking-dialog/booking-dialog
 import { MyBookingsComponent } from './Customer/my-bookings/my-bookings.component';
 import { AdminComponent } from './Admin/admin/admin.component';
 import { PendingBusinessesComponent } from './Admin/pending-businesses/pending-businesses.component';
+import { BookingDetailComponent } from './features/booking-detail/booking-detail.component';
 
 const routes: Routes = [
   { path: '', component: HomePageComponent },
@@ -32,6 +33,11 @@ const routes: Routes = [
   { path: 'bookings', component: BookingsComponent },
   { path: 'my-bookings', component: MyBookingsComponent },
   { path: 'profile', component: ProfileComponent },
+  {
+    path: 'booking-detail/:id',
+    component: BookingDetailComponent
+  },
+
 
   {
     path: 'dashboard',

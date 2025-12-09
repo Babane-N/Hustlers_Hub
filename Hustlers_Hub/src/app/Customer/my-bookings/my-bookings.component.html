@@ -5,13 +5,26 @@
   <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
 
   <div *ngIf="hasBookings; else noBookings" class="bookings-grid">
-    <div class="booking-card" *ngFor="let booking of bookings">
+    <div class="booking-card"
+         *ngFor="let booking of bookings"
+         [ngClass]="{'unscheduled': booking.bookingDate === 'Not Scheduled'}">
       <div class="booking-header">
         <div class="service-name">{{ booking.serviceTitle }}</div>
-        <div class="booking-date">{{ booking.bookingDate | date:'short' }}</div>
+
+        <!-- Display booking date or "Not Scheduled" badge -->
+        <div class="booking-date">
+          <ng-container *ngIf="booking.bookingDate === 'Not Scheduled'; else scheduled">
+            <span class="badge unscheduled-badge">Not Scheduled</span>
+          </ng-container>
+          <ng-template #scheduled>
+            {{ booking.bookingDate | date:'short' }}
+          </ng-template>
+        </div>
       </div>
+
       <div class="provider-name">🏢 {{ booking.businessName }}</div>
-      <div class="booking-location">📍 {{ booking.location }}</div>
+      <div class="booking-location">📍 {{ booking.location || 'Location not provided' }}</div>
+
       <div class="booking-status" [ngClass]="getStatusClass(booking.status)">
         {{ booking.status }}
       </div>

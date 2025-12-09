@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../auth.service';   // Your backend service
+import { AuthService } from '../auth.service';
 import { SocialAuthService, GoogleLoginProvider, FacebookLoginProvider, SocialUser } from '@abacritt/angularx-social-login';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
@@ -17,13 +17,12 @@ export class LoginComponent {
   isLoading = false;
   loginError = '';
 
-  // Rename social login service to avoid conflicts
   constructor(
     private socialAuth: SocialAuthService,
     private http: HttpClient,
     private fb: FormBuilder,
     private router: Router,
-    private backendAuth: AuthService   // Your API login service
+    private backendAuth: AuthService
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -31,9 +30,9 @@ export class LoginComponent {
     });
   }
 
-  // ----------------------------
+  // -------------------------------------------------
   // 🔐 NORMAL EMAIL/PASSWORD LOGIN
-  // ----------------------------
+  // -------------------------------------------------
   onSubmit(): void {
     if (this.loginForm.invalid) return;
 
@@ -45,34 +44,64 @@ export class LoginComponent {
     this.backendAuth.login(credentials).subscribe({
       next: (res) => {
 
+        // Store token + role
         this.backendAuth.setSession(res.token, res.role);
 
-        localStorage.setItem('user', JSON.stringify({
-          userId: res.userId,
-          email: res.email,
+        // ---------------------------------------
+        // ✔ Store USER OBJECT in correct structure
+        // ---------------------------------------
+        const userObj = {
+          id: res.user?.id ?? res.userId,               // support both response types
+          email: res.user?.email ?? res.email,
           role: res.role,
+          userType: res.user?.userType ?? res.role,
+          businessId: res.user?.businessId ?? null,
+          fullName: res.user?.fullName ?? null,
           token: res.token
-        }));
+        };
 
+        localStorage.setItem('user', JSON.stringify(userObj));
+
+        // ---------------------------------------
+        // ✔ Store direct values for other components
+        // ---------------------------------------
+        localStorage.setItem('userId', String(userObj.id));
+        localStorage.setItem('role', userObj.role);
+        localStorage.setItem('email', userObj.email);
+        localStorage.setItem('businessId', String(userObj.businessId ?? ''));
+        localStorage.setItem('token', res.token);
+
+        // ---------------------------------------
+        // ✔ Navigation
+        // ---------------------------------------
         switch (res.role) {
-          case 'Business': this.router.navigate(['/home']); break;
-          case 'Customer': this.router.navigate(['/home-page']); break;
-          case 'Admin': this.router.navigate(['/admin']); break;
-          default: this.router.navigate(['/home-page']);
+          case 'Business':
+            this.router.navigate(['/home']);
+            break;
+          case 'Customer':
+            this.router.navigate(['/home-page']);
+            break;
+          case 'Admin':
+            this.router.navigate(['/admin']);
+            break;
+          default:
+            this.router.navigate(['/home-page']);
         }
 
         this.isLoading = false;
       },
+
       error: (err) => {
+        console.error(err);
         this.loginError = err.error?.message || 'Login failed. Please try again.';
         this.isLoading = false;
       }
     });
   }
 
-  // ----------------------------
-  // 🔵 GOOGLE LOGIN
-  // ----------------------------
+  // -------------------------------------------------
+  // 🔵 GOOGLE LOGIN (unchanged)
+  // -------------------------------------------------
   onGoogleSignIn(user: any) {
     const socialUser = user as SocialUser;
 
@@ -89,10 +118,9 @@ export class LoginComponent {
       });
   }
 
-
-  // ----------------------------
-  // 🔵 FACEBOOK LOGIN
-  // ----------------------------
+  // -------------------------------------------------
+  // 🔵 FACEBOOK LOGIN (unchanged)
+  // -------------------------------------------------
   onFacebookSignIn() {
     this.socialAuth.signIn(FacebookLoginProvider.PROVIDER_ID)
       .then(user => {

@@ -17,6 +17,7 @@ export interface LoginRequest {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+
   private apiUrl = `${environment.apiUrl}/Users`;
   private loggedInSubject = new BehaviorSubject<boolean>(this.hasToken());
   isLoggedIn$ = this.loggedInSubject.asObservable();
@@ -31,6 +32,9 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/login`, credentials);
   }
 
+  // -------------------------
+  // SESSION MANAGEMENT
+  // -------------------------
   setSession(token: string, role: string): void {
     localStorage.setItem('authToken', token);
     localStorage.setItem('userRole', role);
@@ -38,11 +42,13 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userRole');
+    localStorage.clear();
     this.loggedInSubject.next(false);
   }
 
+  // -------------------------
+  // SIMPLE GETTERS
+  // -------------------------
   getToken(): string | null {
     return localStorage.getItem('authToken');
   }
@@ -51,43 +57,35 @@ export class AuthService {
     return localStorage.getItem('userRole');
   }
 
-  // 🧠 Decode JWT (no external library needed)
-  getUserInfoFromToken(): any {
-    const token = this.getToken();
-    if (!token) return null;
-
+  // -------------------------
+  // READ USER OBJECT STORED AT LOGIN
+  // -------------------------
+  getUser(): any {
+    const data = localStorage.getItem('user');
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload; // contains sub, role, etc.
-    } catch (e) {
-      console.error('Error decoding token:', e);
+      return data ? JSON.parse(data) : null;
+    } catch {
       return null;
     }
   }
-  getUser(): any {
-    const payload = this.getUserInfoFromToken();
-    if (!payload) return null;
-
-    // Example payload structure: { sub: "userId", role: "Business", businessId: "GUID" }
-    return {
-      id: payload.sub,
-      userType: payload.role,
-      businessId: payload.businessId, // optional if included in token
-      business: payload.business // optional nested object
-    };
-  }
 
   getUserId(): string | null {
-    const user = this.getUserInfoFromToken();
-    return user ? user.sub : null; // assuming 'sub' holds user ID
+    return this.getUser()?.id ?? null;
   }
 
+  getBusinessId(): string | null {
+    return this.getUser()?.businessId ?? null;
+  }
+
+  getUserType(): string | null {
+    return this.getUser()?.userType ?? null;
+  }
+
+  // -------------------------
+  // AUTH STATUS
+  // -------------------------
   isLoggedIn(): boolean {
-    return this.loggedInSubject.value;
-  }
-
-  isAuthenticated(): boolean {
-    return this.isLoggedIn();
+    return !!this.getToken();
   }
 
   private hasToken(): boolean {

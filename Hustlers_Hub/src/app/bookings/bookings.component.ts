@@ -34,21 +34,28 @@ export class BookingsComponent implements OnInit {
     }
 
     const role = this.authService.getRole();
-    const userId = this.authService.getUserId();
-
-    if (!userId) {
-      this.errorMessage = 'User ID not found. Please log in again.';
-      this.isLoading = false;
-      return;
-    }
+    const activeBusinessId = localStorage.getItem('activeBusinessId'); // 🔹 use active business
 
     if (role?.toLowerCase() === 'business') {
-      this.bookingService.getBookingsByBusiness(userId).subscribe({
+      if (!activeBusinessId) {
+        this.errorMessage = 'No active business selected.';
+        this.isLoading = false;
+        return;
+      }
+
+      this.bookingService.getBookingsByBusiness(activeBusinessId).subscribe({
         next: data => this.handleBookings(data),
         error: err => this.handleError(err)
       });
 
     } else if (role?.toLowerCase() === 'customer') {
+      const userId = this.authService.getUserId();
+      if (!userId) {
+        this.errorMessage = 'User ID not found. Please log in again.';
+        this.isLoading = false;
+        return;
+      }
+
       this.bookingService.getBookingsByCustomer(userId).subscribe({
         next: data => this.handleBookings(data),
         error: err => this.handleError(err)
@@ -59,7 +66,6 @@ export class BookingsComponent implements OnInit {
       this.isLoading = false;
     }
   }
-
 
   private handleBookings(data: Booking[]) {
     this.bookings = data.map(b => ({

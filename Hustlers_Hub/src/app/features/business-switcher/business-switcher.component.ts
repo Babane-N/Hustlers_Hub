@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Business, BusinessService } from './BusinessModel';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-business-switcher',
@@ -13,37 +14,36 @@ export class BusinessSwitcherComponent implements OnInit {
 
   constructor(
     private businessService: BusinessService,
+    private authService: AuthService,
     private router: Router
   ) { }
 
   ngOnInit(): void {
-    const storedUser = localStorage.getItem('user');
-    const user = storedUser ? JSON.parse(storedUser) : null;
+    const user = this.authService.getUser();   // ✅ decode from JWT
 
-    if (user?.userId) {
-      const userId = user.userId;
-      this.businessService.getUserBusinesses(userId).subscribe(data => {
-        this.businesses = data;
+    if (user?.id) {
+      const userId = user.id;
+
+      this.businessService.getUserBusinesses(userId).subscribe({
+        next: (data) => (this.businesses = data),
+        error: (err) => console.error(err)
       });
+
     } else {
-      console.error('User not found in localStorage.');
+      console.error('User not logged in or invalid token.');
       this.router.navigate(['/login']);
     }
   }
 
   onSwitchBusiness(businessId: string) {
     this.selectedBusinessId = businessId;
-
-    // Store in localStorage or a shared service
     localStorage.setItem('activeBusinessId', businessId);
 
-    // Optionally, store the whole business object
     const selected = this.businesses.find(b => b.id === businessId);
     if (selected) {
       localStorage.setItem('activeBusinessData', JSON.stringify(selected));
     }
 
-    // Redirect to dashboard/home
     this.router.navigate(['/home']);
   }
 }

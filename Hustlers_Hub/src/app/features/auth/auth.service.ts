@@ -64,6 +64,11 @@ export class AuthService {
   isAuthenticated(): boolean {
     return this.isLoggedIn();
   }
+  getUser(): any {
+    const data = localStorage.getItem('user');
+    return data ? JSON.parse(data) : null;
+  }
+
 
   private hasToken(): boolean {
     return !!localStorage.getItem('authToken');

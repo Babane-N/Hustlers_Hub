@@ -20,7 +20,7 @@ export class MyBookingsComponent implements OnInit {
   ngOnInit(): void {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-    // ✅ Normalize customerId
+    // Normalize customerId
     const customerId = user.userId || user.id;
 
     if (!customerId) {
@@ -36,7 +36,10 @@ export class MyBookingsComponent implements OnInit {
           serviceTitle: b.serviceTitle || b.service?.title || 'Unknown Service',
           businessName: b.businessName || b.business?.businessName || 'Unknown Business',
           customerName: b.customerName || b.customer?.fullName || 'You',
-          description: b.description || 'No details provided'
+          description: b.description || 'No details provided',
+
+          // ✅ Default bookingDate to "Not Scheduled" if null or empty
+          bookingDate: b.bookingDate ? b.bookingDate : 'Not Scheduled'
         }));
         this.isLoading = false;
       },
@@ -63,3 +66,4 @@ export class MyBookingsComponent implements OnInit {
     }
   }
 }
+

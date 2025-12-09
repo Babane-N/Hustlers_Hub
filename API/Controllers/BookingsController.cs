@@ -116,7 +116,7 @@ namespace API.Controllers
         // PUT: api/Bookings/{id}
         // =====================================================
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBooking(Guid id, [FromBody] UpdateBookingDto dto)
+        public async Task<ActionResult<BookingDto>> UpdateBooking(Guid id, [FromBody] UpdateBookingDto dto)
         {
             var booking = await _context.Bookings.FindAsync(id);
 
@@ -132,8 +132,11 @@ namespace API.Controllers
             booking.Longitude = dto.Longitude;
 
             await _context.SaveChangesAsync();
-            return NoContent();
+
+            // ⭐ Return an updated BookingDto so the frontend receives a full object
+            return Ok(MapToDto(booking));
         }
+
 
         // =====================================================
         // DELETE: api/Bookings/{id}
