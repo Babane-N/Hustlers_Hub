@@ -20,6 +20,7 @@ import { MyBookingsComponent } from './Customer/my-bookings/my-bookings.componen
 import { AdminComponent } from './Admin/admin/admin.component';
 import { PendingBusinessesComponent } from './Admin/pending-businesses/pending-businesses.component';
 import { BookingDetailComponent } from './features/booking-detail/booking-detail.component';
+import { EditBusinessComponent } from './features/edit-business/edit-business.component';
 
 const routes: Routes = [
   { path: '', component: HomePageComponent },
@@ -33,11 +34,8 @@ const routes: Routes = [
   { path: 'bookings', component: BookingsComponent },
   { path: 'my-bookings', component: MyBookingsComponent },
   { path: 'profile', component: ProfileComponent },
-  {
-    path: 'booking-detail/:id',
-    component: BookingDetailComponent
-  },
-
+  { path: 'booking-detail/:id', component: BookingDetailComponent },
+  { path: 'edit-business', component: EditBusinessComponent },
 
   {
     path: 'dashboard',
