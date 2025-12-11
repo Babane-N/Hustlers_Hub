@@ -9,14 +9,18 @@
   </div>
 
   <div class="dashboard-grid">
-    <!-- Bookings Overview -->
+
+    <!-- Upcoming Bookings -->
     <mat-card class="dashboard-card clickable" (click)="goTo('bookings')">
       <mat-card-title>📅 Upcoming Bookings</mat-card-title>
       <mat-card-content>
         <p *ngIf="bookings.length === 0">No upcoming bookings.</p>
-        <ul *ngIf="bookings.length">
+
+        <ul *ngIf="bookings.length > 0">
           <li *ngFor="let b of bookings | slice:0:3">
-            {{ b.date | date: 'shortDate' }} - {{ b.clientName }} ({{ b.service }})
+            {{ b.bookingDate | date:'shortDate' }} -
+            {{ b.customerName || 'Customer' }}
+            ({{ b.serviceTitle || 'Service' }})
           </li>
         </ul>
       </mat-card-content>
@@ -26,10 +30,16 @@
     <mat-card class="dashboard-card clickable" (click)="goTo('history')">
       <mat-card-title>📁 Booking History</mat-card-title>
       <mat-card-content>
-        <p>{{ history.length }} jobs completed</p>
-        <ul *ngIf="history.length">
+        <p *ngIf="history.length === 0">No completed bookings yet.</p>
+
+        <p *ngIf="history.length > 0">
+          {{ history.length }} jobs completed
+        </p>
+
+        <ul *ngIf="history.length > 0">
           <li *ngFor="let h of history | slice:0:3">
-            {{ h.date | date: 'shortDate' }} - {{ h.clientName }}
+            {{ h.bookingDate | date:'shortDate' }} -
+            {{ h.customerName || 'Customer' }}
           </li>
         </ul>
       </mat-card-content>
@@ -39,23 +49,30 @@
     <mat-card class="dashboard-card clickable" (click)="goTo('reviews')">
       <mat-card-title>⭐ Latest Reviews</mat-card-title>
       <mat-card-content>
+
         <div *ngIf="reviews.length > 0; else noReviews">
           <p *ngFor="let r of reviews | slice:0:2">
-            “{{ r.comment }}” — <strong>{{ r.reviewer }}</strong> ({{ r.rating }}/5)
+            “{{ r.comment }}” —
+            <strong>{{ r.reviewer }}</strong>
+            ({{ r.rating }}/5)
           </p>
         </div>
+
         <ng-template #noReviews>
           <p>No reviews yet.</p>
         </ng-template>
+
       </mat-card-content>
     </mat-card>
+
   </div>
 
-  <!-- Business Management Tools Section -->
+  <!-- Business Tools -->
   <div class="tools-section">
     <h3 class="tools-header">🧰 Business Management Tools</h3>
 
     <div class="tools-grid">
+
       <!-- Unlocked Tools -->
       <div class="tool-card" (click)="goTo('edit-business')">
         <div class="tool-icon">📝</div>
@@ -72,27 +89,32 @@
         <div class="tool-title">View Customer Feedback</div>
       </div>
 
-      <!-- Premium Tools -->
+      <!-- Premium Locked Tools -->
       <div class="tool-card locked-tool">
         <div class="lock-icon">🔒</div>
         <div class="tool-icon">📩</div>
         <div class="tool-title">Customer Messaging</div>
       </div>
+
       <div class="tool-card locked-tool">
         <div class="lock-icon">🔒</div>
         <div class="tool-icon">💰</div>
         <div class="tool-title">View Total Earnings</div>
       </div>
+
       <div class="tool-card locked-tool">
         <div class="lock-icon">🔒</div>
         <div class="tool-icon">💳</div>
         <div class="tool-title">Online Payment Setup</div>
       </div>
+
       <div class="tool-card locked-tool">
         <div class="lock-icon">🔒</div>
         <div class="tool-icon">📊</div>
         <div class="tool-title">Advanced Analytics</div>
       </div>
+
     </div>
   </div>
 </div>
+
