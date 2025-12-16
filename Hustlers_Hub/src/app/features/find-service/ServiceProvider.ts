@@ -52,5 +52,6 @@ export class ServiceProviderService {
   getBusinessReviews(businessId: string): Observable<Review[]> {
     return this.http.get<Review[]>(`${this.baseUrl}/reviews/business/${businessId}`);
   }
+
 }
 

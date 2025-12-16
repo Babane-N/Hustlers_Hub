@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, forkJoin } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
-import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 // Service + Business details
@@ -11,10 +10,10 @@ export interface ServiceDetail {
   title: string;
   description: string;
   category: string;
-  imageUrl?: string;
+  imageUrl?: string | null;
   price: number;
   durationMinutes: number;
-
+  hiddenImage?: boolean;
   businessId: string;
   businessName: string;
   logoUrl?: string | null;
@@ -35,12 +34,29 @@ export interface Review {
 @Injectable({ providedIn: 'root' })
 export class ServiceProvider {
   private baseUrl = `${environment.apiUrl}/Services`;
+  private uploadsUrl = environment.uploadsUrl;
 
   constructor(private http: HttpClient) { }
 
-  // Fetch service details by ID
+  // 🔧 Normalize image / logo URL
+  private normalizeUrl(url?: string | null): string | null {
+    if (!url) return null;
+    if (url.startsWith('http')) return url;
+
+    return `${this.uploadsUrl.replace(/\/+$/, '')}/${url.replace(/^\/+|uploads\/?/g, '')}`;
+  }
+
+  // Fetch service details by ID (✅ FIXED)
   getServiceDetails(id: string): Observable<ServiceDetail> {
-    return this.http.get<ServiceDetail>(`${this.baseUrl}/detail/${id}`);
+    return this.http
+      .get<ServiceDetail>(`${this.baseUrl}/detail/${id}`)
+      .pipe(
+        map(service => ({
+          ...service,
+          imageUrl: this.normalizeUrl(service.imageUrl),
+          logoUrl: this.normalizeUrl(service.logoUrl)
+        }))
+      );
   }
 
   // Fetch reviews for a specific business
@@ -51,9 +67,7 @@ export class ServiceProvider {
   // Combine service details + reviews
   getServiceWithReviews(id: string): Observable<{ provider: ServiceDetail; reviews: Review[] }> {
     return this.getServiceDetails(id).pipe(
-      map(provider => ({ provider, reviews: [] })), // initialize reviews empty
-      // fetch reviews separately
-      switchMap(({ provider }) =>
+      switchMap(provider =>
         this.getBusinessReviews(provider.businessId).pipe(
           map(reviews => ({ provider, reviews }))
         )
@@ -61,7 +75,16 @@ export class ServiceProvider {
     );
   }
 
+  // Get all providers (✅ also normalized)
   getAllProviders(): Observable<ServiceDetail[]> {
-    return this.http.get<ServiceDetail[]>(this.baseUrl);
+    return this.http.get<ServiceDetail[]>(this.baseUrl).pipe(
+      map(services =>
+        services.map(service => ({
+          ...service,
+          imageUrl: this.normalizeUrl(service.imageUrl),
+          logoUrl: this.normalizeUrl(service.logoUrl)
+        }))
+      )
+    );
   }
 }

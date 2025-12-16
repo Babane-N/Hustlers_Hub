@@ -1,44 +1,42 @@
-<div class="service-detail-container" *ngIf="provider && !isLoading; else loading">
+<div class="service-detail-container" *ngIf="service && !isLoading; else loading">
   <!-- Header / Hero Section -->
   <div class="service-hero">
-    <div class="hero-left" *ngIf="provider.logoUrl">
+    <div class="hero-left" *ngIf="service.logoUrl">
       <img class="provider-logo"
-           [src]="provider.logoUrl"
-           [alt]="provider.businessName + ' Logo'" />
+           [src]="service.logoUrl"
+           [alt]="service.businessName + ' Logo'" />
     </div>
 
     <div class="hero-info">
       <h1>
-        {{ provider.businessName }}
-        <span *ngIf="provider.isVerified" class="verified-badge">
+        {{ service.businessName }}
+        <span *ngIf="service.isVerified" class="verified-badge">
           <mat-icon>verified</mat-icon> Verified
         </span>
       </h1>
-      <p class="category">{{ provider.category }}</p>
+      <p class="category">{{ service.category }}</p>
     </div>
   </div>
 
   <!-- Service Description -->
   <div class="service-body">
     <div class="service-info-card">
-      <h2>{{ provider.title }}</h2>
-      <p class="description">{{ provider.description }}</p>
+      <h2>{{ service.title }}</h2>
+      <p class="description">{{ service.description }}</p>
 
-      <div class="service-meta" *ngIf="provider.businessLocation">
-        <p><mat-icon>location_on</mat-icon> {{ provider.businessLocation }}</p>
+      <div class="service-meta" *ngIf="service.businessLocation">
+        <p><mat-icon>location_on</mat-icon> {{ service.businessLocation }}</p>
       </div>
 
-      <button class="book-btn" (click)="openBookingDialog(provider.id)">
+      <button class="book-btn" (click)="openBookingDialog()">
         <mat-icon>calendar_today</mat-icon> Book Now
       </button>
     </div>
 
     <!-- Gallery -->
-    <div class="gallery" *ngIf="provider.imageUrl?.length">
+    <div class="gallery" *ngIf="service.imageUrl">
       <div class="gallery-grid">
-        <img *ngFor="let img of provider.imageUrl"
-             [src]="img"
-             alt="Service image" />
+        <img [src]="service.imageUrl" alt="Service image" />
       </div>
     </div>
   </div>
@@ -50,7 +48,7 @@
     <div *ngIf="reviews.length > 0; else noReviews">
       <div class="review-card" *ngFor="let review of reviews">
         <div class="review-header">
-          <strong>{{ review.customerName }}</strong>
+          <strong>{{ review.reviewer }}</strong>
           <span class="rating">
             <mat-icon *ngFor="let star of [].constructor(review.rating)">star</mat-icon>
           </span>
@@ -60,7 +58,7 @@
     </div>
 
     <ng-template #noReviews>
-      <p class="no-reviews">No reviews yet for this provider.</p>
+      <p class="no-reviews">No reviews yet for this service.</p>
     </ng-template>
   </div>
 </div>
@@ -71,4 +69,3 @@
     <p>Loading service details...</p>
   </div>
 </ng-template>
-
