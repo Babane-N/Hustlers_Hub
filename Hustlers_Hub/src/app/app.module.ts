@@ -26,6 +26,7 @@ import { MyBookingsComponent } from './Customer/my-bookings/my-bookings.componen
 import { PendingBusinessesComponent } from './Admin/pending-businesses/pending-businesses.component';
 import { BookingDetailComponent } from './features/booking-detail/booking-detail.component';
 import { EditBusinessComponent } from './features/edit-business/edit-business.component';
+import { ServiceImageUploadComponent } from './features/service-image-upload/service-image-upload.component';
 
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
@@ -48,6 +49,7 @@ import { GoogleMapsModule } from '@angular/google-maps';
 import { SocialLoginModule, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
 import { GoogleLoginProvider, FacebookLoginProvider } from '@abacritt/angularx-social-login';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 
 
 
@@ -79,7 +81,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     MyBookingsComponent,
     PendingBusinessesComponent,
     BookingDetailComponent,
-    EditBusinessComponent
+    EditBusinessComponent,
+    ServiceImageUploadComponent,
   ],
   imports: [
     BrowserModule,

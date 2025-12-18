@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,11 +21,33 @@ namespace API.Controllers
             _context = context;
         }
 
+        // =========================
+        // 🔧 Helper: parse images
+        // =========================
+        private List<string> ParseImages(string? imageUrl)
+        {
+            if (string.IsNullOrWhiteSpace(imageUrl))
+                return new List<string>();
+
+            try
+            {
+                return JsonSerializer.Deserialize<List<string>>(imageUrl)
+                       ?? new List<string>();
+            }
+            catch
+            {
+                // backward compatibility (single image stored as string)
+                return new List<string> { imageUrl };
+            }
+        }
+
+        // =========================
         // ✅ GET: api/Services
+        // =========================
         [HttpGet]
         public async Task<ActionResult<IEnumerable<object>>> GetServices()
         {
-            var servicesWithBusiness = await _context.Services
+            var services = await _context.Services
                 .Include(s => s.Business)
                 .Select(s => new
                 {
@@ -32,21 +55,24 @@ namespace API.Controllers
                     s.Title,
                     s.Category,
                     s.Description,
-                    s.ImageUrl,
+                    images = ParseImages(s.ImageUrl), // ✅ MULTIPLE IMAGES
                     s.Price,
                     s.DurationMinutes,
-                    s.Business.Latitude,
-                    s.Business.Longitude,
+                    latitude = s.Business.Latitude,
+                    longitude = s.Business.Longitude,
                     businessName = s.Business.BusinessName,
                     businessLocation = s.Business.Location,
-                    logoUrl = s.Business.LogoUrl // ✅ Unified camelCase name
+                    logoUrl = s.Business.LogoUrl,
+                    isVerified = s.Business.IsVerified
                 })
                 .ToListAsync();
 
-            return Ok(servicesWithBusiness);
+            return Ok(services);
         }
 
+        // =========================
         // ✅ GET: api/Services/detail/{id}
+        // =========================
         [HttpGet("detail/{id}")]
         public async Task<ActionResult<object>> GetServiceWithBusiness(Guid id)
         {
@@ -59,11 +85,10 @@ namespace API.Controllers
                     s.Title,
                     s.Description,
                     s.Category,
-                    s.ImageUrl,
+                    images = ParseImages(s.ImageUrl), // ✅ MULTIPLE IMAGES
                     s.Price,
                     s.DurationMinutes,
-                    s.Business.Latitude,
-                    s.Business.Longitude,
+                    businessId = s.Business.Id,
                     businessName = s.Business.BusinessName,
                     logoUrl = s.Business.LogoUrl,
                     businessLocation = s.Business.Location,
@@ -78,19 +103,21 @@ namespace API.Controllers
             return Ok(service);
         }
 
+        // =========================
         // ✅ GET: api/Services/reviews/business/{businessId}
+        // =========================
         [HttpGet("reviews/business/{businessId}")]
         public async Task<ActionResult<IEnumerable<object>>> GetBusinessReviews(Guid businessId)
         {
             var reviews = await _context.Reviews
-                .Include(r => r.User) // join with user for reviewer name
+                .Include(r => r.User)
                 .Where(r => r.BusinessId == businessId)
                 .Select(r => new
                 {
                     r.Id,
                     r.Comment,
                     r.Rating,
-                    Reviewer = r.User.FullName,
+                    customerName = r.User.FullName,
                     r.CreatedAt
                 })
                 .ToListAsync();
@@ -98,7 +125,9 @@ namespace API.Controllers
             return Ok(reviews);
         }
 
+        // =========================
         // ✅ PUT: api/Services/{id}
+        // =========================
         [HttpPut("{id}")]
         public async Task<IActionResult> PutService(Guid id, Service service)
         {
@@ -115,24 +144,29 @@ namespace API.Controllers
             {
                 if (!ServiceExists(id))
                     return NotFound();
-                else
-                    throw;
+
+                throw;
             }
 
             return NoContent();
         }
 
+        // =========================
         // ✅ POST: api/Services
+        // =========================
         [HttpPost]
         public async Task<ActionResult<Service>> PostService(Service service)
         {
             _context.Services.Add(service);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetServiceWithBusiness), new { id = service.Id }, service);
+            return CreatedAtAction(nameof(GetServiceWithBusiness),
+                new { id = service.Id }, service);
         }
 
+        // =========================
         // ✅ DELETE: api/Services/{id}
+        // =========================
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteService(Guid id)
         {
@@ -152,3 +186,4 @@ namespace API.Controllers
         }
     }
 }
+

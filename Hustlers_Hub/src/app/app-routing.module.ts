@@ -21,6 +21,7 @@ import { AdminComponent } from './Admin/admin/admin.component';
 import { PendingBusinessesComponent } from './Admin/pending-businesses/pending-businesses.component';
 import { BookingDetailComponent } from './features/booking-detail/booking-detail.component';
 import { EditBusinessComponent } from './features/edit-business/edit-business.component';
+import { ServiceImageUploadComponent } from './features/service-image-upload/service-image-upload.component';
 
 const routes: Routes = [
   { path: '', component: HomePageComponent },
@@ -36,7 +37,7 @@ const routes: Routes = [
   { path: 'profile', component: ProfileComponent },
   { path: 'booking-detail/:id', component: BookingDetailComponent },
   { path: 'edit-business', component: EditBusinessComponent },
-
+  { path: 'service-image-upload', component: ServiceImageUploadComponent },
   {
     path: 'dashboard',
     component: DashboardComponent,

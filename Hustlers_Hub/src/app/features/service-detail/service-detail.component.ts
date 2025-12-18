@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ServiceProvider, ServiceDetail, Review } from './service.detail';
 import { BookingDialogComponent } from '../booking-dialog/booking-dialog.component';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-service-detail',
@@ -14,6 +15,7 @@ export class ServiceDetailComponent implements OnInit {
   service: ServiceDetail | null = null;
   reviews: Review[] = [];
   isLoading = true;
+  uploadsUrl = environment.uploadsUrl;
 
   constructor(
     private route: ActivatedRoute,
@@ -36,12 +38,13 @@ export class ServiceDetailComponent implements OnInit {
   private loadService(serviceId: string): void {
     this.serviceProvider.getServiceDetails(serviceId).subscribe({
       next: service => {
-        this.service = {
-          ...service,
-          hiddenImage: false // UI-only flag
-        };
+        // Normalize gallery images and logo
+        service.logoUrl = this.normalizeUrl(service.logoUrl);
+        service.images = this.normalizeImages(service.images);
 
+        this.service = service;
         this.isLoading = false;
+
         this.loadReviews(service.businessId);
       },
       error: err => {
@@ -53,14 +56,14 @@ export class ServiceDetailComponent implements OnInit {
 
   private loadReviews(businessId: string): void {
     this.serviceProvider.getBusinessReviews(businessId).subscribe({
-      next: reviews => (this.reviews = reviews),
+      next: reviews => this.reviews = reviews,
       error: err => console.error('Failed to load reviews', err)
     });
   }
 
-  hideImage(): void {
-    if (this.service) {
-      this.service.hiddenImage = true;
+  hideImage(imgUrl: string): void {
+    if (this.service && this.service.images) {
+      this.service.images = this.service.images.filter(i => i !== imgUrl);
     }
   }
 
@@ -72,5 +75,18 @@ export class ServiceDetailComponent implements OnInit {
       data: { serviceId: this.service.id }
     });
   }
-}
 
+  // 🔹 Make this public so template can access it
+  public normalizeUrl(url?: string | null): string | null {
+    if (!url) return null;
+    if (url.startsWith('http')) return url;
+    return `${this.uploadsUrl.replace(/\/+$/, '')}/${url.replace(/^\/+|uploads\/?/g, '')}`;
+  }
+
+  private normalizeImages(images?: string[]): string[] {
+    if (!images || !images.length) return [];
+    return images
+      .map(img => this.normalizeUrl(img))
+      .filter((img): img is string => !!img);
+  }
+}

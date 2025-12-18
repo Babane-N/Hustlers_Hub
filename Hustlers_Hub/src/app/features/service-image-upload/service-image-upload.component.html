@@ -1,0 +1,21 @@
+<div class="upload-card">
+  <h3>Upload Service Images</h3>
+
+  <input type="file"
+         multiple
+         accept="image/*"
+         (change)="onFileSelect($event)" />
+
+  <div class="preview-grid" *ngIf="previewUrls.length">
+    <img *ngFor="let img of previewUrls" [src]="img" />
+  </div>
+
+  <button mat-raised-button
+          color="primary"
+          (click)="uploadImages()"
+          [disabled]="uploading">
+    <mat-icon>cloud_upload</mat-icon>
+    Upload Images
+  </button>
+</div>
+
