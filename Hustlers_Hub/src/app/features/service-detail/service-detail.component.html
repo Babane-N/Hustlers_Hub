@@ -33,6 +33,10 @@
       </button>
     </div>
 
+    <app-service-image-upload *ngIf="service"
+                              [serviceId]="service.id">
+    </app-service-image-upload>
+
     <!-- Gallery -->
     <div class="gallery" *ngIf="service.images?.length">
       <div class="gallery-grid">

@@ -16,6 +16,7 @@ export class ServiceDetailComponent implements OnInit {
   reviews: Review[] = [];
   isLoading = true;
   uploadsUrl = environment.uploadsUrl;
+  serviceId!: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -24,15 +25,16 @@ export class ServiceDetailComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const serviceId = this.route.snapshot.paramMap.get('id');
+    const id = this.route.snapshot.paramMap.get('id');
 
-    if (!serviceId) {
+    if (!id) {
       console.error('Missing service ID');
       this.isLoading = false;
       return;
     }
 
-    this.loadService(serviceId);
+    this.serviceId = id;     
+    this.loadService(id);
   }
 
   private loadService(serviceId: string): void {
