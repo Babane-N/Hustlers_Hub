@@ -14,7 +14,7 @@
           color="primary"
           type="button"
           (click)="uploadImages()"
-          [disabled]="uploading || !businessId || selectedFiles.length === 0">
+          [disabled]="uploading || selectedFiles.length === 0">
     <mat-icon>cloud_upload</mat-icon>
     Upload Images
   </button>
