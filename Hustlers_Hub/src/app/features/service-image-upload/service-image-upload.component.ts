@@ -9,7 +9,7 @@ import { environment } from '../../../environments/environment';
 })
 export class ServiceImageUploadComponent {
 
-  @Input() serviceId!: string; // service.id will be passed here
+  @Input() businessId!: string; // service.id will be passed here
 
   selectedFiles: File[] = [];
   uploading = false;
@@ -28,7 +28,7 @@ export class ServiceImageUploadComponent {
   }
 
   uploadImages(): void {
-    if (!this.serviceId || this.selectedFiles.length === 0) {
+    if (!this.businessId || this.selectedFiles.length === 0) {
       console.warn('Missing serviceId or no files selected');
       return;
     }
@@ -38,7 +38,7 @@ export class ServiceImageUploadComponent {
 
     this.uploading = true;
 
-    this.http.post(`${environment.apiUrl}/Services/upload-images/${this.serviceId}`, formData)
+    this.http.post(`${environment.apiUrl}/Services/upload-images/${this.businessId}`, formData)
       .subscribe({
         next: () => {
           alert('Images uploaded successfully');

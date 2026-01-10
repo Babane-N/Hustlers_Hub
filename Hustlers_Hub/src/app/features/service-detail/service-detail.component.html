@@ -33,8 +33,8 @@
       </button>
     </div>
 
-    <app-service-image-upload *ngIf="service"
-                              [serviceId]="service.id">
+    <app-service-image-upload *ngIf="service?.businessId"
+                              [businessId]="service.businessId">
     </app-service-image-upload>
 
     <!-- Gallery -->
