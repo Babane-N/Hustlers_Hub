@@ -1,22 +1,36 @@
 <div class="upload-card">
+
   <h3>Upload Service Images</h3>
 
+  <!-- Service selector -->
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Select Service</mat-label>
+    <mat-select [(value)]="selectedServiceId"
+                [disabled]="loadingServices || services.length === 0">
+
+      <mat-option *ngFor="let service of services" [value]="service.id">
+        {{ service.title }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- File input -->
   <input type="file"
          multiple
          accept="image/*"
          (change)="onFileSelect($event)" />
 
+  <!-- Preview -->
   <div class="preview-grid" *ngIf="previewUrls.length">
     <img *ngFor="let img of previewUrls" [src]="img" />
   </div>
 
+  <!-- Upload button -->
   <button mat-raised-button
           color="primary"
-          type="button"
           (click)="uploadImages()"
-          [disabled]="uploading || selectedFiles.length === 0">
-    <mat-icon>cloud_upload</mat-icon>
-    Upload Images
+          [disabled]="uploading || !selectedServiceId || selectedFiles.length === 0">
+    {{ uploading ? 'Uploading...' : 'Upload Images' }}
   </button>
-</div>
 
+</div>

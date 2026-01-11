@@ -4,6 +4,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { RegisterComponent } from './features/auth/register/register.component';
 import { RoleGuard } from './features/auth/role.guard';
 import { LoginComponent } from './features/auth/login/login.component';
+import { ForgetPasswordComponent } from './features/auth/forget-password/forget-password.component';
+import { ResetPasswordComponent } from './features/auth/reset-password/reset-password.component';
 import { HomeComponent } from './home/home.component';
 import { RegisterBusinessComponent } from './features/register-business/register-business.component';
 import { FindServiceComponent } from './features/find-service/find-service.component';
@@ -38,6 +40,8 @@ const routes: Routes = [
   { path: 'booking-detail/:id', component: BookingDetailComponent },
   { path: 'edit-business', component: EditBusinessComponent },
   { path: 'service-image-upload', component: ServiceImageUploadComponent },
+  { path: 'forgot-password', component: ForgetPasswordComponent },
+  { path: 'reset-password', component: ResetPasswordComponent },
   {
     path: 'dashboard',
     component: DashboardComponent,

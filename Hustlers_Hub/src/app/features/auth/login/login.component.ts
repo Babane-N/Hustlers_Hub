@@ -139,6 +139,10 @@ export class LoginComponent {
       });
   }
 
+  goToForgotPassword() {
+    this.router.navigate(['/forgot-password']);
+  }
+
   handleSocialError(err: any, provider: string) {
     console.error(`${provider} login error:`, err);
     this.loginError = err?.error?.message || `${provider} login failed`;

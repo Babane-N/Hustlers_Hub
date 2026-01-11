@@ -58,6 +58,22 @@ export class ServiceProvider {
       .filter((img): img is string => !!img);
   }
 
+  // 📋 Get services by business
+  getServicesByBusiness(businessId: string): Observable<ServiceDetail[]> {
+    return this.http
+      .get<ServiceDetail[]>(`${this.baseUrl}/business/${businessId}`)
+      .pipe(
+        map(services =>
+          services.map(service => ({
+            ...service,
+            logoUrl: this.normalizeUrl(service.logoUrl),
+            images: this.normalizeImages(service.images)
+          }))
+        )
+      );
+  }
+
+
   // 📌 Get service details
   getServiceDetails(id: string): Observable<ServiceDetail> {
     return this.http

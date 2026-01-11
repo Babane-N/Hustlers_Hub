@@ -35,6 +35,7 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<JwtService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 
 // ---------------------------
