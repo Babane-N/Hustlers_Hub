@@ -36,7 +36,6 @@ namespace API.Controllers
             }
             catch
             {
-                // backward compatibility (single image stored as string)
                 return new List<string> { imageUrl };
             }
         }
@@ -47,13 +46,30 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<object>>> GetServices()
         {
-            // Fetch services with their businesses first
-            var servicesFromDb = await _context.Services
+            // Select only raw fields EF Core can translate
+            var rawServices = await _context.Services
                 .Include(s => s.Business)
+                .Select(s => new
+                {
+                    s.Id,
+                    s.Title,
+                    s.Category,
+                    s.Description,
+                    s.ImageUrl,
+                    s.Price,
+                    s.DurationMinutes,
+                    BusinessId = s.Business != null ? s.Business.Id : (Guid?)null,
+                    BusinessName = s.Business != null ? s.Business.BusinessName : null,
+                    BusinessLocation = s.Business != null ? s.Business.Location : null,
+                    LogoUrl = s.Business != null ? s.Business.LogoUrl : null,
+                    Latitude = s.Business != null ? s.Business.Latitude : (double?)null,
+                    Longitude = s.Business != null ? s.Business.Longitude : (double?)null,
+                    IsVerified = s.Business != null ? s.Business.IsVerified : false
+                })
                 .ToListAsync();
 
-            // Project safely after fetching
-            var services = servicesFromDb.Select(s => new
+            // Project in memory (safe for ParseImages and null-handling)
+            var services = rawServices.Select(s => new
             {
                 s.Id,
                 s.Title,
@@ -62,12 +78,12 @@ namespace API.Controllers
                 images = ParseImages(s.ImageUrl),
                 s.Price,
                 s.DurationMinutes,
-                latitude = s.Business?.Latitude,
-                longitude = s.Business?.Longitude,
-                businessName = s.Business?.BusinessName ?? "",
-                businessLocation = s.Business?.Location ?? "",
-                logoUrl = s.Business?.LogoUrl ?? "",
-                isVerified = s.Business?.IsVerified ?? false
+                latitude = s.Latitude,
+                longitude = s.Longitude,
+                businessName = s.BusinessName ?? "",
+                businessLocation = s.BusinessLocation ?? "",
+                logoUrl = s.LogoUrl ?? "",
+                isVerified = s.IsVerified
             });
 
             return Ok(services);
@@ -79,28 +95,46 @@ namespace API.Controllers
         [HttpGet("detail/{id}")]
         public async Task<ActionResult<object>> GetServiceWithBusiness(Guid id)
         {
-            var serviceFromDb = await _context.Services
+            var s = await _context.Services
                 .Include(s => s.Business)
-                .FirstOrDefaultAsync(s => s.Id == id);
+                .Where(s => s.Id == id)
+                .Select(s => new
+                {
+                    s.Id,
+                    s.Title,
+                    s.Description,
+                    s.Category,
+                    s.ImageUrl,
+                    s.Price,
+                    s.DurationMinutes,
+                    BusinessId = s.Business != null ? s.Business.Id : (Guid?)null,
+                    BusinessName = s.Business != null ? s.Business.BusinessName : null,
+                    LogoUrl = s.Business != null ? s.Business.LogoUrl : null,
+                    BusinessLocation = s.Business != null ? s.Business.Location : null,
+                    BusinessDescription = s.Business != null ? s.Business.Description : null,
+                    IsVerified = s.Business != null ? s.Business.IsVerified : false
+                })
+                .FirstOrDefaultAsync();
 
-            if (serviceFromDb == null)
+            if (s == null)
                 return NotFound();
 
+            // Final projection in memory
             var service = new
             {
-                serviceFromDb.Id,
-                serviceFromDb.Title,
-                serviceFromDb.Description,
-                serviceFromDb.Category,
-                images = ParseImages(serviceFromDb.ImageUrl),
-                serviceFromDb.Price,
-                serviceFromDb.DurationMinutes,
-                businessId = serviceFromDb.Business?.Id,
-                businessName = serviceFromDb.Business?.BusinessName ?? "",
-                logoUrl = serviceFromDb.Business?.LogoUrl ?? "",
-                businessLocation = serviceFromDb.Business?.Location ?? "",
-                businessDescription = serviceFromDb.Business?.Description ?? "",
-                isVerified = serviceFromDb.Business?.IsVerified ?? false
+                s.Id,
+                s.Title,
+                s.Description,
+                s.Category,
+                images = ParseImages(s.ImageUrl),
+                s.Price,
+                s.DurationMinutes,
+                businessId = s.BusinessId,
+                businessName = s.BusinessName ?? "",
+                logoUrl = s.LogoUrl ?? "",
+                businessLocation = s.BusinessLocation ?? "",
+                businessDescription = s.BusinessDescription ?? "",
+                isVerified = s.IsVerified
             };
 
             return Ok(service);
