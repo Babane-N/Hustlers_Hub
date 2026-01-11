@@ -1,7 +1,9 @@
 <!-- Hero Section -->
 <div class="hero-heading">
   <h2>Local Hustlers, Trusted Services</h2>
-  <p class="slogan">Empowering small businesses near you, one connection at a time.</p>
+  <p class="slogan">
+    Empowering small businesses near you, one connection at a time.
+  </p>
 
   <button class="register-btn" (click)="goToRegisterBusiness()">
     + Register Your Business
@@ -17,7 +19,10 @@
 
   <select [(ngModel)]="selectedService">
     <option value="">All Services</option>
-    <option *ngFor="let service of uniqueServices" [value]="service">{{ service }}</option>
+    <option *ngFor="let service of uniqueServices"
+            [value]="service">
+      {{ service }}
+    </option>
   </select>
 
   <select [(ngModel)]="sortBy">
@@ -27,63 +32,79 @@
 
   <!-- Toggle Buttons -->
   <div class="view-toggle">
-    <button mat-stroked-button color="primary"
+    <button mat-stroked-button
+            color="primary"
             (click)="toggleView('list')"
-            [disabled]="viewMode==='list'">
-      <mat-icon>view_list</mat-icon> List View
+            [disabled]="viewMode === 'list'">
+      <mat-icon>view_list</mat-icon>
+      List View
     </button>
-    <button mat-stroked-button color="primary"
+
+    <button mat-stroked-button
+            color="primary"
             (click)="toggleView('map')"
-            [disabled]="viewMode==='map'">
-      <mat-icon>map</mat-icon> Map View
+            [disabled]="viewMode === 'map'">
+      <mat-icon>map</mat-icon>
+      Map View
     </button>
   </div>
 </div>
 
-<!-- Results List -->
-<div *ngIf="viewMode==='list'" class="results-grid">
+<!-- ===================== -->
+<!-- 📋 LIST VIEW -->
+<!-- ===================== -->
+<div *ngIf="viewMode === 'list'" class="results-grid">
+
   <div class="service-card"
        *ngFor="let provider of filteredProviders"
        (click)="goFindServiceDetail(provider)"
        style="cursor: pointer;">
 
-    <!-- Service Image -->
-    <div class="service-img-container" *ngIf="provider.imageUrl && !provider.hiddenImage">
-      <img [src]="getServiceImage(provider)"
-           alt="{{ provider.businessName }} Image"
+    <!-- 🏢 Business Logo -->
+    <div class="service-img-container" *ngIf="provider.logoUrl">
+      <img [src]="provider.logoUrl"
+           alt="{{ provider.businessName }} Logo"
            class="service-img"
-           (error)="hideImage(provider)" />
+           loading="lazy"
+           (error)="provider.logoUrl = null" />
     </div>
 
-    <!-- Service Info -->
+    <!-- ℹ️ Service Info -->
     <div class="service-info">
       <h3>{{ provider.businessName }}</h3>
 
-      <!-- ✅ Verified text below business name -->
+      <!-- ✅ Verified Badge -->
       <p *ngIf="provider.isVerified" class="verified-text">
         <mat-icon class="verified-icon">check_circle</mat-icon>
         Verified
       </p>
 
       <p class="service">{{ provider.category }}</p>
+
       <p class="location">
-        <mat-icon>location_on</mat-icon> {{ provider.businessLocation }}
+        <mat-icon>location_on</mat-icon>
+        {{ provider.businessLocation }}
       </p>
+
       <p class="bio">{{ provider.description }}</p>
     </div>
   </div>
 </div>
 
-<!-- Map View -->
-<div *ngIf="viewMode==='map'" class="map-container">
-  <google-map height="500px" width="100%"
+<!-- ===================== -->
+<!-- 🗺️ MAP VIEW -->
+<!-- ===================== -->
+<div *ngIf="viewMode === 'map'" class="map-container">
+  <google-map height="500px"
+              width="100%"
               [center]="center"
               [zoom]="zoom">
+
     <map-marker *ngFor="let marker of mapMarkers"
                 [position]="marker.position"
                 [title]="marker.title"
                 (mapClick)="goFindServiceDetail(marker.provider)">
     </map-marker>
+
   </google-map>
 </div>
-
