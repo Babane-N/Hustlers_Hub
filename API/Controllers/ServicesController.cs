@@ -24,7 +24,7 @@ namespace API.Controllers
         // =========================
         // 🔧 Helper: parse images
         // =========================
-        private List<string> ParseImages(string? imageUrl)
+        private static List<string> ParseImages(string? imageUrl)
         {
             if (string.IsNullOrWhiteSpace(imageUrl))
                 return new List<string>();
@@ -47,25 +47,28 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<object>>> GetServices()
         {
-            var services = await _context.Services
+            // Fetch services with their businesses first
+            var servicesFromDb = await _context.Services
                 .Include(s => s.Business)
-                .Select(s => new
-                {
-                    s.Id,
-                    s.Title,
-                    s.Category,
-                    s.Description,
-                    images = ParseImages(s.ImageUrl), // ✅ MULTIPLE IMAGES
-                    s.Price,
-                    s.DurationMinutes,
-                    latitude = s.Business.Latitude,
-                    longitude = s.Business.Longitude,
-                    businessName = s.Business.BusinessName,
-                    businessLocation = s.Business.Location,
-                    logoUrl = s.Business.LogoUrl,
-                    isVerified = s.Business.IsVerified
-                })
                 .ToListAsync();
+
+            // Project safely after fetching
+            var services = servicesFromDb.Select(s => new
+            {
+                s.Id,
+                s.Title,
+                s.Category,
+                s.Description,
+                images = ParseImages(s.ImageUrl),
+                s.Price,
+                s.DurationMinutes,
+                latitude = s.Business?.Latitude,
+                longitude = s.Business?.Longitude,
+                businessName = s.Business?.BusinessName ?? "",
+                businessLocation = s.Business?.Location ?? "",
+                logoUrl = s.Business?.LogoUrl ?? "",
+                isVerified = s.Business?.IsVerified ?? false
+            });
 
             return Ok(services);
         }
@@ -76,29 +79,29 @@ namespace API.Controllers
         [HttpGet("detail/{id}")]
         public async Task<ActionResult<object>> GetServiceWithBusiness(Guid id)
         {
-            var service = await _context.Services
+            var serviceFromDb = await _context.Services
                 .Include(s => s.Business)
-                .Where(s => s.Id == id)
-                .Select(s => new
-                {
-                    s.Id,
-                    s.Title,
-                    s.Description,
-                    s.Category,
-                    images = ParseImages(s.ImageUrl), // ✅ MULTIPLE IMAGES
-                    s.Price,
-                    s.DurationMinutes,
-                    businessId = s.Business.Id,
-                    businessName = s.Business.BusinessName,
-                    logoUrl = s.Business.LogoUrl,
-                    businessLocation = s.Business.Location,
-                    businessDescription = s.Business.Description,
-                    isVerified = s.Business.IsVerified
-                })
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(s => s.Id == id);
 
-            if (service == null)
+            if (serviceFromDb == null)
                 return NotFound();
+
+            var service = new
+            {
+                serviceFromDb.Id,
+                serviceFromDb.Title,
+                serviceFromDb.Description,
+                serviceFromDb.Category,
+                images = ParseImages(serviceFromDb.ImageUrl),
+                serviceFromDb.Price,
+                serviceFromDb.DurationMinutes,
+                businessId = serviceFromDb.Business?.Id,
+                businessName = serviceFromDb.Business?.BusinessName ?? "",
+                logoUrl = serviceFromDb.Business?.LogoUrl ?? "",
+                businessLocation = serviceFromDb.Business?.Location ?? "",
+                businessDescription = serviceFromDb.Business?.Description ?? "",
+                isVerified = serviceFromDb.Business?.IsVerified ?? false
+            };
 
             return Ok(service);
         }
@@ -186,4 +189,3 @@ namespace API.Controllers
         }
     }
 }
-
