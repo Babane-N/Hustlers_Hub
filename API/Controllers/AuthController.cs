@@ -36,77 +36,6 @@ namespace API.Controllers
         }
 
         // ----------------------------
-        // 🔐 REGISTER
-        // ----------------------------
-        [HttpPost("register")]
-        [AllowAnonymous]
-        public async Task<IActionResult> Register([FromBody] RegisterUserDto dto)
-        {
-            if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
-                return BadRequest("Email and password are required.");
-
-            if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
-                return BadRequest("Email is already registered.");
-
-            var user = new User
-            {
-                Id = Guid.NewGuid(),
-                FullName = dto.FullName,
-                Email = dto.Email,
-                PhoneNumber = dto.PhoneNumber,
-                UserType = dto.UserType,
-                CreatedAt = DateTime.UtcNow,
-                AuthProvider = "Local"
-            };
-
-            user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            var token = _jwtService.GenerateToken(user.Id.ToString(), user.UserType.ToString());
-
-            return Ok(new
-            {
-                userId = user.Id,
-                email = user.Email,
-                role = user.UserType.ToString(),
-                token
-            });
-        }
-
-        // ----------------------------
-        // 🔑 LOGIN
-        // ----------------------------
-        [HttpPost("login")]
-        [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] LoginRequestDto dto)
-        {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
-            if (user == null)
-                return Unauthorized("Invalid email or password.");
-
-            var result = _passwordHasher.VerifyHashedPassword(
-                user,
-                user.PasswordHash,
-                dto.Password
-            );
-
-            if (result != PasswordVerificationResult.Success)
-                return Unauthorized("Invalid email or password.");
-
-            var token = _jwtService.GenerateToken(user.Id.ToString(), user.UserType.ToString());
-
-            return Ok(new
-            {
-                userId = user.Id,
-                email = user.Email,
-                role = user.UserType.ToString(),
-                token
-            });
-        }
-
-        // ----------------------------
         // 🔁 FORGOT PASSWORD
         // ----------------------------
         [HttpPost("forgot-password")]
@@ -115,31 +44,45 @@ namespace API.Controllers
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
 
-            // Always return OK (do not reveal user existence)
+            // Always return OK to prevent email enumeration
             if (user == null)
                 return Ok();
 
-            var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
-            var tokenHash = HashToken(token);
+            // Generate secure token
+            var rawToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+            var tokenHash = HashToken(rawToken);
 
             var resetToken = new PasswordResetToken
             {
+                Id = Guid.NewGuid(),
                 UserId = user.Id,
                 TokenHash = tokenHash,
                 ExpiryDate = DateTime.UtcNow.AddHours(1),
-                IsUsed = false
+                IsUsed = false,
+                CreatedAt = DateTime.UtcNow
             };
 
             _context.PasswordResetTokens.Add(resetToken);
             await _context.SaveChangesAsync();
 
             var resetLink =
-                $"{_config["FrontendUrl"]}/reset-password?token={Uri.EscapeDataString(token)}&email={Uri.EscapeDataString(dto.Email)}";
+                $"{_config["FrontendUrl"]}/reset-password" +
+                $"?token={Uri.EscapeDataString(rawToken)}" +
+                $"&email={Uri.EscapeDataString(dto.Email)}";
 
             await _emailService.SendAsync(
                 dto.Email,
                 "Reset your Hustlers Hub password",
-                $"Click the link below to reset your password:\n\n{resetLink}\n\nThis link expires in 1 hour."
+                $@"
+Hi {user.FullName},
+
+Click the link below to reset your password:
+
+{resetLink}
+
+This link expires in 1 hour.
+If you did not request this, please ignore this email.
+"
             );
 
             return Ok();
@@ -156,20 +99,16 @@ namespace API.Controllers
             if (user == null)
                 return BadRequest("Invalid request.");
 
-            var tokenEntry = await _context.PasswordResetTokens
-                .Where(t =>
-                    t.UserId == user.Id &&
-                    !t.IsUsed &&
-                    t.ExpiryDate > DateTime.UtcNow)
-                .OrderByDescending(t => t.CreatedAt)
-                .FirstOrDefaultAsync();
-
-            if (tokenEntry == null)
-                return BadRequest("Invalid or expired token.");
-
             var incomingTokenHash = HashToken(dto.Token);
 
-            if (tokenEntry.TokenHash != incomingTokenHash)
+            var tokenEntry = await _context.PasswordResetTokens.FirstOrDefaultAsync(t =>
+                t.UserId == user.Id &&
+                t.TokenHash == incomingTokenHash &&
+                !t.IsUsed &&
+                t.ExpiryDate > DateTime.UtcNow
+            );
+
+            if (tokenEntry == null)
                 return BadRequest("Invalid or expired token.");
 
             user.PasswordHash = _passwordHasher.HashPassword(user, dto.NewPassword);
@@ -194,21 +133,6 @@ namespace API.Controllers
     // ----------------------------
     // DTOs
     // ----------------------------
-    public class RegisterUserDto
-    {
-        public string FullName { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string PhoneNumber { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-        public UserType UserType { get; set; }
-    }
-
-    public class LoginRequestDto
-    {
-        public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-    }
-
     public class ForgotPasswordDto
     {
         public string Email { get; set; } = string.Empty;
