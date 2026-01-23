@@ -12,14 +12,12 @@ export interface BusinessDetail {
   title: string;
   description: string;
   category: string;
-
-  images: string[];              // ✅ MULTIPLE IMAGES (gallery)
-
   price: number;
   durationMinutes: number;
   businessId: string;
   businessName: string;
   logoUrl?: string | null;
+  images?: string[];
   businessLocation: string;
   businessDescription?: string;
   isVerified: boolean;

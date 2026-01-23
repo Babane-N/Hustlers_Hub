@@ -10,6 +10,7 @@ namespace API.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Business> Businesses { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        public DbSet<BusinessImage> BusinessImages { get; set; }
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<Comment> Comments { get; set; }

@@ -52,5 +52,6 @@ namespace API.Data.Models
 
         // RELATIONSHIPS
         public ICollection<Review> Reviews { get; set; }
+        public ICollection<BusinessImage> Images { get; set; } = new List<BusinessImage>();
     }
 }

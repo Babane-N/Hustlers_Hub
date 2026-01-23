@@ -70,6 +70,7 @@ namespace API.Controllers
         public async Task<IActionResult> GetBusiness(Guid id)
         {
             var business = await _context.Businesses
+                .Include(b => b.Images)
                 .Include(b => b.Reviews)
                 .ThenInclude(r => r.User)
                 .FirstOrDefaultAsync(b => b.Id == id && b.IsApproved);
@@ -77,7 +78,16 @@ namespace API.Controllers
             if (business == null)
                 return NotFound();
 
-            return Ok(business);
+            return Ok(new
+            {
+                business.Id,
+                business.BusinessName,
+                business.Description,
+                business.Category,
+                business.LogoUrl,
+                business.IsVerified,
+                images = business.Images.Select(i => i.ImageUrl)
+            });
         }
 
         // =====================================================
@@ -140,21 +150,28 @@ namespace API.Controllers
             var business = await _context.Businesses.FindAsync(id);
             if (business == null) return NotFound();
 
+            var uploadsFolder = Path.Combine(_env.WebRootPath ?? "wwwroot", "uploads");
+            Directory.CreateDirectory(uploadsFolder);
+
             foreach (var file in images)
             {
-                var uploadsFolder = Path.Combine(_env.WebRootPath ?? "wwwroot", "uploads");
-                Directory.CreateDirectory(uploadsFolder);
                 var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
                 var filePath = Path.Combine(uploadsFolder, fileName);
 
                 using var stream = new FileStream(filePath, FileMode.Create);
                 await file.CopyToAsync(stream);
 
-                // Optional: save URLs in a BusinessImages table or in JSON column
+                _context.BusinessImages.Add(new BusinessImage
+                {
+                    BusinessId = id,
+                    ImageUrl = $"/uploads/{fileName}"
+                });
             }
 
+            await _context.SaveChangesAsync();
             return Ok(new { message = "Images uploaded successfully" });
         }
+
 
 
         // =====================================================

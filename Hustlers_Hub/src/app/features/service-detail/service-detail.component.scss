@@ -2,47 +2,27 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-
+  /* ================= HERO ================= */
   .service-hero {
     display: flex;
     align-items: center;
     gap: 1.5rem;
     margin-bottom: 2rem;
 
-    .hero-left {
-      .provider-logo {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        object-fit: cover;
-      }
+    .provider-logo {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
     }
 
     .hero-info {
       h1 {
         font-size: 2rem;
         color: #a87450;
-        margin-bottom: 0.5rem;
         display: flex;
         align-items: center;
-        flex-wrap: wrap;
         gap: 0.5rem;
-      }
-
-      .verified-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.3rem;
-        color: #4caf50;
-        background: rgba(76, 175, 80, 0.1);
-        padding: 0.2rem 0.6rem;
-        border-radius: 12px;
-        font-weight: 600;
-        font-size: 0.9rem;
-
-        mat-icon {
-          font-size: 1.1rem;
-        }
       }
 
       .category {
@@ -50,105 +30,108 @@
         color: #7a4f25;
       }
     }
-  }
 
+    .verified-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: rgba(76, 175, 80, 0.15);
+      color: #4caf50;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+  }
+  /* ================= BODY ================= */
   .service-body {
     display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-
-    .service-info-card {
-      flex: 1 1 300px;
-      background-color: #fff8f0;
-      border-radius: 12px;
-      padding: 1.5rem;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-
-      h2 {
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
-        color: #a87450;
-      }
-
-      .description {
-        font-size: 1rem;
-        color: #444;
-        margin-bottom: 1rem;
-      }
-
-      .service-meta {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        font-size: 0.95rem;
-        color: #555;
-        margin-bottom: 1rem;
-
-        mat-icon {
-          vertical-align: middle;
-          margin-right: 0.25rem;
-        }
-      }
-
-      .book-btn {
-        background: linear-gradient(45deg, #8b4000, #a87450);
-        border: none;
-        border-radius: 30px;
-        padding: 0.75rem 1.5rem;
-        color: #fff3e6;
-        font-weight: 700;
-        font-size: 1rem;
-        cursor: pointer;
-        box-shadow: 0 4px 12px rgba(139, 64, 0, 0.5);
-        transition: background 0.3s ease, transform 0.2s ease;
-
-        &:hover {
-          background: linear-gradient(45deg, #a87450, #8b4000);
-          transform: scale(1.05);
-        }
-      }
-    }
-
-    .gallery {
-      flex: 1 1 300px;
-
-      .gallery-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 1rem;
-      }
-
-      img {
-        width: 100%;
-        height: 180px;
-        border-radius: 12px;
-        object-fit: cover;
-        background-color: #fff8f0;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        transition: transform 0.2s ease;
-
-        &:hover {
-          transform: scale(1.03);
-        }
-      }
-    }
+    flex-direction: column;
+    gap: 2.5rem;
   }
+  /* ================= INFO CARD ================= */
+  .service-info-card {
+    background: #fff8f0;
+    border-radius: 14px;
+    padding: 1.75rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 
-  .reviews-section {
-    margin-top: 2rem;
-
-    h3 {
-      font-size: 1.5rem;
+    h2 {
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
       color: #a87450;
+    }
+
+    .description {
+      font-size: 1rem;
+      color: #444;
       margin-bottom: 1rem;
     }
 
+    .service-meta {
+      font-size: 0.95rem;
+      color: #555;
+      margin-bottom: 1.25rem;
+
+      mat-icon {
+        vertical-align: middle;
+        margin-right: 0.25rem;
+      }
+    }
+
+    .book-btn {
+      background: linear-gradient(45deg, #8b4000, #a87450);
+      border: none;
+      border-radius: 30px;
+      padding: 0.75rem 1.6rem;
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: transform 0.2s ease;
+
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
+  }
+  /* ================= SECTIONS ================= */
+  .section-title {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    color: #a87450;
+  }
+  /* ================= GALLERY ================= */
+  .gallery {
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+
+    img {
+      width: 100%;
+      height: 180px;
+      border-radius: 12px;
+      object-fit: cover;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s ease;
+
+      &:hover {
+        transform: scale(1.04);
+      }
+    }
+  }
+  /* ================= REVIEWS ================= */
+  .reviews-section {
     .review-card {
-      background-color: #fff8f0;
+      background: #fff8f0;
       border-radius: 12px;
       padding: 1rem;
       margin-bottom: 1rem;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 
       .review-header {
         display: flex;
@@ -169,8 +152,8 @@
     }
 
     .no-reviews {
-      font-size: 0.95rem;
       color: #777;
+      font-size: 0.95rem;
     }
   }
 }

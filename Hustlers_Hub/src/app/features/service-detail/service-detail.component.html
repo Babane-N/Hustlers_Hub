@@ -1,5 +1,6 @@
 <div class="service-detail-container" *ngIf="business && !isLoading; else loading">
-  <!-- Header / Hero Section -->
+
+  <!-- Header / Hero -->
   <div class="service-hero">
     <div class="hero-left" *ngIf="business.logoUrl">
       <img class="provider-logo"
@@ -18,23 +19,34 @@
     </div>
   </div>
 
-  <!-- Service Description -->
+  <!-- BODY -->
   <div class="service-body">
+
+    <!-- INFO CARD -->
     <div class="service-info-card">
-      <h2>{{ business.title }}</h2>
-      <p class="description">{{ business.description }}</p>
+      <h2>{{ business.businessName }}</h2>
+
+      <p class="description">
+        {{ business.description }}
+      </p>
 
       <div class="service-meta" *ngIf="business.businessLocation">
-        <p><mat-icon>location_on</mat-icon> {{ business.businessLocation }}</p>
+        <p>
+          <mat-icon>location_on</mat-icon>
+          {{ business.businessLocation }}
+        </p>
       </div>
 
       <button class="book-btn" (click)="openBookingDialog()">
-        <mat-icon>calendar_today</mat-icon> Book Now
+        <mat-icon>calendar_today</mat-icon>
+        Book Now
       </button>
     </div>
 
-    <!-- Gallery -->
+    <!-- GALLERY -->
     <div class="gallery" *ngIf="business.images?.length">
+      <h3 class="section-title">Gallery</h3>
+
       <div class="gallery-grid">
         <img *ngFor="let img of business.images"
              [src]="img"
@@ -42,18 +54,22 @@
       </div>
     </div>
 
-    <!-- Reviews Section -->
+    <!-- REVIEWS -->
     <div class="reviews-section">
-      <h3>Customer Reviews</h3>
+      <h3 class="section-title">Customer Reviews</h3>
 
       <div *ngIf="reviews.length > 0; else noReviews">
         <div class="review-card" *ngFor="let review of reviews">
           <div class="review-header">
             <strong>{{ review.reviewer }}</strong>
+
             <span class="rating">
-              <mat-icon *ngFor="let star of [].constructor(review.rating)">star</mat-icon>
+              <mat-icon *ngFor="let star of [].constructor(review.rating)">
+                star
+              </mat-icon>
             </span>
           </div>
+
           <p class="comment">{{ review.comment }}</p>
         </div>
       </div>
@@ -62,6 +78,7 @@
         <p class="no-reviews">No reviews yet for this business.</p>
       </ng-template>
     </div>
+
   </div>
 </div>
 
