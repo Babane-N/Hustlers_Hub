@@ -38,7 +38,7 @@ export interface Review {
 
 @Injectable({ providedIn: 'root' })
 export class ServiceProvider {
-  private baseUrl = `${environment.apiUrl}/Businesses/public`;
+  private baseUrl = `${environment.apiUrl}/Businesses`;
   private uploadsUrl = environment.uploadsUrl;
 
   constructor(private http: HttpClient) { }
@@ -77,7 +77,7 @@ export class ServiceProvider {
   // 📌 Get service details
   getServiceDetails(id: string): Observable<BusinessDetail> {
     return this.http
-      .get<BusinessDetail>(`${this.baseUrl}/detail/${id}`)
+      .get<BusinessDetail>(`${this.baseUrl}/${id}`)
       .pipe(
         map(service => ({
           ...service,

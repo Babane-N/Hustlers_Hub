@@ -6,7 +6,8 @@
   <mat-form-field appearance="outline" class="full-width">
     <mat-label>Select Business</mat-label>
 
-    <mat-select [(value)]="selectedBusinessId"
+    <mat-select [(ngModel)]="selectedBusinessId"
+                name="business"
                 [disabled]="loadingBusinesses || businesses.length === 0">
 
       <mat-option *ngFor="let business of businesses" [value]="business.id">
@@ -15,7 +16,6 @@
 
     </mat-select>
   </mat-form-field>
-
 
   <!-- File input -->
   <input type="file"

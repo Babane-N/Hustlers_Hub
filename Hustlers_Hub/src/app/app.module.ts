@@ -40,6 +40,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatCardModule } from '@angular/material/card';
@@ -102,7 +103,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     MatMenuModule,
     GoogleMapsModule,
     SocialLoginModule,
-    BrowserAnimationsModule 
+    BrowserAnimationsModule,
+    MatSelectModule
   ],
   providers: [
     provideAnimationsAsync(),
