@@ -23,67 +23,170 @@ import { AdminComponent } from './Admin/admin/admin.component';
 import { PendingBusinessesComponent } from './Admin/pending-businesses/pending-businesses.component';
 import { BookingDetailComponent } from './features/booking-detail/booking-detail.component';
 import { EditBusinessComponent } from './features/edit-business/edit-business.component';
-import { ServiceImageUploadComponent } from './features/service-image-upload/service-image-upload.component';
+import { BusinessImageUploadComponent } from './features/business-image-upload/business-image-upload.component';
 
 const routes: Routes = [
+
+  // =========================
+  // PUBLIC ROUTES
+  // =========================
   { path: '', component: HomePageComponent },
   { path: 'home-page', component: HomePageComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'login', component: LoginComponent },
   { path: 'home', component: HomeComponent },
-  { path: 'business-switcher', component: BusinessSwitcherComponent },
   { path: 'find-service', component: FindServiceComponent },
   { path: 'service-detail/:id', component: ServiceDetailComponent },
-  { path: 'bookings', component: BookingsComponent },
-  { path: 'my-bookings', component: MyBookingsComponent },
-  { path: 'profile', component: ProfileComponent },
-  { path: 'booking-detail/:id', component: BookingDetailComponent },
-  { path: 'edit-business', component: EditBusinessComponent },
-  { path: 'service-image-upload', component: ServiceImageUploadComponent },
+
+  { path: 'register', component: RegisterComponent },
+  { path: 'login', component: LoginComponent },
   { path: 'forgot-password', component: ForgetPasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
+
+  // =========================
+  // AUTHENTICATED – NO SERVICE REQUIRED
+  // =========================
   {
-    path: 'dashboard',
-    component: DashboardComponent,
+    path: 'profile',
+    component: ProfileComponent,
     canActivate: [RoleGuard],
-    data: { roles: ['Business', 'Admin'] } // 👈 Only allow business & admin
+    data: {
+      roles: ['Customer', 'Business', 'Admin'],
+      requiresService: false
+    }
   },
+
   {
-    path: 'adcreator',
-    component: AdCreatorComponent,
+    path: 'edit-business',
+    component: EditBusinessComponent,
     canActivate: [RoleGuard],
-    data: { roles: ['Business', 'Customer'] } // 👈 Only allow business
+    data: {
+      roles: ['Customer', 'Business', 'Admin'],
+      requiresService: false
+    }
   },
+
   {
-    path: 'promotion',
-    component: PromotionComponent,
+    path: 'my-bookings',
+    component: MyBookingsComponent,
     canActivate: [RoleGuard],
-    data: { roles: ['Customer', 'Business', 'Admin'] }
+    data: {
+      roles: ['Customer'],
+      requiresService: false
+    }
   },
+
+  {
+    path: 'booking-detail/:id',
+    component: BookingDetailComponent,
+    canActivate: [RoleGuard],
+    data: {
+      roles: ['Customer', 'Business', 'Admin'],
+      requiresService: false
+    }
+  },
+
+  // =========================
+  // BUSINESS – SERVICE SELECTION
+  // =========================
+  {
+    path: 'business-switcher',
+    component: BusinessSwitcherComponent,
+    canActivate: [RoleGuard],
+    data: {
+      roles: ['Business', 'Admin'],
+      requiresService: false
+    }
+  },
+
   {
     path: 'register-business',
     component: RegisterBusinessComponent,
     canActivate: [RoleGuard],
-    data: {roles: ['Customer', 'Business', 'Admin']}
+    data: {
+      roles: ['Customer', 'Business'],
+      requiresService: false
+    }
   },
+
+  // =========================
+  // BUSINESS – SERVICE CONTEXT REQUIRED
+  // =========================
   {
-    path: 'booking-dialog',
-    component: BookingDialogComponent,
+    path: 'dashboard',
+    component: DashboardComponent,
     canActivate: [RoleGuard],
-    data: {roles: ['Customer', 'Business', 'Admin']}
+    data: {
+      roles: ['Business', 'Admin'],
+      requiresService: true
+    }
   },
+
   {
-    path: 'admin',
+    path: 'business-image-upload',
+    component: BusinessImageUploadComponent,
+    canActivate: [RoleGuard],
+    data: {
+      roles: ['Business', 'Admin'],
+      requiresService: true
+    }
+  },
+
+  {
+    path: 'bookings',
+    component: BookingsComponent,
+    canActivate: [RoleGuard],
+    data: {
+      roles: ['Business', 'Admin'],
+      requiresService: true
+    }
+  },
+
+  {
+    path: 'adcreator',
+    component: AdCreatorComponent,
+    canActivate: [RoleGuard],
+    data: {
+      roles: ['Business', 'Customer', 'Admin'],
+      requiresService: true
+    }
+  },
+
+  {
+    path: 'promotion',
+    component: PromotionComponent,
+    canActivate: [RoleGuard],
+    data: {
+      roles: ['Customer', 'Business', 'Admin'],
+      requiresService: false
+    }
+  },
+
+  // =========================
+  // ADMIN ONLY
+  // =========================
+  {
+    path: 'Admin',
     component: AdminComponent,
     canActivate: [RoleGuard],
-    data: {roles: ['Admin']}
+    data: {
+      roles: ['Admin'],
+      requiresService: false
+    }
   },
+
   {
     path: 'pending-businesses',
     component: PendingBusinessesComponent,
     canActivate: [RoleGuard],
-    data: {roles: ['Admin']}
+    data: {
+      roles: ['Admin'],
+      requiresService: false
+    }
   },
+
+  // =========================
+  // FALLBACK
+  // =========================
+  { path: '**', redirectTo: '' }
 ];
 
 @NgModule({

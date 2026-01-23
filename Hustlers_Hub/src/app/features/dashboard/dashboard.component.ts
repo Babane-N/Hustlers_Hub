@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { AuthService } from '../../features/auth/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -10,65 +11,85 @@ import { environment } from '../../../environments/environment';
 })
 export class DashboardComponent implements OnInit {
 
-  business: any = {};
-  bookings: any[] = [];       // Upcoming bookings from backend
-  history: any[] = [];        // Past bookings
-  reviews: any[] = [];        // Reviews
+  business: any = null; // ⚡ Now holds the active business
+  uploadsUrl = environment.uploadsUrl || ''; // e.g., "https://yourdomain.com/uploads"
+
+  bookings: any[] = [];
+  history: any[] = [];
+  reviews: any[] = [];
+
   isPremium = false;
 
-  uploadsUrl = environment.apiUrl;
-
-  constructor(private router: Router, private http: HttpClient) { }
+  constructor(
+    private router: Router,
+    private http: HttpClient,
+    private authService: AuthService
+  ) { }
 
   ngOnInit(): void {
-    const userId = localStorage.getItem('userId');
-    if (userId) {
-      this.loadBusinessDetails(userId);
+    const user = this.authService.getUser();
+    if (!user) {
+      this.router.navigate(['/login']);
+      return;
     }
-  }
 
-  // Load business info
-  loadBusinessDetails(userId: string) {
-    this.http.get<any[]>(`${environment.apiUrl}/Businesses/Users/${userId}`).subscribe({
-      next: (data) => {
-        if (data.length > 0) {
-          this.business = data[0];
-          this.isPremium = this.business.isPremium || false;
+    // Load user's first approved business
+    this.http.get<any[]>(`${environment.apiUrl}/Businesses/Users/${user.id}`).subscribe({
+      next: (res) => {
+        // Pick the first approved business
+        this.business = res.find(b => b.isApproved) || res[0] || null;
+        if (!this.business) return;
 
-          // Now load dashboard data
-          this.loadBookings(this.business.businessId);
-          this.loadHistory(this.business.businessId);
-          this.loadReviews(this.business.businessId);
-        }
+        this.isPremium = this.business.isPremium ?? false;
+
+        this.loadBookings();
+        this.loadHistory();
+        this.loadReviews();
       },
-      error: (err) => console.error('Error fetching business:', err)
+      error: (err) => console.error('Failed to load business', err)
     });
   }
 
-  // Load upcoming bookings
-  loadBookings(businessId: string) {
-    this.http.get<any[]>(`${environment.apiUrl}/Bookings/Business/${businessId}/Upcoming`).subscribe({
-      next: (data) => this.bookings = data,
-      error: (err) => console.error('Error fetching upcoming bookings:', err)
-    });
+  // ========================
+  // DATA LOADERS
+  // ========================
+
+  loadBookings() {
+    if (!this.business) return;
+
+    this.http
+      .get<any[]>(`${environment.apiUrl}/Bookings/business/${this.business.id}`)
+      .subscribe({
+        next: data => this.bookings = data.filter(b => b.status === 'Pending'),
+        error: err => console.error('Failed to load bookings', err)
+      });
   }
 
-  // Load past bookings
-  loadHistory(businessId: string) {
-    this.http.get<any[]>(`${environment.apiUrl}/Bookings/Business/${businessId}/History`).subscribe({
-      next: (data) => this.history = data,
-      error: (err) => console.error('Error fetching booking history:', err)
-    });
+  loadHistory() {
+    if (!this.business) return;
+
+    this.http
+      .get<any[]>(`${environment.apiUrl}/Bookings/business/${this.business.id}`)
+      .subscribe({
+        next: data => this.history = data.filter(b => b.status === 'Completed'),
+        error: err => console.error('Failed to load history', err)
+      });
   }
 
-  // Load reviews
-  loadReviews(businessId: string) {
-    this.http.get<any[]>(`${environment.apiUrl}/Reviews/Business/${businessId}`).subscribe({
-      next: (data) => this.reviews = data,
-      error: (err) => console.error('Error fetching reviews:', err)
-    });
+  loadReviews() {
+    if (!this.business) return;
+
+    this.http
+      .get<any[]>(`${environment.apiUrl}/Reviews/business/${this.business.id}`)
+      .subscribe({
+        next: data => this.reviews = data,
+        error: err => console.error('Failed to load reviews', err)
+      });
   }
 
+  // ========================
+  // NAVIGATION
+  // ========================
   goTo(path: string) {
     this.router.navigate([`/${path}`]);
   }
@@ -78,6 +99,8 @@ export class DashboardComponent implements OnInit {
       alert(`The "${toolName}" tool is only available on Premium.`);
       return;
     }
+
     this.router.navigate([`/tools/${toolName.toLowerCase().replace(/ /g, '-')}`]);
   }
+
 }

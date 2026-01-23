@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { SocialAuthService, SocialUser } from '@abacritt/angularx-social-login';
+import { AuthService } from '../auth.service';
+import { ActiveServiceContextService } from '../../../core/active-service-context.service';
 
 @Component({
   selector: 'app-register',
@@ -20,7 +22,9 @@ export class RegisterComponent {
     private fb: FormBuilder,
     private router: Router,
     private http: HttpClient,
-    private socialAuthService: SocialAuthService
+    private socialAuthService: SocialAuthService,
+    private authService: AuthService,
+    private activeServiceContext: ActiveServiceContextService
   ) {
     this.registerForm = this.fb.group({
       fullName: ['', Validators.required],
@@ -43,72 +47,85 @@ export class RegisterComponent {
     this.registrationError = '';
 
     const { fullName, email, phoneNumber, password } = this.registerForm.value;
-    const userPayload = {
-      fullName,
-      email,
-      password,
-      phoneNumber,
-      userType: 0 // Customer
-    };
+    const userPayload = { fullName, email, password, phoneNumber, userType: 0 }; // Customer
 
     this.http.post(`${environment.apiUrl}/auth/register`, userPayload).subscribe({
-      next: () => {
-        this.router.navigate(['/home-page']);
+      next: (res: any) => {
+        // Use AuthService to store token + role
+        this.authService.setSession(res.token, res.role);
+        this.authService.setUser(res.user);
+
+        // Clear any previous active service
+        this.activeServiceContext.clear();
+
+        // Navigate based on role
+        switch (res.role.toLowerCase()) {
+          case 'business':
+            this.router.navigate(['/switch-service']);
+            break;
+          case 'customer':
+            this.router.navigate(['/home-page']);
+            break;
+          case 'admin':
+            this.router.navigate(['/admin']);
+            break;
+          default:
+            this.router.navigate(['/home-page']);
+        }
+
         this.isLoading = false;
       },
       error: (err) => {
         console.error(err);
-        this.registrationError = err?.error || 'Registration failed.';
+        this.registrationError = err?.error?.message || 'Registration failed.';
         this.isLoading = false;
       }
     });
   }
 
-
   // Google login
-  onGoogleSignIn(event: any) {
-    const user = event as SocialUser | undefined;
-    if (!user) {
-      console.error('Google sign-in failed: user is undefined');
-      this.registrationError = 'Google sign-in failed';
-      return;
-    }
-
-    this.http.post(`${environment.apiUrl}/auth/google`, { token: user.idToken }).subscribe({
-      next: (res: any) => {
-        localStorage.setItem('token', res.token);
-        this.router.navigate(['/home-page']);
-      },
-      error: (err) => {
-        console.error(err);
-        this.registrationError = err?.error?.message || 'Google registration failed';
-      }
-    });
+  onGoogleSignIn(): void {
+    this.socialAuthService.signIn('GOOGLE').then((user: SocialUser) => {
+      this.http.post(`${environment.apiUrl}/auth/google`, { token: user.idToken }).subscribe({
+        next: (res: any) => this.handleSocialLogin(res),
+        error: (err) => this.handleSocialError(err, 'Google')
+      });
+    }).catch(err => this.handleSocialError(err, 'Google'));
   }
 
   // Facebook login
-  onFacebookSignIn(event: any) {
-    const user = event as SocialUser | undefined;
-    if (!user) {
-      console.error('Facebook sign-in failed: user is undefined');
-      this.registrationError = 'Facebook sign-in failed';
-      return;
-    }
+  onFacebookSignIn(): void {
+    this.socialAuthService.signIn('FACEBOOK').then((user: SocialUser) => {
+      this.http.post(`${environment.apiUrl}/auth/facebook`, { token: user.authToken }).subscribe({
+        next: (res: any) => this.handleSocialLogin(res),
+        error: (err) => this.handleSocialError(err, 'Facebook')
+      });
+    }).catch(err => this.handleSocialError(err, 'Facebook'));
+  }
 
-    this.http.post(`${environment.apiUrl}/auth/facebook`, { token: user.authToken }).subscribe({
-      next: (res: any) => {
-        localStorage.setItem('token', res.token);
+  // Handle social login response
+  private handleSocialLogin(res: any) {
+    this.authService.setSession(res.token, res.role);
+    this.authService.setUser(res.user);
+    this.activeServiceContext.clear();
+
+    switch (res.role.toLowerCase()) {
+      case 'business':
+        this.router.navigate(['/switch-service']);
+        break;
+      case 'customer':
         this.router.navigate(['/home-page']);
-      },
-      error: (err) => {
-        console.error(err);
-        this.registrationError = err?.error?.message || 'Facebook registration failed';
-      }
-    });
+        break;
+      case 'admin':
+        this.router.navigate(['/admin']);
+        break;
+      default:
+        this.router.navigate(['/home-page']);
+    }
   }
 
   // Unified social login error handler
-  handleSocialError(err: any, provider: string) {
+  public handleSocialError(err: any, provider: string) {
     console.error(`${provider} login error:`, err);
     this.registrationError = err?.error?.message || `${provider} registration failed`;
   }

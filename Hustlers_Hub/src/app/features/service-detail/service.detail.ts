@@ -7,7 +7,7 @@ import { environment } from '../../../environments/environment';
 // =============================
 // 📦 Service + Business details
 // =============================
-export interface ServiceDetail {
+export interface BusinessDetail {
   id: string;
   title: string;
   description: string;
@@ -38,7 +38,7 @@ export interface Review {
 
 @Injectable({ providedIn: 'root' })
 export class ServiceProvider {
-  private baseUrl = `${environment.apiUrl}/Services`;
+  private baseUrl = `${environment.apiUrl}/Businesses/public`;
   private uploadsUrl = environment.uploadsUrl;
 
   constructor(private http: HttpClient) { }
@@ -59,9 +59,9 @@ export class ServiceProvider {
   }
 
   // 📋 Get services by business
-  getServicesByBusiness(businessId: string): Observable<ServiceDetail[]> {
+  getServicesByBusiness(businessId: string): Observable<BusinessDetail[]> {
     return this.http
-      .get<ServiceDetail[]>(`${this.baseUrl}/business/${businessId}`)
+      .get<BusinessDetail[]>(`${this.baseUrl}/business/${businessId}`)
       .pipe(
         map(services =>
           services.map(service => ({
@@ -75,9 +75,9 @@ export class ServiceProvider {
 
 
   // 📌 Get service details
-  getServiceDetails(id: string): Observable<ServiceDetail> {
+  getServiceDetails(id: string): Observable<BusinessDetail> {
     return this.http
-      .get<ServiceDetail>(`${this.baseUrl}/detail/${id}`)
+      .get<BusinessDetail>(`${this.baseUrl}/detail/${id}`)
       .pipe(
         map(service => ({
           ...service,
@@ -95,7 +95,7 @@ export class ServiceProvider {
   // 🔗 Service + reviews combo
   getServiceWithReviews(
     id: string
-  ): Observable<{ provider: ServiceDetail; reviews: Review[] }> {
+  ): Observable<{ provider: BusinessDetail; reviews: Review[] }> {
     return this.getServiceDetails(id).pipe(
       switchMap(provider =>
         this.getBusinessReviews(provider.businessId).pipe(
@@ -106,8 +106,8 @@ export class ServiceProvider {
   }
 
   // 📋 Get all services (list)
-  getAllProviders(): Observable<ServiceDetail[]> {
-    return this.http.get<ServiceDetail[]>(this.baseUrl).pipe(
+  getAllProviders(): Observable<BusinessDetail[]> {
+    return this.http.get<BusinessDetail[]>(this.baseUrl).pipe(
       map(services =>
         services.map(service => ({
           ...service,

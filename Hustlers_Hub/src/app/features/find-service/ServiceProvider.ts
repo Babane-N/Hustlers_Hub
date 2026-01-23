@@ -34,7 +34,7 @@ export interface Review {
   providedIn: 'root'
 })
 export class ServiceProviderService {
-  private baseUrl = `${environment.apiUrl}/Services`;
+  private baseUrl = `${environment.apiUrl}/Businesses/public`;
 
   constructor(private http: HttpClient) { }
 

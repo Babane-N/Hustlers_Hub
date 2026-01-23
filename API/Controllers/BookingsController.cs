@@ -79,24 +79,23 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<BookingDto>> CreateBooking([FromBody] CreateBookingDto dto)
         {
-            var service = await _context.Services
-                .Include(s => s.Business)
-                .FirstOrDefaultAsync(s => s.Id == dto.ServiceId);
+            // Validate business
+            var business = await _context.Businesses
+                .FirstOrDefaultAsync(b => b.Id == dto.BusinessId && b.IsApproved);
 
-            if (service == null)
-                return BadRequest($"Service with ID {dto.ServiceId} does not exist.");
+            if (business == null)
+                return BadRequest("Business does not exist or is not approved.");
 
             // Validate customer
             var customerExists = await _context.Users.AnyAsync(u => u.Id == dto.CustomerId);
             if (!customerExists)
-                return BadRequest($"Customer with ID {dto.CustomerId} does not exist.");
+                return BadRequest("Customer does not exist.");
 
             var booking = new Booking
             {
                 Id = Guid.NewGuid(),
-                ServiceId = dto.ServiceId,
+                BusinessId = dto.BusinessId,
                 CustomerId = dto.CustomerId,
-                BusinessId = service.BusinessId,
                 BookingDate = dto.BookingDate,
                 Status = BookingStatus.Pending,
                 Description = dto.Description,
@@ -109,7 +108,13 @@ namespace API.Controllers
             _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetBooking), new { id = booking.Id }, MapToDto(booking));
+            // Reload with navigation properties
+            var created = await QueryBookings()
+                .FirstAsync(b => b.Id == booking.Id);
+
+            return CreatedAtAction(nameof(GetBooking),
+                new { id = booking.Id },
+                MapToDto(created));
         }
 
         // =====================================================
@@ -119,7 +124,6 @@ namespace API.Controllers
         public async Task<ActionResult<BookingDto>> UpdateBooking(Guid id, [FromBody] UpdateBookingDto dto)
         {
             var booking = await _context.Bookings.FindAsync(id);
-
             if (booking == null)
                 return NotFound("Booking not found.");
 
@@ -133,10 +137,11 @@ namespace API.Controllers
 
             await _context.SaveChangesAsync();
 
-            // ⭐ Return an updated BookingDto so the frontend receives a full object
-            return Ok(MapToDto(booking));
-        }
+            var updated = await QueryBookings()
+                .FirstAsync(b => b.Id == id);
 
+            return Ok(MapToDto(updated));
+        }
 
         // =====================================================
         // DELETE: api/Bookings/{id}
@@ -150,6 +155,7 @@ namespace API.Controllers
 
             _context.Bookings.Remove(booking);
             await _context.SaveChangesAsync();
+
             return NoContent();
         }
 
@@ -160,7 +166,6 @@ namespace API.Controllers
         {
             return _context.Bookings
                 .Include(b => b.Customer)
-                .Include(b => b.Service)
                 .Include(b => b.Business)
                 .AsNoTracking();
         }
@@ -176,7 +181,6 @@ namespace API.Controllers
                 BookingDate = b.BookingDate,
                 Status = b.Status,
                 CustomerName = b.Customer?.FullName ?? "Unknown Customer",
-                ServiceTitle = b.Service?.Title ?? "Unknown Service",
                 BusinessName = b.Business?.BusinessName ?? "Unknown Business",
                 Description = b.Description,
                 ContactNumber = b.ContactNumber,
@@ -192,7 +196,7 @@ namespace API.Controllers
     // =====================================================
     public class CreateBookingDto
     {
-        public Guid ServiceId { get; set; }
+        public Guid BusinessId { get; set; }
         public Guid CustomerId { get; set; }
         public DateTime BookingDate { get; set; }
         public string? Description { get; set; }
@@ -219,7 +223,6 @@ namespace API.Controllers
         public DateTime BookingDate { get; set; }
         public BookingStatus Status { get; set; }
         public string? CustomerName { get; set; }
-        public string? ServiceTitle { get; set; }
         public string? BusinessName { get; set; }
         public string? Description { get; set; }
         public string? ContactNumber { get; set; }

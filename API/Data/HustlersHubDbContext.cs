@@ -9,7 +9,6 @@ namespace API.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<Business> Businesses { get; set; }
-        public DbSet<Service> Services { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
@@ -22,7 +21,7 @@ namespace API.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Decimal precision for Price and similar properties
-            modelBuilder.Entity<Service>()
+            modelBuilder.Entity<Business>()
                 .Property(s => s.Price)
                 .HasColumnType("decimal(18,2)");
 

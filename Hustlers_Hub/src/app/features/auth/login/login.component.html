@@ -1,6 +1,7 @@
 <div class="login-container">
   <h2>Login to Hustlers Hub</h2>
 
+  <!-- Email/Password Form -->
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
     <!-- Email -->
     <div class="form-group">
@@ -29,18 +30,22 @@
     </button>
   </form>
 
+  <!-- Redirect to Signup -->
   <p class="signup-redirect">Don't have an account? <a routerLink="/register">Register</a></p>
 
   <!-- Social Login Buttons -->
-  <!-- Google Login -->
-  <asl-google-signin-button (signInSuccess)="onGoogleSignIn($event)"
-                            (signInFailure)="handleSocialError($event, 'Google')">
-  </asl-google-signin-button>
+  <div class="social-login-buttons">
+    <!-- Google Login -->
+    <asl-google-signin-button (signInSuccess)="onGoogleSignIn()"
+                              (signInFailure)="handleSocialError($event, 'Google')">
+    </asl-google-signin-button>
 
-  <!-- Facebook Login -->
-  <asl-facebook-signin-button (click)="onFacebookSignIn()"
-                              (signInFailure)="handleSocialError($event, 'Facebook')">
-  </asl-facebook-signin-button>
+    <!-- Facebook Login -->
+    <asl-facebook-signin-button (signInSuccess)="onFacebookSignIn()"
+                                (signInFailure)="handleSocialError($event, 'Facebook')">
+    </asl-facebook-signin-button>
+  </div>
 
-  <a routerLink="/forgot-password">Forgot password?</a>
+  <!-- Forgot Password -->
+  <a routerLink="/forgot-password" class="forgot-password-link">Forgot password?</a>
 </div>

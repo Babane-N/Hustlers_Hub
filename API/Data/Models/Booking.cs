@@ -10,9 +10,6 @@ namespace API.Data.Models
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [Required]
-        public Guid ServiceId { get; set; }
-
-        [Required]
         public Guid CustomerId { get; set; }
 
         [Required]
@@ -35,9 +32,6 @@ namespace API.Data.Models
         public BookingStatus Status { get; set; } = BookingStatus.Pending;
 
         // Navigation
-        [ForeignKey("ServiceId")]
-        public Service Service { get; set; }
-
         [ForeignKey("CustomerId")]
         public User Customer { get; set; }
 

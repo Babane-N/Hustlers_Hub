@@ -1,18 +1,21 @@
 <div class="upload-card">
 
-  <h3>Upload Service Images</h3>
+  <h3>Upload Business Images</h3>
 
   <!-- Service selector -->
   <mat-form-field appearance="outline" class="full-width">
-    <mat-label>Select Service</mat-label>
-    <mat-select [(value)]="selectedServiceId"
-                [disabled]="loadingServices || services.length === 0">
+    <mat-label>Select Business</mat-label>
 
-      <mat-option *ngFor="let service of services" [value]="service.id">
-        {{ service.title }}
+    <mat-select [(value)]="selectedBusinessId"
+                [disabled]="loadingBusinesses || businesses.length === 0">
+
+      <mat-option *ngFor="let business of businesses" [value]="business.id">
+        {{ business.businessName }}
       </mat-option>
+
     </mat-select>
   </mat-form-field>
+
 
   <!-- File input -->
   <input type="file"
@@ -29,7 +32,7 @@
   <button mat-raised-button
           color="primary"
           (click)="uploadImages()"
-          [disabled]="uploading || !selectedServiceId || selectedFiles.length === 0">
+          [disabled]="uploading || !selectedBusinessId || selectedFiles.length === 0">
     {{ uploading ? 'Uploading...' : 'Upload Images' }}
   </button>
 

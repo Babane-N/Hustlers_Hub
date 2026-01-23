@@ -35,6 +35,73 @@ namespace API.Controllers
             _config = config;
         }
 
+
+        [HttpPost("register")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+        {
+            if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
+                return BadRequest(new { message = "Email already exists." });
+
+            var user = new User
+            {
+                Id = Guid.NewGuid(),
+                FullName = dto.FullName,
+                Email = dto.Email,
+                PhoneNumber = dto.PhoneNumber,
+                UserType = (UserType)dto.UserType // ✅ cast int -> enum
+            };
+
+            user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                userId = user.Id,
+                user.Email,
+                role = user.UserType == UserType.Customer ? "Customer" : "Business"
+            });
+        }
+
+        [HttpPost("login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+            if (user == null)
+                return BadRequest(new { message = "Invalid email or password." });
+
+            var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
+            if (result == PasswordVerificationResult.Failed)
+                return BadRequest(new { message = "Invalid email or password." });
+
+            // Generate JWT
+            var token = _jwtService.GenerateToken(user.Id.ToString(), user.UserType == 0 ? "Customer" : "Business");
+
+            return Ok(new
+            {
+                token,
+                role = user.UserType == 0 ? "Customer" : "Business",
+                user = new
+                {
+                    id = user.Id,
+                    fullName = user.FullName,
+                    email = user.Email,
+                    phoneNumber = user.PhoneNumber,
+                    businessId = user.ProviderUserId
+                }
+            });
+        }
+
+        // DTO
+        public class LoginDto
+        {
+            public string Email { get; set; } = string.Empty;
+            public string Password { get; set; } = string.Empty;
+        }
+
         // ----------------------------
         // 🔁 FORGOT PASSWORD
         // ----------------------------
@@ -74,15 +141,15 @@ namespace API.Controllers
                 dto.Email,
                 "Reset your Hustlers Hub password",
                 $@"
-Hi {user.FullName},
+                Hi {user.FullName},
 
-Click the link below to reset your password:
+                Click the link below to reset your password:
 
-{resetLink}
+                {resetLink}
 
-This link expires in 1 hour.
-If you did not request this, please ignore this email.
-"
+                This link expires in 1 hour.
+                If you did not request this, please ignore this email.
+                "
             );
 
             return Ok();
@@ -133,6 +200,21 @@ If you did not request this, please ignore this email.
     // ----------------------------
     // DTOs
     // ----------------------------
+    public class RegisterDto
+    {
+        public string FullName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string PhoneNumber { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public int UserType { get; set; } // 0=Customer,1=Business
+    }
+
+    public class LoginDto
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    }
+
     public class ForgotPasswordDto
     {
         public string Email { get; set; } = string.Empty;

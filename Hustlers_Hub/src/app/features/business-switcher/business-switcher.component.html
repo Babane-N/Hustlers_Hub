@@ -1,17 +1,13 @@
-<div class="business-switcher">
-  <h3>Select a Business</h3>
+<div class="service-switcher">
+  <div *ngFor="let business of businesses"
+       (click)="onSwitchBusiness(business)"
+       class="service-card">
 
-  <div class="business-cards">
-    <div class="business-card"
-         *ngFor="let business of businesses"
-         [class.selected]="business.id === selectedBusinessId"
-         (click)="onSwitchBusiness(business.id)">
-      <img *ngIf="business.imageUrl" [src]="business.imageUrl" alt="{{ business.businessName }}" />
-      <div class="info">
-        <h4>{{ business.businessName }}</h4>
-        <p>{{ business.location }}</p>
-        <span class="category">{{ business.category }}</span>
-      </div>
-    </div>
+    <h4>{{ business.businessName }}</h4>
+
+    <!-- Optional badges -->
+    <span *ngIf="business.businessType === 'verified'">✅ Verified</span>
+    <span *ngIf="business.isApproved">🌟 Approved</span>
+
   </div>
 </div>

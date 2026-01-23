@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Business, BusinessService } from './BusinessModel';
+import { ActiveServiceContextService } from '../../core/active-service-context.service';
 import { AuthService } from '../auth/auth.service';
 
 @Component({
@@ -9,41 +10,43 @@ import { AuthService } from '../auth/auth.service';
   styleUrls: ['./business-switcher.component.scss']
 })
 export class BusinessSwitcherComponent implements OnInit {
+
   businesses: Business[] = [];
-  selectedBusinessId: string = '';
+  selectedBusinessId = '';
 
   constructor(
     private businessService: BusinessService,
     private authService: AuthService,
+    private activeServiceContext: ActiveServiceContextService,
     private router: Router
   ) { }
 
   ngOnInit(): void {
-    const user = this.authService.getUser();   // ✅ decode from JWT
+    const user = this.authService.getUser();
 
-    if (user?.id) {
-      const userId = user.id;
-
-      this.businessService.getUserBusinesses(userId).subscribe({
-        next: (data) => (this.businesses = data),
-        error: (err) => console.error(err)
-      });
-
-    } else {
-      console.error('User not logged in or invalid token.');
+    if (!user?.id) {
       this.router.navigate(['/login']);
+      return;
     }
+
+    // ✅ Load businesses instead of services
+    this.businessService.getUserBusinesses(user.id).subscribe({
+      next: businesses => this.businesses = businesses,
+      error: err => console.error('Failed to load businesses', err)
+    });
   }
 
-  onSwitchBusiness(businessId: string) {
-    this.selectedBusinessId = businessId;
-    localStorage.setItem('activeBusinessId', businessId);
+  onSwitchBusiness(business: Business): void {
+    // ✅ Set active business context
+    this.activeServiceContext.setActiveBusiness({
+      id: business.id,
+      businessName: business.businessName,
+      businessType: business.businessType, // optional, if you track verified/unverified
+      isApproved: business.isApproved      // optional
+    });
 
-    const selected = this.businesses.find(b => b.id === businessId);
-    if (selected) {
-      localStorage.setItem('activeBusinessData', JSON.stringify(selected));
-    }
-
-    this.router.navigate(['/home']);
+    // Navigate to dashboard
+    this.router.navigate(['/dashboard']);
   }
 }
+

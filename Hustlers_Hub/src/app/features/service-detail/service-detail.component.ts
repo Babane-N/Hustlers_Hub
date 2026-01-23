@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { ServiceProvider, ServiceDetail, Review } from './service.detail';
+import { ServiceProvider, BusinessDetail, Review } from './service.detail';
 import { BookingDialogComponent } from '../booking-dialog/booking-dialog.component';
 import { environment } from '../../../environments/environment';
 
@@ -12,11 +12,11 @@ import { environment } from '../../../environments/environment';
 })
 export class ServiceDetailComponent implements OnInit {
 
-  service: ServiceDetail | null = null;
+  business: BusinessDetail | null = null;
   reviews: Review[] = [];
   isLoading = true;
   uploadsUrl = environment.uploadsUrl;
-  serviceId!: string;
+  businessId!: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -33,24 +33,24 @@ export class ServiceDetailComponent implements OnInit {
       return;
     }
 
-    this.serviceId = id;     
+    this.businessId = id;     
     this.loadService(id);
   }
 
-  private loadService(serviceId: string): void {
-    this.serviceProvider.getServiceDetails(serviceId).subscribe({
+  private loadService(businessId: string): void {
+    this.serviceProvider.getServiceDetails(businessId).subscribe({
       next: service => {
         // Normalize gallery images and logo
         service.logoUrl = this.normalizeUrl(service.logoUrl);
         service.images = this.normalizeImages(service.images);
 
-        this.service = service;
+        this.business = service;
         this.isLoading = false;
 
         this.loadReviews(service.businessId);
       },
       error: err => {
-        console.error('Failed to load service', err);
+        console.error('Failed to load Business', err);
         this.isLoading = false;
       }
     });
@@ -64,17 +64,17 @@ export class ServiceDetailComponent implements OnInit {
   }
 
   hideImage(imgUrl: string): void {
-    if (this.service && this.service.images) {
-      this.service.images = this.service.images.filter(i => i !== imgUrl);
+    if (this.business && this.business.images) {
+      this.business.images = this.business.images.filter(i => i !== imgUrl);
     }
   }
 
   openBookingDialog(): void {
-    if (!this.service?.id) return;
+    if (!this.business?.id) return;
 
     this.dialog.open(BookingDialogComponent, {
       width: '480px',
-      data: { serviceId: this.service.id }
+      data: { serviceId: this.business.id }
     });
   }
 

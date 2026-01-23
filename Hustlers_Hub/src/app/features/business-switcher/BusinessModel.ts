@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
-// ✅ 1. Interface for Business model
+// ✅ Interface for Business model
 export interface Business {
   id: string;
   businessName: string;
@@ -12,27 +12,41 @@ export interface Business {
   imageUrl: string;
   location: string;
   userId: string;
+  businessType?: string;   // optional, e.g., "verified" / "unverified"
+  isApproved?: boolean;    // optional
 }
 
-// ✅ 2. Business Service for HTTP API calls
+// ✅ Business Service for HTTP API calls
 @Injectable({
   providedIn: 'root'
 })
 export class BusinessService {
-  private baseUrl = `${environment.apiUrl}/Businesses`; // Your backend API route
+
+  private businessUrl = `${environment.apiUrl}/Businesses`;
 
   constructor(private http: HttpClient) { }
 
-  // Get businesses owned by a user
+  // =========================
+  // BUSINESS APIs
+  // =========================
+
+  // Get all businesses for a specific user
   getUserBusinesses(userId: string): Observable<Business[]> {
-    return this.http.get<Business[]>(`${this.baseUrl}/Users/${userId}`);
+    return this.http.get<Business[]>(`${this.businessUrl}/user/${userId}`);
   }
 
-  // Create a new business
+  // Create a new business (submit for approval)
   createBusiness(business: Business): Observable<Business> {
-    return this.http.post<Business>(this.baseUrl, business);
+    return this.http.post<Business>(this.businessUrl, business);
   }
 
-  // More methods can go here
-}
+  // Optional: get a single business by ID
+  getBusinessById(id: string): Observable<Business> {
+    return this.http.get<Business>(`${this.businessUrl}/${id}`);
+  }
 
+  // Optional: get all public (approved) businesses
+  getApprovedBusinesses(): Observable<Business[]> {
+    return this.http.get<Business[]>(`${this.businessUrl}/public`);
+  }
+}

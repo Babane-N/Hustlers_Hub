@@ -5,6 +5,7 @@ import { AuthService } from '../auth.service';
 import { SocialAuthService, GoogleLoginProvider, FacebookLoginProvider, SocialUser } from '@abacritt/angularx-social-login';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
+import { ActiveServiceContextService } from '../../../core/active-service-context.service';
 
 @Component({
   selector: 'app-login',
@@ -12,17 +13,17 @@ import { environment } from '../../../../environments/environment';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
-
   loginForm: FormGroup;
   isLoading = false;
   loginError = '';
 
   constructor(
-    private socialAuth: SocialAuthService,
-    private http: HttpClient,
     private fb: FormBuilder,
     private router: Router,
-    private backendAuth: AuthService
+    private http: HttpClient,
+    private authService: AuthService,
+    private socialAuth: SocialAuthService,
+    private activeServiceContext: ActiveServiceContextService
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -31,7 +32,7 @@ export class LoginComponent {
   }
 
   // -------------------------------------------------
-  // 🔐 NORMAL EMAIL/PASSWORD LOGIN
+  // EMAIL / PASSWORD LOGIN
   // -------------------------------------------------
   onSubmit(): void {
     if (this.loginForm.invalid) return;
@@ -41,47 +42,24 @@ export class LoginComponent {
 
     const credentials = this.loginForm.value;
 
-    this.backendAuth.login(credentials).subscribe({
-      next: (res) => {
+    this.authService.login(credentials).subscribe({
+      next: (res: any) => {
+        // Save token + role
+        this.authService.setSession(res.token, res.role);
+        this.authService.setUser(res.user);
 
-        // Store token + role
-        this.backendAuth.setSession(res.token, res.role);
+        // Clear previous active service
+        this.activeServiceContext.clear();
 
-        // ---------------------------------------
-        // ✔ Store USER OBJECT in correct structure
-        // ---------------------------------------
-        const userObj = {
-          id: res.user?.id ?? res.userId,               // support both response types
-          email: res.user?.email ?? res.email,
-          role: res.role,
-          userType: res.user?.userType ?? res.role,
-          businessId: res.user?.businessId ?? null,
-          fullName: res.user?.fullName ?? null,
-          token: res.token
-        };
-
-        localStorage.setItem('user', JSON.stringify(userObj));
-
-        // ---------------------------------------
-        // ✔ Store direct values for other components
-        // ---------------------------------------
-        localStorage.setItem('userId', String(userObj.id));
-        localStorage.setItem('role', userObj.role);
-        localStorage.setItem('email', userObj.email);
-        localStorage.setItem('businessId', String(userObj.businessId ?? ''));
-        localStorage.setItem('token', res.token);
-
-        // ---------------------------------------
-        // ✔ Navigation
-        // ---------------------------------------
-        switch (res.role) {
-          case 'Business':
-            this.router.navigate(['/home']);
+        // Navigate based on role
+        switch (res.role.toLowerCase()) {
+          case 'business':
+            this.router.navigate(['/switch-service']);
             break;
-          case 'Customer':
+          case 'customer':
             this.router.navigate(['/home-page']);
             break;
-          case 'Admin':
+          case 'admin':
             this.router.navigate(['/admin']);
             break;
           default:
@@ -90,62 +68,79 @@ export class LoginComponent {
 
         this.isLoading = false;
       },
-
       error: (err) => {
         console.error(err);
-        this.loginError = err.error?.message || 'Login failed. Please try again.';
+        this.loginError = err?.error?.message || 'Login failed. Please try again.';
         this.isLoading = false;
       }
     });
   }
 
   // -------------------------------------------------
-  // 🔵 GOOGLE LOGIN (unchanged)
+  // GOOGLE LOGIN
   // -------------------------------------------------
-  onGoogleSignIn(user: any) {
-    const socialUser = user as SocialUser;
-
-    this.http.post(`${environment.apiUrl}/auth/google`, { token: socialUser.idToken })
-      .subscribe({
-        next: (res: any) => {
-          localStorage.setItem('token', res.token);
-          this.router.navigate(['/home-page']);
-        },
-        error: (err) => {
-          console.error(err);
-          this.loginError = err?.error?.message || 'Google login failed';
-        }
-      });
+  onGoogleSignIn(): void {
+    this.socialAuth.signIn(GoogleLoginProvider.PROVIDER_ID)
+      .then((socialUser: SocialUser) => {
+        this.http.post(`${environment.apiUrl}/auth/google`, { token: socialUser.idToken })
+          .subscribe({
+            next: (res: any) => this.handleSocialLogin(res),
+            error: (err) => this.handleSocialError(err, 'Google')
+          });
+      })
+      .catch(err => this.handleSocialError(err, 'Google'));
   }
 
   // -------------------------------------------------
-  // 🔵 FACEBOOK LOGIN (unchanged)
+  // FACEBOOK LOGIN
   // -------------------------------------------------
-  onFacebookSignIn() {
+  onFacebookSignIn(): void {
     this.socialAuth.signIn(FacebookLoginProvider.PROVIDER_ID)
-      .then(user => {
-        return this.http.post(
-          `${environment.apiUrl}/auth/facebook`,
-          { token: user.authToken }
-        ).toPromise();
+      .then((socialUser: SocialUser) => {
+        this.http.post(`${environment.apiUrl}/auth/facebook`, { token: socialUser.authToken })
+          .subscribe({
+            next: (res: any) => this.handleSocialLogin(res),
+            error: (err) => this.handleSocialError(err, 'Facebook')
+          });
       })
-      .then((res: any) => {
-        localStorage.setItem('token', res.token);
-        this.router.navigate(['/home-page']);
-      })
-      .catch(err => {
-        console.error(err);
-        this.loginError = err?.error?.message || 'Facebook login failed.';
-      });
+      .catch(err => this.handleSocialError(err, 'Facebook'));
   }
 
-  goToForgotPassword() {
+  // -------------------------------------------------
+  // HANDLE SOCIAL LOGIN RESPONSE
+  // -------------------------------------------------
+  private handleSocialLogin(res: any) {
+    this.authService.setSession(res.token, res.role);
+    this.authService.setUser(res.user);
+    this.activeServiceContext.clear();
+
+    switch (res.role.toLowerCase()) {
+      case 'business':
+        this.router.navigate(['/home']);
+        break;
+      case 'customer':
+        this.router.navigate(['/home-page']);
+        break;
+      case 'admin':
+        this.router.navigate(['/admin']);
+        break;
+      default:
+        this.router.navigate(['/home-page']);
+    }
+  }
+
+  // -------------------------------------------------
+  // HANDLE SOCIAL ERRORS
+  // -------------------------------------------------
+  public handleSocialError(err: any, provider: string) {
+    console.error(`${provider} login error:`, err);
+    this.loginError = err?.error?.message || `${provider} login failed.`;
+  }
+
+  // -------------------------------------------------
+  // NAVIGATE TO FORGOT PASSWORD
+  // -------------------------------------------------
+  goToForgotPassword(): void {
     this.router.navigate(['/forgot-password']);
   }
-
-  handleSocialError(err: any, provider: string) {
-    console.error(`${provider} login error:`, err);
-    this.loginError = err?.error?.message || `${provider} login failed`;
-  }
-
 }

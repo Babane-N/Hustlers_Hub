@@ -2,10 +2,12 @@
   <h2 class="welcome">Welcome Back, Hustler 💼</h2>
 
   <!-- Business Logo -->
-  <div class="logo-wrapper" *ngIf="business.logoUrl">
-    <img [src]="uploadsUrl + '/' + business.logoUrl"
-         alt="Business Logo"
-         class="dashboard-logo" />
+  <div *ngIf="business">
+    <div class="logo-wrapper" *ngIf="business.logoUrl">
+      <img [src]="uploadsUrl + business.logoUrl" alt="Business Logo" />
+    </div>
+
+    <h2>{{ business.businessName }}</h2>
   </div>
 
   <div class="dashboard-grid">
@@ -79,7 +81,7 @@
         <div class="tool-title">Edit Business Profile</div>
       </div>
 
-      <div class="tool-card" (click)="goTo('service-image-upload')">
+      <div class="tool-card" (click)="goTo('business-image-upload')">
         <div class="tool-icon">🖼️</div>
         <div class="tool-title">Upload Photos</div>
       </div>
@@ -117,4 +119,3 @@
     </div>
   </div>
 </div>
-

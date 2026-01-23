@@ -4,6 +4,7 @@ using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(HustlersHubDbContext))]
-    partial class HustlersHubDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260123101820_ExtendBusinessForServiceMerge")]
+    partial class ExtendBusinessForServiceMerge
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,6 +57,9 @@ namespace API.Migrations
                     b.Property<double?>("Longitude")
                         .HasColumnType("float");
 
+                    b.Property<Guid>("ServiceId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -62,6 +68,8 @@ namespace API.Migrations
                     b.HasIndex("BusinessId");
 
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("ServiceId");
 
                     b.ToTable("Bookings");
                 });
@@ -93,12 +101,6 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DurationMinutes")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ImageUrls")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsApproved")
                         .HasColumnType("bit");
 
@@ -118,9 +120,6 @@ namespace API.Migrations
 
                     b.Property<double?>("Longitude")
                         .HasColumnType("float");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("RegistrationNumber")
                         .HasColumnType("nvarchar(max)");
@@ -375,9 +374,17 @@ namespace API.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("API.Data.Models.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Business");
 
                     b.Navigation("Customer");
+
+                    b.Navigation("Service");
                 });
 
             modelBuilder.Entity("API.Data.Models.Business", b =>
@@ -453,7 +460,7 @@ namespace API.Migrations
             modelBuilder.Entity("API.Data.Models.Service", b =>
                 {
                     b.HasOne("API.Data.Models.Business", "Business")
-                        .WithMany()
+                        .WithMany("Services")
                         .HasForeignKey("BusinessId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -464,6 +471,8 @@ namespace API.Migrations
             modelBuilder.Entity("API.Data.Models.Business", b =>
                 {
                     b.Navigation("Reviews");
+
+                    b.Navigation("Services");
                 });
 
             modelBuilder.Entity("API.Data.Models.Promotion", b =>

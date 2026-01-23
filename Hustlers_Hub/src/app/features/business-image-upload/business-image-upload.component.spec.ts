@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ServiceImageUploadComponent } from './service-image-upload.component';
+import { ServiceImageUploadComponent } from './business-image-upload.component';
 
 describe('ServiceImageUploadComponent', () => {
   let component: ServiceImageUploadComponent;

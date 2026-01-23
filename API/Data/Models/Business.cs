@@ -11,39 +11,46 @@ namespace API.Data.Models
         [Required]
         public Guid Id { get; set; } = Guid.NewGuid();
 
+        // BASIC BUSINESS INFO
         [Required, MaxLength(100)]
         public string BusinessName { get; set; }
 
+        [Required]
         public string Description { get; set; }
 
         [MaxLength(255)]
-        public string Location { get; set; } // e.g. "Johannesburg, South Africa"
+        public string Location { get; set; } 
 
         [MaxLength(100)]
-        public string Category { get; set; } // E.g., Plumbing, Cleaning, Fitness
+        public string Category { get; set; } 
 
-        public string? LogoUrl { get; set; } // Business Logo (optional)
+        // SERVICE (MERGED)
+        [Required]
+        public decimal Price { get; set; }
+        public int DurationMinutes { get; set; }
+        public string? ImageUrls { get; set; }
+        public string? LogoUrl { get; set; }
 
+        // VERIFICATION & APPROVAL    
+        public bool IsApproved { get; set; } = false;
         public bool IsVerified { get; set; } = false;
-        public string BusinessType { get; set; } = string.Empty; // verified / unverified
-        public string? RegistrationNumber { get; set; }
+        public string BusinessType { get; set; } = string.Empty;
+        public string? RegistrationNumber { get; set; } // CIPC number
 
+        // LOCATION (MAP)
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
+
+        // META
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // ✅ New: Store map coordinates
-        public double? Latitude { get; set; }   // precise lat
-        public double? Longitude { get; set; }  // precise lng
-        public bool IsApproved { get; set; } = false;
-
-        // Foreign Key
+        // OWNERSHIP
         [Required]
         public Guid UserId { get; set; }
-
-        // Navigation Properties
-        [ForeignKey("UserId")]
+        [ForeignKey(nameof(UserId))]
         public User User { get; set; }
 
-        public ICollection<Service> Services { get; set; }
+        // RELATIONSHIPS
         public ICollection<Review> Reviews { get; set; }
     }
 }

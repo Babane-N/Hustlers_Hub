@@ -26,7 +26,7 @@ import { MyBookingsComponent } from './Customer/my-bookings/my-bookings.componen
 import { PendingBusinessesComponent } from './Admin/pending-businesses/pending-businesses.component';
 import { BookingDetailComponent } from './features/booking-detail/booking-detail.component';
 import { EditBusinessComponent } from './features/edit-business/edit-business.component';
-import { ServiceImageUploadComponent } from './features/service-image-upload/service-image-upload.component';
+import { BusinessImageUploadComponent } from './features/business-image-upload/business-image-upload.component';
 import { ForgetPasswordComponent } from './features/auth/forget-password/forget-password.component';
 import { ResetPasswordComponent } from './features/auth/reset-password/reset-password.component';
 
@@ -78,7 +78,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     PendingBusinessesComponent,
     BookingDetailComponent,
     EditBusinessComponent,
-    ServiceImageUploadComponent,
+    BusinessImageUploadComponent,
     ForgetPasswordComponent,
     ResetPasswordComponent,
   ],

@@ -1,31 +1,31 @@
-<div class="service-detail-container" *ngIf="service && !isLoading; else loading">
+<div class="service-detail-container" *ngIf="business && !isLoading; else loading">
   <!-- Header / Hero Section -->
   <div class="service-hero">
-    <div class="hero-left" *ngIf="service.logoUrl">
+    <div class="hero-left" *ngIf="business.logoUrl">
       <img class="provider-logo"
-           [src]="service.logoUrl"
-           [alt]="service.businessName + ' Logo'" />
+           [src]="business.logoUrl"
+           [alt]="business.businessName + ' Logo'" />
     </div>
 
     <div class="hero-info">
       <h1>
-        {{ service.businessName }}
-        <span *ngIf="service.isVerified" class="verified-badge">
+        {{ business.businessName }}
+        <span *ngIf="business.isVerified" class="verified-badge">
           <mat-icon>verified</mat-icon> Verified
         </span>
       </h1>
-      <p class="category">{{ service.category }}</p>
+      <p class="category">{{ business.category }}</p>
     </div>
   </div>
 
   <!-- Service Description -->
   <div class="service-body">
     <div class="service-info-card">
-      <h2>{{ service.title }}</h2>
-      <p class="description">{{ service.description }}</p>
+      <h2>{{ business.title }}</h2>
+      <p class="description">{{ business.description }}</p>
 
-      <div class="service-meta" *ngIf="service.businessLocation">
-        <p><mat-icon>location_on</mat-icon> {{ service.businessLocation }}</p>
+      <div class="service-meta" *ngIf="business.businessLocation">
+        <p><mat-icon>location_on</mat-icon> {{ business.businessLocation }}</p>
       </div>
 
       <button class="book-btn" (click)="openBookingDialog()">
@@ -34,11 +34,11 @@
     </div>
 
     <!-- Gallery -->
-    <div class="gallery" *ngIf="service.images?.length">
+    <div class="gallery" *ngIf="business.images?.length">
       <div class="gallery-grid">
-        <img *ngFor="let img of service.images"
+        <img *ngFor="let img of business.images"
              [src]="img"
-             alt="Service image" />
+             alt="Business image" />
       </div>
     </div>
 
@@ -59,7 +59,7 @@
       </div>
 
       <ng-template #noReviews>
-        <p class="no-reviews">No reviews yet for this service.</p>
+        <p class="no-reviews">No reviews yet for this business.</p>
       </ng-template>
     </div>
   </div>
@@ -68,6 +68,6 @@
 <ng-template #loading>
   <div class="loading-container">
     <mat-spinner></mat-spinner>
-    <p>Loading service details...</p>
+    <p>Loading business details...</p>
   </div>
 </ng-template>

@@ -59,13 +59,11 @@
   <p class="login-redirect">Already have an account? <a routerLink="/login">Login</a></p>
 
   <!-- Social Buttons -->
-  <asl-google-signin-button (signInSuccess)="onGoogleSignIn($event)"
+  <asl-google-signin-button (signInSuccess)="onGoogleSignIn()"
                             (signInFailure)="handleSocialError($event, 'Google')">
   </asl-google-signin-button>
 
-  <!-- Facebook Login -->
-  <asl-facebook-signin-button (signInSuccess)="onFacebookSignIn($event)"
+  <asl-facebook-signin-button (signInSuccess)="onFacebookSignIn()"
                               (signInFailure)="handleSocialError($event, 'Facebook')">
   </asl-facebook-signin-button>
 </div>
-
