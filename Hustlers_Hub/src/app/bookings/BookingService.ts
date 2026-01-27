@@ -4,28 +4,26 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
+export type BookingStatus =
+  | 'Pending'
+  | 'Confirmed'
+  | 'Cancelled'
+  | 'Completed';
+
 export interface Booking {
   id: string;
   bookingDate: string;
-  status: string;
+  status: BookingStatus;
 
-  // 🔹 Extra fields from backend
   description?: string;
   contactNumber?: string;
   location?: string;
   latitude?: number;
   longitude?: number;
 
-  // 🔹 Flattened fields (if API sends them)
-  serviceTitle?: string;
   customerName?: string;
   businessName?: string;
 
-  // 🔹 Nested relationships
-  service?: {
-    id: string;
-    title: string;
-  };
 
   customer?: {
     id: string;
@@ -42,37 +40,37 @@ export interface Booking {
   providedIn: 'root'
 })
 export class BookingService {
-  private baseUrl = `${environment.apiUrl}/Bookings`;
+  private readonly baseUrl = `${environment.apiUrl}/Bookings`;
 
   constructor(private http: HttpClient) { }
 
-  /**
-   * Get bookings for a business
-   */
   getBookingsByBusiness(businessId: string): Observable<Booking[]> {
     return this.http.get<Booking[]>(`${this.baseUrl}/business/${businessId}`);
   }
 
-  /**
-   * Get bookings created by a specific customer
-   */
   getBookingsByCustomer(customerId: string): Observable<Booking[]> {
     return this.http.get<Booking[]>(`${this.baseUrl}/customer/${customerId}`);
   }
-
 
   getBookingById(id: string): Observable<Booking> {
     return this.http.get<Booking>(`${this.baseUrl}/${id}`);
   }
 
-  scheduleBooking(id: string, newDate: string): Observable<any> {
-    return this.http.put(`${this.baseUrl}/${id}`, {
-      bookingDate: newDate,
+  scheduleBooking(id: string, bookingDate: Date): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/${id}`, {
+      bookingDate: bookingDate.toISOString(),
       status: 'Confirmed'
     });
   }
 
-  updateBookingStatus(id: string, status: string): Observable<any> {
-    return this.http.put(`${this.baseUrl}/${id}/status`, { status });
+  updateBookingStatus(id: string, status: BookingStatus): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/${id}/status`, { status });
+  }
+
+  updateBooking(
+    id: string,
+    payload: Partial<Booking>
+  ): Observable<Booking> {
+    return this.http.put<Booking>(`${this.baseUrl}/${id}`, payload);
   }
 }

@@ -74,7 +74,7 @@ export class ServiceDetailComponent implements OnInit {
 
     this.dialog.open(BookingDialogComponent, {
       width: '480px',
-      data: { serviceId: this.business.id }
+      data: { businessId: this.business.id } // ✅ match what dialog expects
     });
   }
 

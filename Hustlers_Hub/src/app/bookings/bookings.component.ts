@@ -10,14 +10,18 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./bookings.component.scss']
 })
 export class BookingsComponent implements OnInit {
+
   bookings: Booking[] = [];
   isLoading = true;
   errorMessage = '';
 
-  // Scheduling modal state
+  // Scheduling modal
   showScheduleModal = false;
   selectedBooking: Booking | null = null;
-  selectedScheduleDate: string = '';
+  selectedScheduleDate = '';
+
+  // Active business ID
+  activeBusinessId: string | null = null;
 
   constructor(
     private router: Router,
@@ -28,64 +32,87 @@ export class BookingsComponent implements OnInit {
 
   ngOnInit(): void {
     if (!this.authService.isLoggedIn()) {
-      this.errorMessage = 'You must be logged in to view bookings.';
-      this.isLoading = false;
+      this.fail('You must be logged in to view bookings.');
       return;
     }
 
-    const role = this.authService.getRole();
-    const activeBusinessId = localStorage.getItem('activeBusinessId'); // 🔹 use active business
+    const role = this.authService.getRole()?.toLowerCase();
 
-    if (role?.toLowerCase() === 'business') {
-      if (!activeBusinessId) {
-        this.errorMessage = 'No active business selected.';
-        this.isLoading = false;
+    if (role === 'business') {
+      // Try to get activeBusinessId from localStorage
+      this.activeBusinessId = localStorage.getItem('activeBusinessId');
+
+      if (!this.activeBusinessId) {
+        this.fail('No active business selected.');
         return;
       }
 
-      this.bookingService.getBookingsByBusiness(activeBusinessId).subscribe({
-        next: data => this.handleBookings(data),
-        error: err => this.handleError(err)
-      });
-
-    } else if (role?.toLowerCase() === 'customer') {
-      const userId = this.authService.getUserId();
-      if (!userId) {
-        this.errorMessage = 'User ID not found. Please log in again.';
-        this.isLoading = false;
-        return;
-      }
-
-      this.bookingService.getBookingsByCustomer(userId).subscribe({
-        next: data => this.handleBookings(data),
-        error: err => this.handleError(err)
-      });
-
+      this.loadBusinessBookings();
+    } else if (role === 'customer') {
+      this.loadCustomerBookings();
     } else {
-      this.errorMessage = 'Unknown user type. Access denied.';
-      this.isLoading = false;
+      this.fail('Unknown user type.');
     }
   }
+
+  // =============================
+  // Loaders
+  // =============================
+
+  private loadBusinessBookings() {
+    if (!this.activeBusinessId) return;
+
+    this.bookingService.getBookingsByBusiness(this.activeBusinessId).subscribe({
+      next: bookings => this.handleBookings(bookings),
+      error: err => this.handleError(err)
+    });
+  }
+
+  private loadCustomerBookings() {
+    const userId = this.authService.getUserId();
+
+    if (!userId) {
+      this.fail('User session expired. Please log in again.');
+      return;
+    }
+
+    this.bookingService.getBookingsByCustomer(userId).subscribe({
+      next: bookings => this.handleBookings(bookings),
+      error: err => this.handleError(err)
+    });
+  }
+
+  // =============================
+  // Helpers
+  // =============================
 
   private handleBookings(data: Booking[]) {
     this.bookings = data.map(b => ({
       ...b,
-      serviceTitle: b.serviceTitle || b.service?.title || 'Unknown Service',
-      customerName: b.customerName || b.customer?.fullName || 'Unknown Customer',
-      businessName: b.businessName || b.business?.businessName || 'Unknown Business',
-      description: b.description || 'No details provided'
+      customerName: b.customerName || 'Unknown Customer',
+      businessName: b.businessName || 'Unknown Business',
+      description: b.description || 'No description provided'
     }));
+
     this.isLoading = false;
   }
 
   private handleError(err: any) {
-    console.error('Error fetching bookings:', err);
-    this.errorMessage = 'Failed to load bookings.';
-    this.isLoading = false;
-    this.snackBar.open('Could not load bookings. Please try again later.', 'Close', { duration: 3000 });
+    console.error(err);
+    this.fail('Failed to load bookings.');
+    this.snackBar.open('Could not load bookings.', 'Close', { duration: 3000 });
   }
 
-  viewBookingDetails(booking: Booking): void {
+  private fail(message: string) {
+    this.errorMessage = message;
+    this.isLoading = false;
+  }
+
+  // =============================
+  // UI Actions
+  // =============================
+
+  viewBookingDetails(booking: Booking) {
     this.router.navigate(['/booking-detail', booking.id]);
   }
 
@@ -103,9 +130,10 @@ export class BookingsComponent implements OnInit {
     return this.bookings.length > 0;
   }
 
-  // -------------------------------
-  // Scheduling modal functions
-  // -------------------------------
+  // =============================
+  // Scheduling
+  // =============================
+
   openScheduleModal(booking: Booking) {
     this.selectedBooking = booking;
     this.selectedScheduleDate = booking.bookingDate;
@@ -121,19 +149,25 @@ export class BookingsComponent implements OnInit {
   confirmSchedule() {
     if (!this.selectedBooking) return;
 
-    this.bookingService.scheduleBooking(this.selectedBooking.id, this.selectedScheduleDate)
-      .subscribe({
-        next: updatedBooking => {
-          const index = this.bookings.findIndex(b => b.id === updatedBooking.id);
-          if (index > -1) this.bookings[index].bookingDate = updatedBooking.bookingDate;
+    this.bookingService.updateBooking(this.selectedBooking.id, {
+      bookingDate: this.selectedScheduleDate,
+      status: this.selectedBooking.status,
+      description: this.selectedBooking.description,
+      contactNumber: this.selectedBooking.contactNumber,
+      location: this.selectedBooking.location,
+      latitude: this.selectedBooking.latitude,
+      longitude: this.selectedBooking.longitude
+    }).subscribe({
+      next: updated => {
+        const index = this.bookings.findIndex(b => b.id === updated.id);
+        if (index > -1) this.bookings[index] = updated;
 
-          this.snackBar.open('Booking scheduled successfully', 'Close', { duration: 3000 });
-          this.closeScheduleModal();
-        },
-        error: err => {
-          console.error('Error scheduling booking:', err);
-          this.snackBar.open('Failed to schedule booking', 'Close', { duration: 3000 });
-        }
-      });
+        this.snackBar.open('Booking updated successfully', 'Close', { duration: 3000 });
+        this.closeScheduleModal();
+      },
+      error: () => {
+        this.snackBar.open('Failed to update booking', 'Close', { duration: 3000 });
+      }
+    });
   }
 }

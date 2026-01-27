@@ -8,7 +8,6 @@ export interface Booking {
   bookingDate: string;
   status: string;
   customerName?: string;
-  serviceTitle?: string;
   businessName?: string;
   description?: string;
   contactNumber?: string;
@@ -19,7 +18,7 @@ export interface Booking {
 
 // ✅ Export DTO so components can import it
 export interface CreateBookingDto {
-  serviceId: string;
+  businessId: string;
   customerId: string;
   bookingDate: string;
   description?: string;

@@ -189,16 +189,18 @@ namespace API.Controllers
         // ✅ ADMIN — Approve business
         // =====================================================
         [HttpPost("approve/{id}")]
-        public async Task<IActionResult> Approve(Guid id)
+        public async Task<IActionResult> ApproveBusiness(
+            int id,
+           [FromBody] ApproveBusinessRequest request)
         {
             var business = await _context.Businesses.FindAsync(id);
-            if (business == null)
-                return NotFound();
+            if (business == null) return NotFound();
 
             business.IsApproved = true;
-            await _context.SaveChangesAsync();
+            business.IsVerified = request.VerifyBusiness;
 
-            return Ok("Business approved");
+            await _context.SaveChangesAsync();
+            return Ok();
         }
 
         // =====================================================
@@ -234,5 +236,18 @@ namespace API.Controllers
         public string BusinessType { get; set; } = "unverified";
         public string? RegistrationNumber { get; set; }
     }
+
+    public class PendingBusinessDto
+    {
+        public int Id { get; set; }
+        public string BusinessName { get; set; }
+        public string Description { get; set; }
+        public string LogoUrl { get; set; }
+        public string OwnerName { get; set; }
+
+        public bool IsCipcRegistered { get; set; }
+        public string? CipcNumber { get; set; }
+    }
+
 }
 

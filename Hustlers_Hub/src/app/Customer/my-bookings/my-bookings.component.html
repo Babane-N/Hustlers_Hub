@@ -9,7 +9,7 @@
          *ngFor="let booking of bookings"
          [ngClass]="{'unscheduled': booking.bookingDate === 'Not Scheduled'}">
       <div class="booking-header">
-        <div class="service-name">{{ booking.serviceTitle }}</div>
+        <div class="service-name">{{ booking.businessName }}</div>
 
         <!-- Display booking date or "Not Scheduled" badge -->
         <div class="booking-date">

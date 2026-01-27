@@ -33,7 +33,6 @@ export class MyBookingsComponent implements OnInit {
       next: (data) => {
         this.bookings = data.map(b => ({
           ...b,
-          serviceTitle: b.serviceTitle || b.service?.title || 'Unknown Service',
           businessName: b.businessName || b.business?.businessName || 'Unknown Business',
           customerName: b.customerName || b.customer?.fullName || 'You',
           description: b.description || 'No details provided',

@@ -18,7 +18,7 @@ export class BookingDialogComponent implements OnInit, AfterViewInit {
 
   constructor(
     private dialogRef: MatDialogRef<BookingDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { serviceId: string },
+    @Inject(MAT_DIALOG_DATA) public data: { businessId: string },
     private bookingService: BookingService,
     private snackBar: MatSnackBar
   ) { }
@@ -66,7 +66,7 @@ export class BookingDialogComponent implements OnInit, AfterViewInit {
     }
 
     const bookingDto: CreateBookingDto = {
-      serviceId: this.data.serviceId,
+      businessId: this.data.businessId,
       customerId: customerId,
       bookingDate: this.bookingDate.toISOString(),
       description: this.description,

@@ -4,6 +4,17 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
+export interface PendingBusiness {
+  id: string;
+  businessName: string;
+  description: string;
+  category: string;
+  location: string;
+  logoUrl?: string | null;
+  isVerified: boolean;
+  isCipcRegistered: boolean;
+  cipcNumber: number;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -27,15 +38,18 @@ export class AdminService {
     return this.http.get<any[]>(this.baseUrl + '/pending');
   }
 
-  approveBusiness(id: number) {
-    return this.http.post(this.baseUrl + `/Approve/${id}`, {});
+  approveBusiness(id: number, payload: { verifyBusiness: boolean }) {
+    return this.http.post(
+      `${this.baseUrl}/approve/${id}`,
+      payload
+    );
   }
 
-  rejectBusiness(id: number) {
+  rejectBusiness(id: string) {
     return this.http.delete(this.baseUrl + `/Reject/${id}`);
   }
 
-  deleteBusiness(id: number) {
+  deleteBusiness(id: string) {
     return this.http.delete(`${this.baseUrl}/businesses/${id}`);
   }
 

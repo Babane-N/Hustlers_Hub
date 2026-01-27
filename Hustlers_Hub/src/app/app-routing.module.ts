@@ -178,7 +178,7 @@ const routes: Routes = [
     component: PendingBusinessesComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: ['Admin'],
+      roles: ['Admin', "Business"],
       requiresService: false
     }
   },

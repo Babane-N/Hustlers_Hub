@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AdminService } from '../services/admin.service';
+import { PendingBusiness } from '../services/admin.service';
 
 @Component({
   selector: 'app-pending-businesses',
@@ -8,7 +9,7 @@ import { AdminService } from '../services/admin.service';
 })
 export class PendingBusinessesComponent implements OnInit {
 
-  pendingBusinesses: any[] = [];
+  pendingBusinesses: PendingBusiness[] = [];
   loading = true;
   errorMsg = '';
 
@@ -20,8 +21,8 @@ export class PendingBusinessesComponent implements OnInit {
 
   loadPendingBusinesses() {
     this.adminService.getPendingBusinesses().subscribe({
-      next: (response) => {
-        this.pendingBusinesses = response;
+      next: businesses => {
+        this.pendingBusinesses = businesses;
         this.loading = false;
       },
       error: () => {
@@ -31,29 +32,26 @@ export class PendingBusinessesComponent implements OnInit {
     });
   }
 
-  approve(businessId: number) {
-    this.adminService.approveBusiness(businessId).subscribe({
-      next: () => {
-        this.pendingBusinesses = this.pendingBusinesses.filter(b => b.id !== businessId);
-      },
-      error: () => {
-        alert('Failed to approve business.');
-      }
+  approve(business: any) {
+    this.adminService.approveBusiness(business.id, {
+      verifyBusiness: business.verify === true
+    }).subscribe(() => {
+      this.pendingBusinesses =
+        this.pendingBusinesses.filter(b => b.id !== business.id);
     });
   }
 
-  reject(businessId: number) {
-    const confirmReject = confirm("⚠️ Are you sure you want to reject this business?\nThis action cannot be undone.");
 
-    if (!confirmReject) return;
+
+  reject(businessId: string) {
+    if (!confirm('⚠️ Reject this business permanently?')) return;
 
     this.adminService.rejectBusiness(businessId).subscribe({
       next: () => {
-        this.pendingBusinesses = this.pendingBusinesses.filter(b => b.id !== businessId);
+        this.pendingBusinesses =
+          this.pendingBusinesses.filter(b => b.id !== businessId);
       },
-      error: () => {
-        alert('Failed to decline business.');
-      }
+      error: () => alert('Failed to reject business.')
     });
   }
 }

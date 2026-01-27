@@ -1,31 +1,73 @@
 <div class="approval-container">
 
-  <h2>Pending Business Approvals</h2>
-
-  <div *ngIf="loading" class="loading">Loading pending businesses...</div>
-  <div *ngIf="errorMsg" class="error">{{ errorMsg }}</div>
-
-  <div *ngIf="!loading && pendingBusinesses.length === 0" class="empty">
-    No pending business approvals.
+  <!-- Header -->
+  <div class="header">
+    <h2>🕒 Pending Business Approvals</h2>
+    <p class="subtitle">
+      Review new business registrations before they go live on Hustlers Hub
+    </p>
   </div>
 
-  <div class="list">
+  <!-- States -->
+  <div *ngIf="loading" class="state loading">
+    ⏳ Loading pending businesses...
+  </div>
+
+  <div *ngIf="errorMsg" class="state error">
+    {{ errorMsg }}
+  </div>
+
+  <div *ngIf="!loading && pendingBusinesses.length === 0" class="state empty">
+    ✅ No pending business approvals at the moment.
+  </div>
+
+  <!-- List -->
+  <div class="business-grid" *ngIf="!loading && pendingBusinesses.length > 0">
+
     <div class="business-card" *ngFor="let item of pendingBusinesses">
 
-      <img [src]="item.logoUrl || 'assets/default-logo.png'" class="logo" />
-
-      <div class="details">
-        <h3>{{ item.businessName }}</h3>
-        <p>{{ item.description }}</p>
-        <small>Owner: {{ item.ownerName }}</small>
+      <!-- Logo -->
+      <div class="logo-wrapper">
+        <img [src]="item.logoUrl || 'assets/default-logo.png'"
+             alt="Business Logo" />
       </div>
 
-      <div class="actions">
-        <button class="approve" (click)="approve(item.id)">Approve</button>
-        <button class="reject" (click)="reject(item.id)">Reject</button>
-      </div>
+      <!-- Info -->
+      <div class="content">
+        <h3 class="name">{{ item.businessName }}</h3>
+
+        <p class="description">
+          {{ item.description || 'No description provided.' }}
+        </p>
+
+        <div class="meta">
+          <span class="tag">{{ item.category }}</span>
+          <span class="location">📍 {{ item.location }}</span>
+        </div>
+
+      <!-- Actions -->
+        <div class="actions">
+          <button class="btn approve" (click)="approve(item.id)">
+            ✔ Approve
+          </button>
+          <div class="verification" *ngIf="item.isCipcRegistered">
+            <label>
+              <input type="checkbox" [(ngModel)]="item.isVerified" />
+              Grant Verification Badge
+            </label>
+
+            <small class="cipc">
+              CIPC No: {{ item.cipcNumber }}
+            </small>
+          </div>
+
+
+          <button class="btn reject" (click)="reject(item.id)">
+            ✖ Reject
+          </button>
+        </div>
 
     </div>
-  </div>
 
+  </div>
 </div>
