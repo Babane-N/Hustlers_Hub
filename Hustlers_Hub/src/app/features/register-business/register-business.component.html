@@ -1,3 +1,21 @@
+<!-- ===============================
+ Admin Fee Entry Modal
+=============================== -->
+<app-business-fee-modal *ngIf="showAdminFeeModal"
+                        (close)="closeAdminFeeModal()"
+                        (learnMore)="openVerificationInfo()">
+</app-business-fee-modal>
+
+<!-- ===============================
+ Verification Info Modal
+=============================== -->
+<app-verification-info-modal *ngIf="showVerificationInfoModal"
+                             (close)="closeVerificationInfo()">
+</app-verification-info-modal>
+
+<!-- ===============================
+ Register Business Page
+=============================== -->
 <div class="register-business-container">
   <h2>Register Your Business</h2>
 
@@ -5,20 +23,33 @@
 
     <!-- Business Type -->
     <div class="form-group">
-      <label>Business Type</label>
-      <select formControlName="businessType" (change)="onBusinessTypeChange()">
+      <label>
+        Business Type
+        <span class="info-link" (click)="openVerificationInfo()">ℹ</span>
+      </label>
+
+      <select formControlName="businessType"
+              (change)="onBusinessTypeChange()">
         <option value="" disabled>Select type</option>
-        <option value="verified">Verified Business</option>
-        <option value="unverified">Unverified Business</option>
+        <option value="unverified">Unverified (Free)</option>
+        <option value="verified">Verified (Once-off admin fee)</option>
       </select>
+
+      <small class="hint">
+        Verified businesses get a badge and higher trust.
+      </small>
     </div>
 
-    <!-- Conditional: Only show for VERIFIED businesses -->
+    <!-- Verified Only -->
     <div class="form-group" *ngIf="isVerified">
       <label>CIPC Registration Number</label>
       <input type="text"
              formControlName="registrationNumber"
              placeholder="e.g. 2023/123456/07" />
+
+      <small class="hint">
+        Verification approval takes 2–3 business days.
+      </small>
     </div>
 
     <!-- Business Name -->
@@ -33,11 +64,12 @@
       <select formControlName="category">
         <option value="" disabled>Select category</option>
 
-        <!-- ★ Popular Local Services -->
+        <!-- Popular -->
         <option>Plumber</option>
         <option>Electrician</option>
         <option>Car Mechanic</option>
         <option>Painter</option>
+        <option>Pest Control</option>
         <option>Tutor</option>
         <option>Fitness Trainer</option>
         <option>Cleaner</option>
@@ -45,7 +77,7 @@
         <option>Salon / Hairdresser</option>
         <option>Makeup Artist</option>
 
-        <!-- ★ Construction & Home Services -->
+        <!-- Construction -->
         <option>House Builder</option>
         <option>Carpenter</option>
         <option>Welder / Steelwork</option>
@@ -54,7 +86,7 @@
         <option>Landscaping / Gardening</option>
         <option>Security Installation</option>
 
-        <!-- ★ Events & Media -->
+        <!-- Events -->
         <option>Photography</option>
         <option>Videography</option>
         <option>DJ / Music</option>
@@ -62,26 +94,25 @@
         <option>Catering</option>
         <option>Decor Services</option>
 
-        <!-- ★ Retail & Online -->
+        <!-- Retail -->
         <option>Online Store</option>
         <option>Fashion / Tailoring</option>
         <option>Shoe Repair</option>
         <option>Phone Repairs</option>
 
-        <!-- ★ Tech & Business -->
+        <!-- Tech -->
         <option>Technology Services</option>
         <option>Software Developer</option>
         <option>IT Support</option>
         <option>Digital Marketing</option>
         <option>Graphic Designer</option>
 
-        <!-- ★ General -->
+        <!-- General -->
         <option>Food</option>
         <option>Gaming</option>
         <option>Logistics / Delivery</option>
         <option>Consulting</option>
 
-        <!-- Final fallback -->
         <option>Other</option>
       </select>
     </div>
@@ -92,43 +123,58 @@
       <input type="text"
              formControlName="location"
              #addressInput
-             placeholder="Type your address" />
+             placeholder="Start typing your address" />
     </div>
 
     <!-- Map -->
     <div class="form-group">
       <label>Select Location on Map</label>
+
       <google-map [center]="center"
                   [zoom]="zoom"
                   height="300px"
                   width="100%"
                   (mapClick)="onMapClick($event)">
         <map-marker *ngIf="selectedPosition"
-                    [position]="selectedPosition"></map-marker>
+                    [position]="selectedPosition">
+        </map-marker>
       </google-map>
     </div>
 
     <!-- Description -->
     <div class="form-group">
       <label>Description</label>
-      <textarea rows="4" formControlName="description"></textarea>
+      <textarea rows="4"
+                formControlName="description"
+                placeholder="Describe your services...">
+      </textarea>
     </div>
 
-    <!-- Logo Upload -->
+    <!-- Logo -->
     <div class="form-group">
       <label>Business Logo</label>
       <input type="file" (change)="onLogoSelected($event)" />
+
       <div *ngIf="logoPreview" class="logo-preview">
         <img [src]="logoPreview" alt="Logo Preview" />
       </div>
     </div>
 
     <!-- Error -->
-    <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+    <div *ngIf="errorMessage" class="error">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Approval Notice -->
+    <div *ngIf="showApprovalNotice" class="approval-note">
+      ⏳ Your business will be reviewed within <strong>2–3 business days</strong>.
+    </div>
 
     <!-- Submit -->
-    <button type="submit" [disabled]="isSubmitting">
-      {{ isSubmitting ? "Submitting..." : "Register Business" }}
+    <button type="submit"
+            [disabled]="isSubmitting">
+      {{ isSubmitting ? 'Submitting…' : 'Register Business' }}
     </button>
+
   </form>
 </div>

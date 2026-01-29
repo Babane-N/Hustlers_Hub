@@ -1,4 +1,10 @@
-import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  AfterViewInit,
+  ViewChild,
+  ElementRef,
+  OnInit
+} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BusinessService } from './business.service';
 import { Router } from '@angular/router';
@@ -8,17 +14,31 @@ import { Router } from '@angular/router';
   templateUrl: './register-business.component.html',
   styleUrls: ['./register-business.component.scss']
 })
-export class RegisterBusinessComponent implements AfterViewInit {
+export class RegisterBusinessComponent implements OnInit, AfterViewInit {
 
-  @ViewChild('addressInput') addressInput!: ElementRef<HTMLInputElement>;
+  // -------------------------------
+  // View / UI State
+  // -------------------------------
+  showAdminFeeModal = false;
+  showVerificationInfoModal = false;
+  showApprovalNotice = false;
 
-  businessForm: FormGroup;
   isSubmitting = false;
   errorMessage = '';
+
+  // -------------------------------
+  // Form & Upload
+  // -------------------------------
+  businessForm: FormGroup;
   logoPreview: string | null = null;
   selectedLogoFile: File | null = null;
 
-  isVerified = false; // Toggles CIPC field
+  isVerified = false;
+
+  // -------------------------------
+  // Google Maps
+  // -------------------------------
+  @ViewChild('addressInput') addressInput!: ElementRef<HTMLInputElement>;
 
   center: google.maps.LatLngLiteral = { lat: -26.2041, lng: 28.0473 };
   selectedPosition: google.maps.LatLngLiteral | null = null;
@@ -30,25 +50,38 @@ export class RegisterBusinessComponent implements AfterViewInit {
     private router: Router
   ) {
     this.businessForm = this.fb.group({
-      businessType: ['', Validators.required], // verified or unverified
-      registrationNumber: [''],               // only required when verified
+      businessType: ['', Validators.required], // verified | unverified
+      registrationNumber: [''],
 
       businessName: ['', Validators.required],
       category: ['', Validators.required],
       location: [''],
       description: ['', Validators.required],
+
       latitude: [null],
-      longitude: [null],
+      longitude: [null]
     });
   }
 
+  // -------------------------------
+  // Init
+  // -------------------------------
+  ngOnInit(): void {
+    const seen = localStorage.getItem('seenBusinessAdminFeeInfo');
+    if (!seen) {
+      this.showAdminFeeModal = true;
+    }
+  }
+
   ngAfterViewInit(): void {
-    const autocomplete = new google.maps.places.Autocomplete(this.addressInput.nativeElement, {
-      fields: ['geometry', 'formatted_address']
-    });
+    const autocomplete = new google.maps.places.Autocomplete(
+      this.addressInput.nativeElement,
+      { fields: ['geometry', 'formatted_address'] }
+    );
 
     autocomplete.addListener('place_changed', () => {
       const place = autocomplete.getPlace();
+
       if (place.geometry && place.geometry.location) {
         const lat = place.geometry.location.lat();
         const lng = place.geometry.location.lng();
@@ -66,24 +99,43 @@ export class RegisterBusinessComponent implements AfterViewInit {
   }
 
   // -------------------------------
-  // Verified Business Toggle Logic
+  // Admin Fee Modal Controls
   // -------------------------------
-  onBusinessTypeChange() {
+  closeAdminFeeModal(): void {
+    localStorage.setItem('seenBusinessAdminFeeInfo', 'true');
+    this.showAdminFeeModal = false;
+  }
+
+  openVerificationInfo(): void {
+    this.showVerificationInfoModal = true;
+  }
+
+  closeVerificationInfo(): void {
+    this.showVerificationInfoModal = false;
+  }
+
+  // -------------------------------
+  // Verified Business Toggle
+  // -------------------------------
+  onBusinessTypeChange(): void {
     const type = this.businessForm.get('businessType')?.value;
 
     if (type === 'verified') {
       this.isVerified = true;
-      this.businessForm.get('registrationNumber')?.setValidators([Validators.required]);
+      this.businessForm
+        .get('registrationNumber')
+        ?.setValidators([Validators.required]);
     } else {
       this.isVerified = false;
       this.businessForm.get('registrationNumber')?.clearValidators();
+      this.businessForm.get('registrationNumber')?.setValue('');
     }
 
     this.businessForm.get('registrationNumber')?.updateValueAndValidity();
   }
 
   // -------------------------------
-  // Logo upload logic
+  // Logo Upload
   // -------------------------------
   onLogoSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -100,11 +152,12 @@ export class RegisterBusinessComponent implements AfterViewInit {
   }
 
   // -------------------------------
-  // Map selection logic
+  // Map Click
   // -------------------------------
-  onMapClick(event: google.maps.MapMouseEvent) {
+  onMapClick(event: google.maps.MapMouseEvent): void {
     if (event.latLng) {
       this.selectedPosition = event.latLng.toJSON();
+
       this.businessForm.patchValue({
         latitude: this.selectedPosition.lat,
         longitude: this.selectedPosition.lng
@@ -113,7 +166,7 @@ export class RegisterBusinessComponent implements AfterViewInit {
   }
 
   // -------------------------------
-  // Submit form
+  // Submit Form
   // -------------------------------
   onSubmit(): void {
     if (this.businessForm.invalid || !this.getUserId()) {
@@ -123,17 +176,19 @@ export class RegisterBusinessComponent implements AfterViewInit {
 
     this.isSubmitting = true;
     this.errorMessage = '';
+    this.showApprovalNotice = true;
 
     const formData = new FormData();
-    formData.append('businessType', this.businessForm.value.businessType);
-    formData.append('registrationNumber', this.businessForm.value.registrationNumber || '');
+    const value = this.businessForm.value;
 
-    formData.append('businessName', this.businessForm.value.businessName);
-    formData.append('category', this.businessForm.value.category);
-    formData.append('location', this.businessForm.value.location || '');
-    formData.append('description', this.businessForm.value.description);
-    formData.append('latitude', this.businessForm.value.latitude ?? '');
-    formData.append('longitude', this.businessForm.value.longitude ?? '');
+    formData.append('businessType', value.businessType);
+    formData.append('registrationNumber', value.registrationNumber || '');
+    formData.append('businessName', value.businessName);
+    formData.append('category', value.category);
+    formData.append('location', value.location || '');
+    formData.append('description', value.description);
+    formData.append('latitude', value.latitude ?? '');
+    formData.append('longitude', value.longitude ?? '');
     formData.append('userId', this.getUserId());
 
     if (this.selectedLogoFile) {
@@ -152,7 +207,7 @@ export class RegisterBusinessComponent implements AfterViewInit {
   }
 
   // -------------------------------
-  // Get user id
+  // User ID
   // -------------------------------
   private getUserId(): string {
     const user = localStorage.getItem('user');

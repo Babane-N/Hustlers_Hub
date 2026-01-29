@@ -29,7 +29,8 @@ import { EditBusinessComponent } from './features/edit-business/edit-business.co
 import { BusinessImageUploadComponent } from './features/business-image-upload/business-image-upload.component';
 import { ForgetPasswordComponent } from './features/auth/forget-password/forget-password.component';
 import { ResetPasswordComponent } from './features/auth/reset-password/reset-password.component';
-
+import { BusinessFeeModalComponent } from './features/business-fee-modal/business-fee-modal.component';
+import { VerificationInfoModalComponent } from './features/verification-info-modal/verification-info-modal.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -82,6 +83,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     BusinessImageUploadComponent,
     ForgetPasswordComponent,
     ResetPasswordComponent,
+    BusinessFeeModalComponent,
+    VerificationInfoModalComponent,
   ],
   imports: [
     BrowserModule,
