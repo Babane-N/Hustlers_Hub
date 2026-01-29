@@ -1,6 +1,6 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from './auth.Service';
+import { AuthService } from '../auth/auth.service'; // Ensure lowercase 's'
 
 @Component({
   selector: 'app-side-bar',
@@ -8,22 +8,25 @@ import { AuthService } from './auth.Service';
   styleUrls: ['./side-bar.component.scss']
 })
 export class SideBarComponent implements OnInit {
-  isOpened = true;               // Desktop default
-  isMobile = false;              // Mobile detection
+  isOpened = true;              // Desktop default
+  isMobile = false;             // Mobile detection
   userRole: string | null = null;
   isLoggedIn = false;
+  user: any = null;
 
   constructor(private router: Router, private authService: AuthService) { }
 
   ngOnInit(): void {
-    this.userRole = this.authService.getRole();
-    this.isLoggedIn = this.authService.isLoggedIn();
     this.checkScreenSize();
 
-    // Optional: subscribe to login state changes
-    this.authService.isLoggedIn$.subscribe(status => {
-      this.isLoggedIn = status;
-      this.userRole = this.authService.getRole();
+    // Subscribe to auth state changes
+    this.authService.role$.subscribe(role => {
+      this.userRole = role;
+    });
+
+    this.authService.user$.subscribe(user => {
+      this.user = user;
+      this.isLoggedIn = !!user;
     });
   }
 
@@ -54,3 +57,4 @@ export class SideBarComponent implements OnInit {
     this.router.navigate(['/home-page']);
   }
 }
+

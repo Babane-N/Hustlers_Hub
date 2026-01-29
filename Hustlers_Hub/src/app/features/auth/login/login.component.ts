@@ -13,6 +13,7 @@ import { ActiveServiceContextService } from '../../../core/active-service-contex
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
+
   loginForm: FormGroup;
   isLoading = false;
   loginError = '';
@@ -31,42 +32,18 @@ export class LoginComponent {
     });
   }
 
-  // -------------------------------------------------
+  // ----------------------------------
   // EMAIL / PASSWORD LOGIN
-  // -------------------------------------------------
+  // ----------------------------------
   onSubmit(): void {
     if (this.loginForm.invalid) return;
 
     this.isLoading = true;
     this.loginError = '';
 
-    const credentials = this.loginForm.value;
-
-    this.authService.login(credentials).subscribe({
+    this.authService.login(this.loginForm.value).subscribe({
       next: (res: any) => {
-        // Save token + role
-        this.authService.setSession(res.token, res.role);
-        this.authService.setUser(res.user);
-
-        // Clear previous active service
-        this.activeServiceContext.clear();
-
-        // Navigate based on role
-        switch (res.role.toLowerCase()) {
-          case 'business':
-            this.router.navigate(['/switch-service']);
-            break;
-          case 'customer':
-            this.router.navigate(['/home-page']);
-            break;
-          case 'admin':
-            this.router.navigate(['/admin']);
-            break;
-          default:
-            this.router.navigate(['/home-page']);
-        }
-
-        this.isLoading = false;
+        this.handleAuthSuccess(res);
       },
       error: (err) => {
         console.error(err);
@@ -76,47 +53,49 @@ export class LoginComponent {
     });
   }
 
-  // -------------------------------------------------
+  // ----------------------------------
   // GOOGLE LOGIN
-  // -------------------------------------------------
+  // ----------------------------------
   onGoogleSignIn(): void {
     this.socialAuth.signIn(GoogleLoginProvider.PROVIDER_ID)
       .then((socialUser: SocialUser) => {
         this.http.post(`${environment.apiUrl}/auth/google`, { token: socialUser.idToken })
           .subscribe({
-            next: (res: any) => this.handleSocialLogin(res),
+            next: (res: any) => this.handleAuthSuccess(res),
             error: (err) => this.handleSocialError(err, 'Google')
           });
       })
       .catch(err => this.handleSocialError(err, 'Google'));
   }
 
-  // -------------------------------------------------
+  // ----------------------------------
   // FACEBOOK LOGIN
-  // -------------------------------------------------
+  // ----------------------------------
   onFacebookSignIn(): void {
     this.socialAuth.signIn(FacebookLoginProvider.PROVIDER_ID)
       .then((socialUser: SocialUser) => {
         this.http.post(`${environment.apiUrl}/auth/facebook`, { token: socialUser.authToken })
           .subscribe({
-            next: (res: any) => this.handleSocialLogin(res),
+            next: (res: any) => this.handleAuthSuccess(res),
             error: (err) => this.handleSocialError(err, 'Facebook')
           });
       })
       .catch(err => this.handleSocialError(err, 'Facebook'));
   }
 
-  // -------------------------------------------------
-  // HANDLE SOCIAL LOGIN RESPONSE
-  // -------------------------------------------------
-  private handleSocialLogin(res: any) {
+  // ----------------------------------
+  // SHARED SUCCESS HANDLER
+  // ----------------------------------
+  private handleAuthSuccess(res: any): void {
     this.authService.setSession(res.token, res.role);
     this.authService.setUser(res.user);
+
     this.activeServiceContext.clear();
+    this.isLoading = false;
 
     switch (res.role.toLowerCase()) {
       case 'business':
-        this.router.navigate(['/home']);
+        this.router.navigate(['/switch-service']);
         break;
       case 'customer':
         this.router.navigate(['/home-page']);
@@ -129,17 +108,18 @@ export class LoginComponent {
     }
   }
 
-  // -------------------------------------------------
-  // HANDLE SOCIAL ERRORS
-  // -------------------------------------------------
+  // ----------------------------------
+  // ERROR HANDLING
+  // ----------------------------------
   public handleSocialError(err: any, provider: string) {
     console.error(`${provider} login error:`, err);
     this.loginError = err?.error?.message || `${provider} login failed.`;
+    this.isLoading = false;
   }
 
-  // -------------------------------------------------
-  // NAVIGATE TO FORGOT PASSWORD
-  // -------------------------------------------------
+  // ----------------------------------
+  // FORGOT PASSWORD
+  // ----------------------------------
   goToForgotPassword(): void {
     this.router.navigate(['/forgot-password']);
   }

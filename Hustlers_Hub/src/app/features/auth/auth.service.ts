@@ -8,7 +8,7 @@ export interface RegisterRequest {
   email: string;
   phoneNumber: string;
   password: string;
-  userType: number; // 👈 Add this if needed
+  userType?: number; // optional if needed
 }
 
 export interface LoginRequest {
@@ -20,76 +20,84 @@ export interface LoginRequest {
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/auth`;
 
+  // -----------------------------
+  // Reactive state
+  // -----------------------------
+  private userSubject = new BehaviorSubject<any | null>(this.getStoredUser());
+  user$ = this.userSubject.asObservable();
+
+  private roleSubject = new BehaviorSubject<string | null>(this.getStoredRole());
+  role$ = this.roleSubject.asObservable();
+
   private loggedInSubject = new BehaviorSubject<boolean>(this.hasToken());
   isLoggedIn$ = this.loggedInSubject.asObservable();
 
   constructor(private http: HttpClient) { }
 
-  // ---------------------------
-  // 🔥 Register user
-  // ---------------------------
+  // -----------------------------
+  // API CALLS
+  // -----------------------------
   register(user: RegisterRequest): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/register`, user);
   }
 
-  // ---------------------------
-  // 🔥 Login user
-  // ---------------------------
   login(credentials: LoginRequest): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/login`, credentials);
   }
 
-  // ---------------------------
-  // 🔐 Save token + role
-  // ---------------------------
+  // -----------------------------
+  // SESSION MANAGEMENT
+  // -----------------------------
   setSession(token: string, role: string): void {
     localStorage.setItem('authToken', token);
-    localStorage.setItem('userRole', role); // keep original casing
+    localStorage.setItem('userRole', role);
+
+    this.roleSubject.next(role);
     this.loggedInSubject.next(true);
   }
 
-  // ---------------------------
-  // ✅ NEW: Save user object
-  // ---------------------------
   setUser(user: any): void {
     localStorage.setItem('user', JSON.stringify(user));
+    this.userSubject.next(user);
   }
 
-  // ---------------------------
-  // Logout
-  // ---------------------------
   logout(): void {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userRole');
     localStorage.removeItem('user');
+
+    this.userSubject.next(null);
+    this.roleSubject.next(null);
     this.loggedInSubject.next(false);
   }
 
-  // ---------------------------
-  // Get token
-  // ---------------------------
+  // -----------------------------
+  // HELPERS
+  // -----------------------------
   getToken(): string | null {
     return localStorage.getItem('authToken');
   }
 
-  // ---------------------------
-  // Get role
-  // ---------------------------
-  getRole(): string | null {
-    return localStorage.getItem('userRole');
-  }
-
-  // ---------------------------
-  // Get user object
-  // ---------------------------
   getUser(): any {
-    const data = localStorage.getItem('user');
-    return data ? JSON.parse(data) : null;
+    return this.userSubject.value;
   }
 
-  // ---------------------------
-  // Logged in status
-  // ---------------------------
+  getRole(): string | null {
+    return this.roleSubject.value;
+  }
+
+  getUserId(): string | null {
+    return this.getUser()?.id ?? null;
+  }
+
+  getBusinessId(): string | null {
+    return this.getUser()?.businessId ?? null;
+  }
+
+  getUserType(): string | null {
+    return this.getUser()?.userType ?? null;
+  }
+
   isLoggedIn(): boolean {
     return this.loggedInSubject.value;
   }
@@ -98,10 +106,23 @@ export class AuthService {
     return this.isLoggedIn();
   }
 
-  // ---------------------------
+  // -----------------------------
   // Internal: check token
-  // ---------------------------
+  // -----------------------------
   private hasToken(): boolean {
     return !!localStorage.getItem('authToken');
+  }
+
+  private getStoredUser(): any | null {
+    const data = localStorage.getItem('user');
+    try {
+      return data ? JSON.parse(data) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private getStoredRole(): string | null {
+    return localStorage.getItem('userRole');
   }
 }

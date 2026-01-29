@@ -8,7 +8,6 @@
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist\Hustlers_Hub\</BuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="src\app\Admin\services\" />
     <Folder Include="src\app\NewFolder\" />
   </ItemGroup>
 </Project>

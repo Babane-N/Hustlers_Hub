@@ -1,13 +1,15 @@
 <mat-sidenav-container class="sidenav-container">
+
   <!-- Sidebar / Drawer -->
   <mat-sidenav #drawer
                [mode]="isMobile ? 'over' : 'side'"
                [(opened)]="isOpened"
                class="mat-elevation-z4">
-    <mat-toolbar>Hustlers Hub</mat-toolbar>
 
-    <!-- 🧍 CUSTOMER MENU -->
-    <mat-nav-list *ngIf="userRole === 'Customer'">
+    <mat-toolbar color="primary">Hustlers Hub</mat-toolbar>
+
+    <!-- ===================== CUSTOMER MENU ===================== -->
+    <mat-nav-list *ngIf="userRole === 'Customer' && isLoggedIn">
       <a mat-list-item (click)="navigateTo('/home-page'); isMobile && toggleSidebar()">
         <mat-icon>home</mat-icon>
         <span class="nav-text">Home</span>
@@ -26,15 +28,15 @@
       </a>
     </mat-nav-list>
 
-    <!-- 🏢 BUSINESS MENU -->
-    <mat-nav-list *ngIf="userRole === 'Business'">
+    <!-- ===================== BUSINESS MENU ===================== -->
+    <mat-nav-list *ngIf="userRole === 'Business' && isLoggedIn">
       <a mat-list-item (click)="navigateTo('/home'); isMobile && toggleSidebar()">
         <mat-icon>home</mat-icon>
-        <span class="nav-text"> Home</span>
+        <span class="nav-text">Home</span>
       </a>
       <a mat-list-item (click)="navigateTo('/home-page'); isMobile && toggleSidebar()">
         <mat-icon>build_circle</mat-icon>
-        <span class="nav-text"> Services</span>
+        <span class="nav-text">Services</span>
       </a>
       <a mat-list-item (click)="navigateTo('/promotions'); isMobile && toggleSidebar()">
         <mat-icon>local_offer</mat-icon>
@@ -42,23 +44,23 @@
       </a>
       <a mat-list-item (click)="navigateTo('/bookings'); isMobile && toggleSidebar()">
         <mat-icon>calendar_today</mat-icon>
-        <span class="nav-text"> Bookings</span>
+        <span class="nav-text">Bookings</span>
       </a>
       <a mat-list-item (click)="navigateTo('/business-switcher'); isMobile && toggleSidebar()">
         <mat-icon>sync_alt</mat-icon>
-        <span class="nav-text"> Business Switcher</span>
+        <span class="nav-text">Business Switcher</span>
       </a>
       <a mat-list-item (click)="navigateTo('/dashboard'); isMobile && toggleSidebar()">
         <mat-icon>dashboard_customize</mat-icon>
-        <span class="nav-text"> Manage Business</span>
+        <span class="nav-text">Manage Business</span>
       </a>
     </mat-nav-list>
 
-    <!-- 👨‍💼 ADMIN MENU -->
-    <mat-nav-list *ngIf="userRole === 'Admin'">
+    <!-- ===================== ADMIN MENU ===================== -->
+    <mat-nav-list *ngIf="userRole === 'Admin' && isLoggedIn">
       <a mat-list-item (click)="navigateTo('/admin'); isMobile && toggleSidebar()">
         <mat-icon>home</mat-icon>
-        <span class="nav-text"> Home</span>
+        <span class="nav-text">Home</span>
       </a>
       <a mat-list-item (click)="navigateTo('/admin/users'); isMobile && toggleSidebar()">
         <mat-icon>group</mat-icon>
@@ -66,30 +68,32 @@
       </a>
       <a mat-list-item (click)="navigateTo('/pending-businesses'); isMobile && toggleSidebar()">
         <mat-icon>storefront</mat-icon>
-        <span class="nav-text"> Manage Businesses</span>
+        <span class="nav-text">Manage Businesses</span>
       </a>
     </mat-nav-list>
 
-    <!-- 🚪 LOGIN / LOGOUT -->
-    <div class="login-item" *ngIf="!isLoggedIn" (click)="navigateTo('/login'); isMobile && toggleSidebar()">
+    <!-- ===================== LOGIN / LOGOUT ===================== -->
+    <mat-divider></mat-divider>
+    <div *ngIf="!isLoggedIn" class="login-item" (click)="navigateTo('/login'); isMobile && toggleSidebar()">
       <mat-icon>login</mat-icon>
       <span>Login</span>
     </div>
-    <div class="login-item" *ngIf="isLoggedIn" (click)="logout(); isMobile && toggleSidebar()">
+    <div *ngIf="isLoggedIn" class="login-item" (click)="logout(); isMobile && toggleSidebar()">
       <mat-icon>logout</mat-icon>
       <span>Logout</span>
     </div>
+
   </mat-sidenav>
 
-  <!-- Main content -->
+  <!-- ===================== MAIN CONTENT ===================== -->
   <mat-sidenav-content>
-    <mat-toolbar class="custom-toolbar">
+    <mat-toolbar color="primary" class="custom-toolbar">
       <button mat-icon-button (click)="toggleSidebar()" class="toggle-btn">
         <mat-icon>menu</mat-icon>
       </button>
       <span class="app-title">Hustlers Hub</span>
       <span class="spacer"></span>
-      <button mat-icon-button class="profile-button" (click)="navigateTo('/profile')">
+      <button mat-icon-button class="profile-button" *ngIf="isLoggedIn" (click)="navigateTo('/profile')">
         <mat-icon>account_circle</mat-icon>
       </button>
     </mat-toolbar>
@@ -98,5 +102,5 @@
       <router-outlet></router-outlet>
     </div>
   </mat-sidenav-content>
-</mat-sidenav-container>
 
+</mat-sidenav-container>
