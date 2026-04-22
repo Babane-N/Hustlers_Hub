@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <!-- Your normal app theme -->
+  <style name="Theme.MyApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <item name="colorPrimary">#6200EE</item>
+    <item name="colorPrimaryVariant">#3700B3</item>
+    <item name="colorOnPrimary">#FFFFFF</item>
+  </style>
+
+  <!-- Splash Theme -->
+  <style name="Theme.MyApp.Splash" parent="Theme.SplashScreen">
+    <item name="windowSplashScreenBackground">@android:color/white</item>
+    <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+    <item name="postSplashScreenTheme">@style/Theme.MyApp</item>
+  </style>
+
+</resources>
+
