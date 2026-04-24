@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy ASP.Net Core app to Azure Web App - Hustlerhub
+name: Build and deploy ASP.Net Core app to Azure Web App - HustlerHub
 
 on:
   push:
@@ -51,15 +51,15 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_CABF8879C06A42C7A7D623C66056091F }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_3DA554696DB648DB9CB8C88583684EB7 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_2AD420B871964115BBFB11572DA1333F }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_06C8634CDA734A9088DB9964C23FFC84 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_01CCDA7111F849FEBD5C1CCC7ACE7752 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_419653299BF04D3CA54A4C2F8B10C4E5 }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'Hustlerhub'
+          app-name: 'HustlerHub'
           slot-name: 'Production'
           package: .
           
