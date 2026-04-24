@@ -4,7 +4,7 @@ const target = env.ASPNETCORE_HTTPS_PORT
   ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}`
   : env.ASPNETCORE_URLS
     ? env.ASPNETCORE_URLS.split(';')[0]
-    : 'https://hustlershub-g3cjffaea3axckg3.southafricanorth-01.azurewebsites.net/';
+    : 'https://hustlerhub-cea4bhbjdrgfdefb.southafricanorth-01.azurewebsites.net/';
 
 module.exports = [
   {
