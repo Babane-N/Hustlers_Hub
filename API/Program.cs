@@ -45,8 +45,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 // ---------------------------
 var allowedOrigins = new[]
 {
-   // "https://purple-water-01a0ea703.3.azurestaticapps.net/",
-    "https://purple-water-01a0ea703.3.azurestaticapps.net",
+    "https://agreeable-grass-0e90e7a03.7.azurestaticapps.net/",
     "https://hustlerhub-cea4bhbjdrgfdefb.southafricanorth-01.azurewebsites.net",
     "https://localhost:4200",
     "http://localhost:4200"
