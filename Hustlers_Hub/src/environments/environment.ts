@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://localhost:7018/api',
+  apiUrl: 'https://hustlerhub-cea4bhbjdrgfdefb.southafricanorth-01.azurewebsites.net/api',
   uploadsUrl: 'https://localhost:7018/uploads'
 };

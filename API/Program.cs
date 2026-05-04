@@ -45,7 +45,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 // ---------------------------
 var allowedOrigins = new[]
 {
-   // "https://www.hustlershub.tech",
+   // "https://purple-water-01a0ea703.3.azurestaticapps.net/",
     "https://purple-water-01a0ea703.3.azurestaticapps.net",
     "https://hustlerhub-cea4bhbjdrgfdefb.southafricanorth-01.azurewebsites.net",
     "https://localhost:4200",
@@ -76,17 +76,13 @@ app.UseCors("AllowFrontend");
 // Serve static and uploaded files
 app.UseStaticFiles();
 
-var uploadsPath = Path.Combine(builder.Environment.ContentRootPath, "Uploads");
+var uploadsPath = Path.Combine(builder.Environment.WebRootPath, "uploads");
+
 if (!Directory.Exists(uploadsPath))
 {
     Directory.CreateDirectory(uploadsPath);
 }
 
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(uploadsPath),
-    RequestPath = "/uploads"
-});
 
 
 app.UseAuthorization();
