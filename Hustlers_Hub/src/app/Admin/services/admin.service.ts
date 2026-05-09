@@ -40,7 +40,7 @@ export class AdminService {
 
   approveBusiness(id: string, body: any) {
     return this.http.post(
-      `${this.baseUrl}/Businesses/approve/${id}`,
+      `${this.baseUrl}/approve/${id}`,
       body
     );
   }

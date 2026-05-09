@@ -6,9 +6,9 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ==========================================
-// DATABASE CONFIGURATION
-// ==========================================
+// =====================================================
+// DATABASE
+// =====================================================
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<HustlersHubDbContext>(options =>
@@ -16,30 +16,30 @@ builder.Services.AddDbContext<HustlersHubDbContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
-// ==========================================
+// =====================================================
 // SERVICES
-// ==========================================
+// =====================================================
 builder.Services.AddSingleton<JwtService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
-// ==========================================
-// CONTROLLERS + JSON SETTINGS
-// ==========================================
+// =====================================================
+// CONTROLLERS
+// =====================================================
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
-// ==========================================
+// =====================================================
 // SWAGGER
-// ==========================================
+// =====================================================
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// ==========================================
-// CORS CONFIGURATION
-// ==========================================
+// =====================================================
+// CORS
+// =====================================================
 var allowedOrigins = new[]
 {
     "https://agreeable-grass-0e90e7a03.7.azurestaticapps.net",
@@ -61,38 +61,35 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// ==========================================
-// CREATE WWWROOT + UPLOADS FOLDER
-// ==========================================
-var webRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-
-if (!Directory.Exists(webRootPath))
-{
-    Directory.CreateDirectory(webRootPath);
-}
+// =====================================================
+// SAFE WWWROOT + UPLOADS (AZURE FIX)
+// =====================================================
+var webRootPath = app.Environment.WebRootPath
+                  ?? Path.Combine(app.Environment.ContentRootPath, "wwwroot");
 
 var uploadsPath = Path.Combine(webRootPath, "uploads");
 
-if (!Directory.Exists(uploadsPath))
-{
-    Directory.CreateDirectory(uploadsPath);
-}
+// Ensure folders exist
+Directory.CreateDirectory(webRootPath);
+Directory.CreateDirectory(uploadsPath);
 
-// ==========================================
-// MIDDLEWARE PIPELINE
-// ==========================================
+// =====================================================
+// PIPELINE ORDER (IMPORTANT)
+// =====================================================
 
-// IMPORTANT: CORS must be early
-app.UseCors("AllowFrontend");
-
-// Swagger
+// Swagger (dev only recommended, but kept as-is)
 app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-// Static files
-app.UseStaticFiles();
+// IMPORTANT: CORS early
+app.UseCors("AllowFrontend");
+
+// =====================================================
+// STATIC FILES (FIX FOR LOGOS)
+// =====================================================
+app.UseStaticFiles(); // serves wwwroot
 
 app.UseStaticFiles(new StaticFileOptions
 {
@@ -100,16 +97,15 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/uploads"
 });
 
-// Authentication / Authorization
+// =====================================================
+// AUTH
+// =====================================================
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Controllers
+// =====================================================
+// CONTROLLERS
+// =====================================================
 app.MapControllers();
-
-// OPTIONAL:
-// Only use this if Angular build files are inside wwwroot
-// Otherwise comment it out
-// app.MapFallbackToFile("index.html");
 
 app.Run();
