@@ -191,13 +191,13 @@ namespace API.Controllers
         [HttpPost("approve/{id}")]
         public async Task<IActionResult> ApproveBusiness(
         Guid id,
-     [FromBody] ApproveBusinessRequest request)
+    [FromBody] ApproveBusinessRequest request)
         {
             var business = await _context.Businesses.FindAsync(id);
             if (business == null) return NotFound();
 
             business.IsApproved = true;
-            business.IsVerified = request.VerifyBusiness;
+            business.IsVerified = request?.VerifyBusiness ?? false;
 
             await _context.SaveChangesAsync();
             return Ok();
@@ -248,6 +248,9 @@ namespace API.Controllers
         public bool IsCipcRegistered { get; set; }
         public string? CipcNumber { get; set; }
     }
-
+    public class ApproveBusinessRequest
+    {
+        public bool VerifyBusiness { get; set; }
+    }
 }
 
