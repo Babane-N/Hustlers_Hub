@@ -61,7 +61,7 @@ namespace API.Controllers
             {
                 userId = user.Id,
                 user.Email,
-                role = user.UserType == UserType.Customer ? "Customer" : "Business"
+                role = user.UserType.ToString()
             });
         }
 
@@ -69,32 +69,52 @@ namespace API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == dto.Email);
+
             if (user == null)
                 return BadRequest(new { message = "Invalid email or password." });
 
-            var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
+            var result = _passwordHasher.VerifyHashedPassword(
+                user,
+                user.PasswordHash,
+                dto.Password
+            );
+
             if (result == PasswordVerificationResult.Failed)
                 return BadRequest(new { message = "Invalid email or password." });
 
-            // Generate JWT
-            var token = _jwtService.GenerateToken(user.Id.ToString(), user.UserType == 0 ? "Customer" : "Business");
+            // ✅ Determine role properly
+            string role = user.UserType switch
+            {
+                UserType.Customer => "Customer",
+                UserType.Business => "Business",
+                UserType.Admin => "Admin",
+                _ => "Customer"
+            };
+
+            // ✅ Generate JWT
+            var token = _jwtService.GenerateToken(
+                user.Id.ToString(),
+                role
+            );
 
             return Ok(new
             {
                 token,
-                role = user.UserType == 0 ? "Customer" : "Business",
+                role,
+
                 user = new
                 {
                     id = user.Id,
                     fullName = user.FullName,
                     email = user.Email,
                     phoneNumber = user.PhoneNumber,
-                    businessId = user.ProviderUserId
+                    businessId = user.ProviderUserId,
+                    userType = role
                 }
             });
         }
-
         // DTO
         public class LoginDto
         {

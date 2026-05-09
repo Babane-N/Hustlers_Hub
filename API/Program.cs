@@ -1,48 +1,45 @@
 ﻿using API.Data;
 using API.Services;
-using Google;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ---------------------------
-// ✅ Database Configuration (Azure SQL with SQL Authentication)
-// ---------------------------
-
-// Load connection string from appsettings.json
+// ==========================================
+// DATABASE CONFIGURATION
+// ==========================================
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// Configure EF Core (no access tokens or Azure credentials)
 builder.Services.AddDbContext<HustlersHubDbContext>(options =>
 {
     options.UseSqlServer(connectionString);
 });
 
+// ==========================================
+// SERVICES
+// ==========================================
+builder.Services.AddSingleton<JwtService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
-// ---------------------------
-// ✅ Controllers with JSON enum as string
-// ---------------------------
+// ==========================================
+// CONTROLLERS + JSON SETTINGS
+// ==========================================
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
-// ---------------------------
-// ✅ Swagger (enabled in all environments)
-// ---------------------------
+// ==========================================
+// SWAGGER
+// ==========================================
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<JwtService>();
-builder.Services.AddScoped<IEmailService, EmailService>();
 
-
-// ---------------------------
-// ✅ CORS Configuration
-// ---------------------------
+// ==========================================
+// CORS CONFIGURATION
+// ==========================================
 var allowedOrigins = new[]
 {
     "https://agreeable-grass-0e90e7a03.7.azurestaticapps.net",
@@ -54,41 +51,65 @@ var allowedOrigins = new[]
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
+    {
         policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowCredentials());
+              .AllowCredentials();
+    });
 });
 
 var app = builder.Build();
 
-// ---------------------------
-// ✅ Middleware Pipeline
-// ---------------------------
+// ==========================================
+// CREATE WWWROOT + UPLOADS FOLDER
+// ==========================================
+var webRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
 
-app.UseSwagger();
-app.UseSwaggerUI();
+if (!Directory.Exists(webRootPath))
+{
+    Directory.CreateDirectory(webRootPath);
+}
 
-app.UseHttpsRedirection();
-app.UseCors("AllowFrontend");
-
-// Serve static and uploaded files
-app.UseStaticFiles();
-
-var uploadsPath = Path.Combine(builder.Environment.WebRootPath, "uploads");
+var uploadsPath = Path.Combine(webRootPath, "uploads");
 
 if (!Directory.Exists(uploadsPath))
 {
     Directory.CreateDirectory(uploadsPath);
 }
 
+// ==========================================
+// MIDDLEWARE PIPELINE
+// ==========================================
 
+// IMPORTANT: CORS must be early
+app.UseCors("AllowFrontend");
 
+// Swagger
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.UseHttpsRedirection();
+
+// Static files
+app.UseStaticFiles();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadsPath),
+    RequestPath = "/uploads"
+});
+
+// Authentication / Authorization
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Controllers
 app.MapControllers();
 
-// ✅ SPA fallback (for Angular/React routing)
-app.MapFallbackToFile("index.html");
+// OPTIONAL:
+// Only use this if Angular build files are inside wwwroot
+// Otherwise comment it out
+// app.MapFallbackToFile("index.html");
 
 app.Run();

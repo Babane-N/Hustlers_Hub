@@ -164,7 +164,7 @@ const routes: Routes = [
   // ADMIN ONLY
   // =========================
   {
-    path: 'Admin',
+    path: 'admin',
     component: AdminComponent,
     canActivate: [RoleGuard],
     data: {
@@ -178,7 +178,7 @@ const routes: Routes = [
     component: PendingBusinessesComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: ['Admin', "Business"],
+      roles: ['Admin'],
       requiresService: false
     }
   },

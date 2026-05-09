@@ -47,19 +47,43 @@
 
       <!-- Actions -->
         <div class="actions">
-          <button class="btn approve" (click)="approve(item.id)">
+
+          <!-- APPROVE -->
+          <button class="btn approve"
+                  (click)="approve(item)">
+
             ✔ Approve
+
           </button>
-          <div class="verification" *ngIf="item.isCipcRegistered">
+
+          <!-- VERIFICATION -->
+          <div class="verification"
+               *ngIf="item.isCipcRegistered">
+
             <label>
-              <input type="checkbox" [(ngModel)]="item.isVerified" />
+
+              <input type="checkbox"
+                     [(ngModel)]="item.isVerified" />
+
               Grant Verification Badge
+
             </label>
 
             <small class="cipc">
               CIPC No: {{ item.cipcNumber }}
             </small>
+
           </div>
+
+          <!-- REJECT -->
+          <button class="btn reject"
+                  (click)="reject(item.id)">
+
+            ✖ Reject
+
+          </button>
+
+        </div>
 
 
           <button class="btn reject" (click)="reject(item.id)">
