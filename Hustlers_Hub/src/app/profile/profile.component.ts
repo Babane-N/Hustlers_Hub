@@ -3,8 +3,16 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { AuthService } from '../features/auth/auth.service';
 
-interface UserProfile { id: string; fullName: string; email: string; phoneNumber?: string; profileImage?: string; userType: string; }
+interface UserProfile {
+  id: string;
+  fullName: string;
+  email: string;
+  phoneNumber?: string;
+  profileImage?: string;
+  userType: string;
+}
 
 @Component({
   selector: 'app-profile',
@@ -12,60 +20,144 @@ interface UserProfile { id: string; fullName: string; email: string; phoneNumber
   styleUrls: ['./profile.component.scss']
 })
 export class ProfileComponent implements OnInit {
+
   profileForm!: FormGroup;
   user!: UserProfile;
+
   isLoading = true;
   errorMessage = '';
+
   profilePreview: string | ArrayBuffer | null = null;
   selectedFile: File | null = null;
+
   uploadsUrl = environment.uploadsUrl;
 
   private baseUrl = `${environment.apiUrl}/Users`;
 
-  constructor(private fb: FormBuilder, private http: HttpClient, private router: Router) { }
+  constructor(
+    private fb: FormBuilder,
+    private http: HttpClient,
+    private router: Router,
+    private authService: AuthService
+  ) { }
 
   ngOnInit(): void {
-    const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-    if (!storedUser?.userId) { this.router.navigate(['/login']); return; }
 
-    this.http.get<UserProfile>(`${this.baseUrl}/${storedUser.userId}`).subscribe({
-      next: (data) => { this.user = data; this.initForm(); this.isLoading = false; },
-      error: () => { this.errorMessage = 'Failed to load profile'; this.isLoading = false; }
+    this.authService.user$.subscribe(user => {
+
+      if (!user) {
+        this.router.navigate(['/login']);
+        return;
+      }
+
+      console.log('Logged in user:', user);
+
+      const userId = user.id;
+
+      this.http.get<UserProfile>(`${this.baseUrl}/${userId}`)
+        .subscribe({
+
+          next: (data) => {
+
+            console.log('Profile data:', data);
+
+            this.user = data;
+
+            this.initForm();
+
+            this.isLoading = false;
+          },
+
+          error: (err) => {
+
+            console.error(err);
+
+            this.errorMessage = 'Failed to load profile';
+
+            this.isLoading = false;
+          }
+        });
     });
   }
 
   private initForm() {
+
     this.profileForm = this.fb.group({
       fullName: [this.user.fullName, Validators.required],
-      email: [{ value: this.user.email, disabled: true }],
+
+      email: [
+        {
+          value: this.user.email,
+          disabled: true
+        }
+      ],
+
       phoneNumber: [this.user.phoneNumber],
+
       profileImage: ['']
     });
 
-    this.profilePreview = this.user.profileImage ? `${this.uploadsUrl}/${this.user.profileImage}` : null;
+    this.profilePreview = this.user.profileImage
+      ? `${this.uploadsUrl}/${this.user.profileImage}`
+      : null;
   }
 
   onFileSelected(event: Event) {
+
     const input = event.target as HTMLInputElement;
+
     if (input.files && input.files[0]) {
+
       this.selectedFile = input.files[0];
+
       const reader = new FileReader();
-      reader.onload = () => (this.profilePreview = reader.result);
+
+      reader.onload = () => {
+        this.profilePreview = reader.result;
+      };
+
       reader.readAsDataURL(this.selectedFile);
     }
   }
 
   onSubmit() {
-    if (this.profileForm.invalid) return;
-    const formData = new FormData();
-    formData.append('id', this.user.id);
-    formData.append('fullName', this.profileForm.value.fullName);
-    formData.append('phoneNumber', this.profileForm.value.phoneNumber || '');
-    if (this.selectedFile) formData.append('profileImage', this.selectedFile);
 
-    this.http.put(`${this.baseUrl}/${this.user.id}`, formData).subscribe({
-      next: () => { alert('Profile updated successfully!'); this.router.navigate(['/dashboard']); },
-      error: () => (this.errorMessage = 'Update failed. Please try again.')
-    });
+    if (this.profileForm.invalid) return;
+
+    const formData = new FormData();
+
+    formData.append('id', this.user.id);
+
+    formData.append(
+      'fullName',
+      this.profileForm.value.fullName
+    );
+
+    formData.append(
+      'phoneNumber',
+      this.profileForm.value.phoneNumber || ''
+    );
+
+    if (this.selectedFile) {
+      formData.append('profileImage', this.selectedFile);
+    }
+
+    this.http.put(`${this.baseUrl}/${this.user.id}`, formData)
+      .subscribe({
+
+        next: () => {
+
+          alert('Profile updated successfully!');
+
+          this.router.navigate(['/dashboard']);
+        },
+
+        error: (err) => {
+
+          console.error(err);
+
+          this.errorMessage = 'Update failed. Please try again.';
+        }
+      });
   }
 }

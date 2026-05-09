@@ -172,6 +172,22 @@ namespace API.Controllers
             return Ok(new { message = "Images uploaded successfully" });
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateBusiness(Guid id, [FromBody] UpdateBusinessDto dto)
+        {
+            var business = await _context.Businesses.FindAsync(id);
+
+            if (business == null)
+                return NotFound();
+
+            business.Description = dto.Description;
+            business.Category = dto.Category;
+            business.Location = dto.Location;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Business updated successfully" });
+        }
 
 
         // =====================================================
@@ -251,6 +267,15 @@ namespace API.Controllers
     public class ApproveBusinessRequest
     {
         public bool VerifyBusiness { get; set; }
+    }
+
+    public class UpdateBusinessDto
+    {
+        public string Description { get; set; } = string.Empty;
+
+        public string Category { get; set; } = string.Empty;
+
+        public string Location { get; set; } = string.Empty;
     }
 }
 
