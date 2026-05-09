@@ -46,6 +46,10 @@
         <mat-icon>calendar_today</mat-icon>
         <span class="nav-text">Bookings</span>
       </a>
+      <a mat-list-item (click)="navigateTo('/my-bookings'); isMobile && toggleSidebar()">
+        <mat-icon>event</mat-icon>
+        <span class="nav-text">My Bookings</span>
+      </a>
       <a mat-list-item (click)="navigateTo('/business-switcher'); isMobile && toggleSidebar()">
         <mat-icon>sync_alt</mat-icon>
         <span class="nav-text">Business Switcher</span>
@@ -64,7 +68,19 @@
       </a>
       <a mat-list-item (click)="navigateTo('/admin/users'); isMobile && toggleSidebar()">
         <mat-icon>group</mat-icon>
-        <span class="nav-text">Manage Users</span>
+        <span class="nav-text">Services</span>
+      </a>
+      <a mat-list-item (click)="navigateTo('/promotions'); isMobile && toggleSidebar()">
+        <mat-icon>local_offer</mat-icon>
+        <span class="nav-text">Promotions</span>
+      </a>
+      <a mat-list-item (click)="navigateTo('/bookings'); isMobile && toggleSidebar()">
+        <mat-icon>calendar_today</mat-icon>
+        <span class="nav-text">Bookings</span>
+      </a>
+      <a mat-list-item (click)="navigateTo('/my-bookings'); isMobile && toggleSidebar()">
+        <mat-icon>event</mat-icon>
+        <span class="nav-text">My Bookings</span>
       </a>
       <a mat-list-item (click)="navigateTo('/pending-businesses'); isMobile && toggleSidebar()">
         <mat-icon>storefront</mat-icon>

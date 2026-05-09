@@ -178,6 +178,7 @@ namespace API.Controllers
             return new BookingDto
             {
                 Id = b.Id,
+                BusinessId = b.BusinessId,
                 BookingDate = b.BookingDate,
                 Status = b.Status,
                 CustomerName = b.Customer?.FullName ?? "Unknown Customer",

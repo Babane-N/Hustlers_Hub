@@ -24,18 +24,16 @@ export class ActiveServiceContextService {
   }
 
   // ============================
-  // SET ACTIVE SERVICE
+  // SET ACTIVE BUSINESS
   // ============================
-
   setActiveBusiness(service: ActiveService): void {
     this.serviceSubject.next(service);
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(service));
   }
 
   // ============================
-  // GETTERS (SYNC)
+  // GET CURRENT VALUE
   // ============================
-
   getActiveBusiness(): ActiveService | null {
     return this.serviceSubject.value;
   }
@@ -51,24 +49,30 @@ export class ActiveServiceContextService {
   // ============================
   // CLEAR CONTEXT
   // ============================
-
   clear(): void {
     this.serviceSubject.next(null);
     localStorage.removeItem(this.STORAGE_KEY);
   }
 
   // ============================
-  // RESTORE ON REFRESH
+  // RESTORE SAFELY
   // ============================
-
   private restoreFromStorage(): void {
     const stored = localStorage.getItem(this.STORAGE_KEY);
-    if (stored) {
-      try {
-        this.serviceSubject.next(JSON.parse(stored));
-      } catch {
-        localStorage.removeItem(this.STORAGE_KEY);
-      }
+
+    if (!stored) return;
+
+    try {
+      const parsed: ActiveService = JSON.parse(stored);
+
+      // ensure proper async hydration (prevents Angular race issues)
+      setTimeout(() => {
+        this.serviceSubject.next(parsed);
+      });
+
+    } catch (err) {
+      console.error('Failed to restore active business context', err);
+      localStorage.removeItem(this.STORAGE_KEY);
     }
   }
 }

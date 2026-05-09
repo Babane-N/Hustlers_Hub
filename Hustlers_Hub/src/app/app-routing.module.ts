@@ -69,7 +69,7 @@ const routes: Routes = [
     component: MyBookingsComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: ['Customer', 'Admin'],
+      roles: ['Customer', 'Business', 'Admin'],
       requiresService: false
     }
   },
