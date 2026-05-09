@@ -190,8 +190,8 @@ namespace API.Controllers
         // =====================================================
         [HttpPost("approve/{id}")]
         public async Task<IActionResult> ApproveBusiness(
-            int id,
-           [FromBody] ApproveBusinessRequest request)
+        Guid id,
+     [FromBody] ApproveBusinessRequest request)
         {
             var business = await _context.Businesses.FindAsync(id);
             if (business == null) return NotFound();

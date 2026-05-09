@@ -34,6 +34,7 @@
 
       <!-- Info -->
       <div class="content">
+
         <h3 class="name">{{ item.businessName }}</h3>
 
         <p class="description">
@@ -45,51 +46,39 @@
           <span class="location">📍 {{ item.location }}</span>
         </div>
 
-      <!-- Actions -->
+        <!-- Verification -->
+        <div class="verification" *ngIf="item.isCipcRegistered">
+
+          <label>
+            <input type="checkbox"
+                   [(ngModel)]="item.isVerified" />
+            Grant Verification Badge
+          </label>
+
+          <small class="cipc">
+            CIPC No: {{ item.cipcNumber }}
+          </small>
+
+        </div>
+
+        <!-- Actions -->
         <div class="actions">
 
           <!-- APPROVE -->
           <button class="btn approve"
                   (click)="approve(item)">
-
             ✔ Approve
-
           </button>
-
-          <!-- VERIFICATION -->
-          <div class="verification"
-               *ngIf="item.isCipcRegistered">
-
-            <label>
-
-              <input type="checkbox"
-                     [(ngModel)]="item.isVerified" />
-
-              Grant Verification Badge
-
-            </label>
-
-            <small class="cipc">
-              CIPC No: {{ item.cipcNumber }}
-            </small>
-
-          </div>
 
           <!-- REJECT -->
           <button class="btn reject"
                   (click)="reject(item.id)">
-
             ✖ Reject
-
           </button>
 
         </div>
 
-
-          <button class="btn reject" (click)="reject(item.id)">
-            ✖ Reject
-          </button>
-        </div>
+      </div>
 
     </div>
 
