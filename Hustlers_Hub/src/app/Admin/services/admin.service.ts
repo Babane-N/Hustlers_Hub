@@ -38,10 +38,10 @@ export class AdminService {
     return this.http.get<any[]>(this.baseUrl + '/pending');
   }
 
-  approveBusiness(id: number, payload: { verifyBusiness: boolean }) {
+  approveBusiness(id: string, body: any) {
     return this.http.post(
-      `${this.baseUrl}/approve/${id}`,
-      payload
+      `${this.baseUrl}/Businesses/approve/${id}`,
+      body
     );
   }
 

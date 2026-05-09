@@ -32,18 +32,18 @@ export class PendingBusinessesComponent implements OnInit {
     });
   }
 
-  approve(item: any) {
-    this.adminService.approveBusiness(
-      item.id,
-      item.isVerified
-    ).subscribe({
+  approve(business: any) {
+    const payload = {
+      verifyBusiness: business.isVerified === true
+    };
+
+    this.adminService.approveBusiness(business.id, payload).subscribe({
       next: () => {
         this.pendingBusinesses =
-          this.pendingBusinesses.filter(b => b.id !== item.id);
+          this.pendingBusinesses.filter(b => b.id !== business.id);
       },
       error: (err) => {
-        console.error('Approve failed:', err);
-        alert(err?.error || 'Approval failed');
+        console.error('Approve failed:', err.error || err);
       }
     });
   }
