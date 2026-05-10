@@ -1,69 +1,202 @@
-<div class="admin-dashboard">
+<div class="admin-dashboard-container">
 
-  <h2 class="title">Admin Dashboard</h2>
+  <!-- HERO -->
+  <header class="admin-hero">
 
-  <div *ngIf="loading" class="loading">Loading dashboard...</div>
+    <div class="hero-content">
 
-  <div *ngIf="!loading" class="grid">
+      <span class="admin-badge">
+        🛡️ Admin Control Center
+      </span>
 
-    <!-- PENDING -->
-    <div class="card glass" [routerLink]="['/pending-businesses']">
-      <i class="fas fa-hourglass-half icon"></i>
-      <h4>Pending Approvals</h4>
-      <p>{{ stats.pending }}</p>
+      <h1>Admin Dashboard</h1>
+
+      <p>
+        Monitor platform growth, manage businesses,
+        oversee approvals, and keep the marketplace thriving.
+      </p>
+
+      <div class="hero-actions">
+
+        <a routerLink="/pending-businesses"
+           class="btn primary">
+          Review Businesses
+        </a>
+
+        <a routerLink="/reports"
+           class="btn secondary">
+          View Reports
+        </a>
+
+      </div>
+
     </div>
 
-    <!-- USERS -->
-    <div class="card glass">
-      <i class="fas fa-users icon"></i>
-      <h4>Total Users</h4>
-      <p>{{ stats.totalUsers }}</p>
+    <!-- Floating Admin Icon -->
+    <div class="hero-visual">
+      <div class="admin-orb">
+        🧠
+      </div>
     </div>
 
-    <!-- BUSINESSES -->
-    <div class="card glass">
-      <i class="fas fa-briefcase icon"></i>
-      <h4>Total Businesses</h4>
-      <p>{{ stats.totalBusinesses }}</p>
-    </div>
+  </header>
 
-    <!-- APPROVED -->
-    <div class="card glass">
-      <i class="fas fa-check-circle icon"></i>
-      <h4>Approved</h4>
-      <p>{{ stats.approved }}</p>
-    </div>
-
-    <!-- VERIFIED -->
-    <div class="card glass">
-      <i class="fas fa-shield-alt icon"></i>
-      <h4>Verified</h4>
-      <p>{{ stats.verified }}</p>
-    </div>
-
-    <!-- UNVERIFIED -->
-    <div class="card glass">
-      <i class="fas fa-exclamation-circle icon"></i>
-      <h4>Unverified</h4>
-      <p>{{ stats.unverified }}</p>
-    </div>
-
+  <!-- LOADING -->
+  <div *ngIf="loading" class="loading">
+    Loading dashboard...
   </div>
 
-  <!-- ACTION CARDS -->
-  <div class="action-grid">
+  <!-- DASHBOARD -->
+  <div *ngIf="!loading">
 
-    <div class="action-card glass" [routerLink]="['/pending-businesses']">
-      <i class="fas fa-tasks icon"></i>
-      <h3>Manage Pending Businesses</h3>
-      <p>Review, approve or decline business registrations</p>
-    </div>
+    <!-- STATS -->
+    <section class="stats-section">
 
-    <div class="action-card glass" [routerLink]="['/reports']">
-      <i class="fas fa-chart-line icon"></i>
-      <h3>View Reports</h3>
-      <p>See platform activity and performance insights</p>
-    </div>
+      <div class="stat-card pending"
+           routerLink="/pending-businesses">
+
+        <div class="stat-icon">⏳</div>
+
+        <div>
+          <h3>Pending Approvals</h3>
+          <p>{{ stats.pending }}</p>
+        </div>
+
+      </div>
+
+      <div class="stat-card users">
+
+        <div class="stat-icon">👥</div>
+
+        <div>
+          <h3>Total Users</h3>
+          <p>{{ stats.totalUsers }}</p>
+        </div>
+
+      </div>
+
+      <div class="stat-card businesses">
+
+        <div class="stat-icon">💼</div>
+
+        <div>
+          <h3>Total Businesses</h3>
+          <p>{{ stats.totalBusinesses }}</p>
+        </div>
+
+      </div>
+
+      <div class="stat-card approved">
+
+        <div class="stat-icon">✅</div>
+
+        <div>
+          <h3>Approved</h3>
+          <p>{{ stats.approved }}</p>
+        </div>
+
+      </div>
+
+      <div class="stat-card verified">
+
+        <div class="stat-icon">🛡️</div>
+
+        <div>
+          <h3>Verified</h3>
+          <p>{{ stats.verified }}</p>
+        </div>
+
+      </div>
+
+      <div class="stat-card unverified">
+
+        <div class="stat-icon">⚠️</div>
+
+        <div>
+          <h3>Unverified</h3>
+          <p>{{ stats.unverified }}</p>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- MANAGEMENT TOOLS -->
+    <section class="features">
+
+      <a class="feature-card"
+         routerLink="/pending-businesses">
+
+        <h3>📋 Manage Approvals</h3>
+
+        <p>
+          Review pending businesses and decide
+          which providers join the platform.
+        </p>
+
+      </a>
+
+      <a class="feature-card"
+         routerLink="/reports">
+
+        <h3>📊 Platform Reports</h3>
+
+        <p>
+          Monitor bookings, platform activity,
+          user growth and overall engagement.
+        </p>
+
+      </a>
+
+      <a class="feature-card">
+
+        <h3>👨‍💼 User Management</h3>
+
+        <p>
+          Manage users, businesses and platform
+          moderation tools from one place.
+        </p>
+
+      </a>
+
+      <a class="feature-card">
+
+        <h3>🚨 Moderation Center</h3>
+
+        <p>
+          Handle flagged accounts, reports,
+          suspicious activity and violations.
+        </p>
+
+      </a>
+
+      <a class="feature-card locked">
+
+        <div class="lock-badge">🔒 Premium</div>
+
+        <h3>🤖 AI Insights</h3>
+
+        <p>
+          Predict platform trends and receive
+          intelligent admin recommendations.
+        </p>
+
+      </a>
+
+      <a class="feature-card locked">
+
+        <div class="lock-badge">🔒 Premium</div>
+
+        <h3>💳 Revenue Analytics</h3>
+
+        <p>
+          Track platform earnings, subscriptions
+          and payment activity in real-time.
+        </p>
+
+      </a>
+
+    </section>
 
   </div>
 
