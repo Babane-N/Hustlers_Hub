@@ -1,32 +1,75 @@
 <div class="my-bookings-container">
   <h2 class="page-title">📋 My Bookings</h2>
 
-  <div *ngIf="isLoading" class="loading">Loading your bookings...</div>
-  <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+  <div *ngIf="isLoading" class="loading">
+    Loading your bookings...
+  </div>
+
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
 
   <div *ngIf="hasBookings; else noBookings" class="bookings-grid">
-    <div class="booking-card"
-         *ngFor="let booking of bookings"
-         [ngClass]="{'unscheduled': booking.bookingDate === 'Not Scheduled'}">
-      <div class="booking-header">
-        <div class="service-name">{{ booking.businessName }}</div>
 
-        <!-- Display booking date or "Not Scheduled" badge -->
+    <div class="booking-card"
+         *ngFor="let booking of bookings">
+
+      <div class="booking-header">
+
+        <div class="service-name">
+          {{ booking.businessName }}
+        </div>
+
         <div class="booking-date">
-          <ng-container *ngIf="booking.bookingDate === 'Not Scheduled'; else scheduled">
-            <span class="badge unscheduled-badge">Not Scheduled</span>
+
+          <!-- If scheduled -->
+          <ng-container *ngIf="booking.bookingDate; else notScheduled">
+            📅 {{ booking.bookingDate | date:'medium' }}
           </ng-container>
-          <ng-template #scheduled>
-            {{ booking.bookingDate | date:'short' }}
+
+          <!-- If not scheduled -->
+          <ng-template #notScheduled>
+            <span class="badge unscheduled-badge">
+              Not Scheduled Yet
+            </span>
           </ng-template>
+
         </div>
       </div>
 
-      <div class="provider-name">🏢 {{ booking.businessName }}</div>
-      <div class="booking-location">📍 {{ booking.location || 'Location not provided' }}</div>
+      <div class="provider-name">
+        🏢 {{ booking.businessName }}
+      </div>
 
-      <div class="booking-status" [ngClass]="getStatusClass(booking.status)">
+      <div class="booking-location">
+        📍 {{ booking.location || 'Location not provided' }}
+      </div>
+
+      <div class="booking-status"
+           [ngClass]="getStatusClass(booking.status)">
         {{ booking.status }}
+      </div>
+
+      <!-- ACTION BUTTONS -->
+      <div class="booking-actions">
+
+        <!-- Complete Button -->
+        <button *ngIf="booking.status?.toLowerCase() !== 'completed'
+            && booking.status?.toLowerCase() !== 'cancelled'"
+                class="complete-btn"
+                (click)="markAsComplete(booking.id)">
+
+          Complete
+        </button>
+
+        <!-- Cancel Button -->
+        <button *ngIf="booking.status?.toLowerCase() !== 'completed'
+            && booking.status?.toLowerCase() !== 'cancelled'"
+                class="cancel-btn"
+                (click)="cancelBooking(booking.id)">
+
+          Cancel
+        </button>
       </div>
     </div>
   </div>

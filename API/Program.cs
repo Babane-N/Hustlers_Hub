@@ -44,6 +44,7 @@ var allowedOrigins = new[]
 {
     "https://agreeable-grass-0e90e7a03.7.azurestaticapps.net",
     "https://hustlershub.tech",
+    "https://www.hustlershub.tech",
     "https://hustlerhub-cea4bhbjdrgfdefb.southafricanorth-01.azurewebsites.net",
     "https://localhost:4200",
     "http://localhost:4200"

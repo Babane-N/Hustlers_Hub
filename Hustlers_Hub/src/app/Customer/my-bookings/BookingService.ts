@@ -48,5 +48,12 @@ export class BookingService {
   getBookingsByBusiness(businessId: string): Observable<Booking[]> {
     return this.http.get<Booking[]>(`${this.baseUrl}/business/${businessId}`);
   }
+
+  markBookingComplete(bookingId: number) {
+    return this.http.put(
+      `${this.baseUrl}/complete/${bookingId}`,
+      {}
+    );
+  }
 }
 

@@ -143,6 +143,65 @@ namespace API.Controllers
             return Ok(MapToDto(updated));
         }
 
+        [HttpPut("confirm/{id}")]
+        public async Task<IActionResult> ConfirmBooking(Guid id)
+        {
+            var booking = await _context.Bookings.FindAsync(id);
+
+            if (booking == null)
+                return NotFound();
+
+            if (booking.Status == BookingStatus.Cancelled)
+            {
+                return BadRequest("Cancelled bookings cannot be confirmed.");
+            }
+
+            booking.Status = BookingStatus.Confirmed;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Booking confirmed successfully"
+            });
+        }
+
+        [HttpPut("complete/{id}")]
+        public async Task<IActionResult> MarkBookingComplete(int id)
+        {
+            var booking = await _context.Bookings.FindAsync(id);
+
+            if (booking == null)
+                return NotFound();
+
+            booking.Status = BookingStatus.Completed;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Booking marked as completed" });
+        }
+
+        [HttpPut("cancel/{id}")]
+        public async Task<IActionResult> CancelBooking(int id)
+        {
+            var booking = await _context.Bookings.FindAsync(id);
+
+            if (booking == null)
+                return NotFound();
+
+            // Prevent cancelling completed bookings
+            if (booking.Status == BookingStatus.Completed)
+            {
+                return BadRequest("Completed bookings cannot be cancelled.");
+            }
+
+            booking.Status = BookingStatus.Cancelled;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Booking cancelled successfully" });
+        }
+
         // =====================================================
         // DELETE: api/Bookings/{id}
         // =====================================================

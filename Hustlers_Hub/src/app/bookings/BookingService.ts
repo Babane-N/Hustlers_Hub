@@ -12,7 +12,7 @@ export type BookingStatus =
 
 export interface Booking {
   id: string;
-  bookingDate: string;
+  bookingDate?: string | null;
   status: BookingStatus;
 
   description?: string;
@@ -67,10 +67,31 @@ export class BookingService {
     return this.http.put<void>(`${this.baseUrl}/${id}/status`, { status });
   }
 
+  confirmBooking(id: string): Observable<void> {
+    return this.http.put<void>(
+      `${this.baseUrl}/confirm/${id}`,
+      {}
+    );
+  }
+
   updateBooking(
     id: string,
     payload: Partial<Booking>
   ): Observable<Booking> {
     return this.http.put<Booking>(`${this.baseUrl}/${id}`, payload);
+  }
+
+  markBookingComplete(id: string): Observable<void> {
+    return this.http.put<void>(
+      `${this.baseUrl}/complete/${id}`,
+      {}
+    );
+  }
+
+  cancelBooking(id: string): Observable<void> {
+    return this.http.put<void>(
+      `${this.baseUrl}/cancel/${id}`,
+      {}
+    );
   }
 }

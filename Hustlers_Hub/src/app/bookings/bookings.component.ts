@@ -189,6 +189,35 @@ export class BookingsComponent implements OnInit, OnDestroy {
     this.selectedBooking = null;
   }
 
+  confirmBooking(booking: Booking): void {
+
+    this.bookingService.confirmBooking(booking.id)
+      .subscribe({
+
+        next: () => {
+
+          booking.status = 'Confirmed';
+
+          this.snackBar.open(
+            'Booking confirmed successfully!',
+            'Close',
+            { duration: 3000 }
+          );
+        },
+
+        error: (err) => {
+
+          console.error(err);
+
+          this.snackBar.open(
+            'Failed to confirm booking.',
+            'Close',
+            { duration: 3000 }
+          );
+        }
+      });
+  }
+
   confirmSchedule(): void {
 
     if (!this.selectedBooking) return;

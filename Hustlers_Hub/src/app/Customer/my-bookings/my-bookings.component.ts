@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { BookingService, Booking } from '../../bookings/BookingService';
+import { BookingService, Booking, BookingStatus } from '../../bookings/BookingService';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -18,9 +18,12 @@ export class MyBookingsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.loadBookings();
+  }
+
+  loadBookings(): void {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-    // Normalize customerId
     const customerId = user.userId || user.id;
 
     if (!customerId) {
@@ -37,16 +40,94 @@ export class MyBookingsComponent implements OnInit {
           customerName: b.customerName || b.customer?.fullName || 'You',
           description: b.description || 'No details provided',
 
-          // ✅ Default bookingDate to "Not Scheduled" if null or empty
-          bookingDate: b.bookingDate ? b.bookingDate : 'Not Scheduled'
+          // Show scheduled date if available
+          bookingDate: b.bookingDate || null
         }));
+
         this.isLoading = false;
       },
       error: (err) => {
         console.error('Error fetching bookings:', err);
-        this.snackBar.open('Could not load your bookings. Please try again later.', 'Close', { duration: 3000 });
+
+        this.snackBar.open(
+          'Could not load your bookings. Please try again later.',
+          'Close',
+          { duration: 3000 }
+        );
+
         this.errorMessage = 'Failed to load bookings.';
         this.isLoading = false;
+      }
+    });
+  }
+
+  markAsComplete(id: string): void {
+    this.bookingService.markBookingComplete(id).subscribe({
+      next: () => {
+
+        const booking = this.bookings.find(
+          b => b.id === id
+        );
+
+        if (booking) {
+          booking.status = 'Completed';
+        }
+
+        this.snackBar.open(
+          'Booking marked as completed!',
+          'Close',
+          { duration: 3000 }
+        );
+      },
+      error: (err) => {
+        console.error(err);
+
+        this.snackBar.open(
+          'Failed to mark booking as complete.',
+          'Close',
+          { duration: 3000 }
+        );
+      }
+    });
+  }
+
+  cancelBooking(id: string): void {
+
+    const confirmed = window.confirm(
+      'Are you sure you want to cancel this booking?'
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    this.bookingService.cancelBooking(id).subscribe({
+      next: () => {
+
+        const booking = this.bookings.find(
+          b => b.id === id
+        );
+
+        if (booking) {
+          booking.status = 'Cancelled';
+        }
+
+        this.snackBar.open(
+          'Booking cancelled successfully.',
+          'Close',
+          { duration: 3000 }
+        );
+      },
+
+      error: (err) => {
+
+        console.error(err);
+
+        this.snackBar.open(
+          'Failed to cancel booking.',
+          'Close',
+          { duration: 3000 }
+        );
       }
     });
   }
@@ -57,12 +138,20 @@ export class MyBookingsComponent implements OnInit {
 
   getStatusClass(status: string): string {
     switch (status?.toLowerCase()) {
-      case 'pending': return 'status-pending';
-      case 'confirmed': return 'status-confirmed';
-      case 'completed': return 'status-completed';
-      case 'cancelled': return 'status-cancelled';
-      default: return '';
+      case 'pending':
+        return 'status-pending';
+
+      case 'confirmed':
+        return 'status-confirmed';
+
+      case 'completed':
+        return 'status-completed';
+
+      case 'cancelled':
+        return 'status-cancelled';
+
+      default:
+        return '';
     }
   }
 }
-

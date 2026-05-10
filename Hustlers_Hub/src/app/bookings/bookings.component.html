@@ -32,16 +32,29 @@
       </div>
 
       <!-- ACTIONS -->
+      <!-- ACTIONS -->
       <div class="card-actions">
-        <button class="btn view-btn" (click)="viewBookingDetails(booking)">
+
+        <!-- VIEW -->
+        <button class="btn view-btn"
+                (click)="viewBookingDetails(booking)">
           View
         </button>
 
-        <button class="btn schedule-btn"
+        <!-- CONFIRM BOOKING -->
+        <button class="btn confirm-btn"
                 *ngIf="booking.status === 'Pending'"
+                (click)="confirmBooking(booking)">
+          Confirm
+        </button>
+
+        <!-- SCHEDULE -->
+        <button class="btn schedule-btn"
+                *ngIf="booking.status === 'Confirmed'"
                 (click)="openScheduleModal(booking)">
           Schedule
         </button>
+
       </div>
 
     </div>

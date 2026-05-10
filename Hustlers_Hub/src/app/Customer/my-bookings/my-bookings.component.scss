@@ -76,4 +76,39 @@
   .status-cancelled {
     color: #dc3545;
   }
+
+  .booking-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+  }
+
+  .complete-btn,
+  .cancel-btn {
+    flex: 1;
+    border: none;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+  }
+
+  .complete-btn {
+    background: #28a745;
+    color: white;
+  }
+
+  .complete-btn:hover {
+    background: #218838;
+  }
+
+  .cancel-btn {
+    background: #dc3545;
+    color: white;
+  }
+
+  .cancel-btn:hover {
+    background: #c82333;
+  }
 }
