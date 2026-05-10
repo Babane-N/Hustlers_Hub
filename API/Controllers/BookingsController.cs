@@ -167,7 +167,7 @@ namespace API.Controllers
         }
 
         [HttpPut("complete/{id}")]
-        public async Task<IActionResult> MarkBookingComplete(int id)
+        public async Task<IActionResult> MarkBookingComplete(Guid id)
         {
             var booking = await _context.Bookings.FindAsync(id);
 
@@ -178,28 +178,35 @@ namespace API.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Booking marked as completed" });
+            return Ok(new
+            {
+                message = "Booking marked as completed"
+            });
         }
 
         [HttpPut("cancel/{id}")]
-        public async Task<IActionResult> CancelBooking(int id)
+        public async Task<IActionResult> CancelBooking(Guid id)
         {
             var booking = await _context.Bookings.FindAsync(id);
 
             if (booking == null)
                 return NotFound();
 
-            // Prevent cancelling completed bookings
             if (booking.Status == BookingStatus.Completed)
             {
-                return BadRequest("Completed bookings cannot be cancelled.");
+                return BadRequest(
+                    "Completed bookings cannot be cancelled."
+                );
             }
 
             booking.Status = BookingStatus.Cancelled;
 
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Booking cancelled successfully" });
+            return Ok(new
+            {
+                message = "Booking cancelled successfully"
+            });
         }
 
         // =====================================================
