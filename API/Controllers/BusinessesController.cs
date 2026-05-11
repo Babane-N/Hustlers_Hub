@@ -173,7 +173,9 @@ namespace API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBusiness(Guid id, [FromBody] UpdateBusinessDto dto)
+        public async Task<IActionResult> UpdateBusiness(
+     Guid id,
+     [FromForm] UpdateBusinessDto dto)
         {
             var business = await _context.Businesses.FindAsync(id);
 
@@ -184,9 +186,35 @@ namespace API.Controllers
             business.Category = dto.Category;
             business.Location = dto.Location;
 
+            // Upload new logo
+            if (dto.Logo != null)
+            {
+                var uploadsFolder = Path.Combine(
+                    _env.ContentRootPath,
+                    "wwwroot",
+                    "uploads"
+                );
+
+                Directory.CreateDirectory(uploadsFolder);
+
+                var fileName =
+                    $"{Guid.NewGuid()}{Path.GetExtension(dto.Logo.FileName)}";
+
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using var stream = new FileStream(filePath, FileMode.Create);
+
+                await dto.Logo.CopyToAsync(stream);
+
+                business.LogoUrl = $"/uploads/{fileName}";
+            }
+
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Business updated successfully" });
+            return Ok(new
+            {
+                message = "Business updated successfully"
+            });
         }
 
 
@@ -276,6 +304,8 @@ namespace API.Controllers
         public string Category { get; set; } = string.Empty;
 
         public string Location { get; set; } = string.Empty;
+
+        public IFormFile? Logo { get; set; }
     }
 }
 

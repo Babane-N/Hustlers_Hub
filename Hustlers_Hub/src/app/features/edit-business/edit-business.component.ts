@@ -18,7 +18,7 @@ export class EditBusinessComponent implements OnInit {
   logoPreview: string | null = null;
   businessId: string = '';
   user: any = null;
-
+  selectedLogoFile: File | null = null;
   constructor(
     private fb: FormBuilder,
     private http: HttpClient,
@@ -97,9 +97,11 @@ export class EditBusinessComponent implements OnInit {
 
     if (file) {
 
+      this.selectedLogoFile = file;
+
       const reader = new FileReader();
 
-      reader.onload = e => {
+      reader.onload = () => {
         this.logoPreview = reader.result as string;
       };
 
@@ -111,22 +113,42 @@ export class EditBusinessComponent implements OnInit {
 
     if (!this.businessId) return;
 
-    const payload = {
-      description: this.businessForm.get('description')?.value,
-      category: this.businessForm.get('category')?.value,
-      location: this.businessForm.get('address')?.value
-    };
+    const formData = new FormData();
 
-    this.http.put(`${environment.apiUrl}/Businesses/${this.businessId}`, payload)
-      .subscribe({
-        next: () => {
-          this.successMessage = 'Business updated successfully';
-        },
+    formData.append(
+      'description',
+      this.businessForm.get('description')?.value || ''
+    );
 
-        error: (err) => {
-          console.error(err);
-          this.errorMessage = 'Failed to update business';
-        }
-      });
+    formData.append(
+      'category',
+      this.businessForm.get('category')?.value || ''
+    );
+
+    formData.append(
+      'location',
+      this.businessForm.get('address')?.value || ''
+    );
+
+    // Upload logo if selected
+    if (this.selectedLogoFile) {
+      formData.append('logo', this.selectedLogoFile);
+    }
+
+    this.http.put(
+      `${environment.apiUrl}/Businesses/${this.businessId}`,
+      formData
+    ).subscribe({
+      next: () => {
+        this.successMessage = 'Business updated successfully';
+        this.errorMessage = '';
+      },
+
+      error: (err) => {
+        console.error(err);
+        this.errorMessage = 'Failed to update business';
+        this.successMessage = '';
+      }
+    });
   }
 }
