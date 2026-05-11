@@ -24,7 +24,7 @@ export class PromotionComponent implements OnInit {
   selectedCategory: string = '';
   sortOrder: string = '';
   isLoading: boolean = false;
-  readonly apiUrl = 'https://hustlershub-g3cjffaea3axckg3.southafricanorth-01.azurewebsites.net/api/promotions';
+  readonly apiUrl = 'https://hustlerhub-cea4bhbjdrgfdefb.southafricanorth-01.azurewebsites.net/api/promotions';
   constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
