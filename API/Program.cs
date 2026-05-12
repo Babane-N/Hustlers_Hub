@@ -40,24 +40,36 @@ builder.Services.AddSwaggerGen();
 // =====================================================
 // CORS
 // =====================================================
+
+// Web + Angular + Capacitor Mobile Origins
 var allowedOrigins = new[]
 {
+    // Production Web
     "https://agreeable-grass-0e90e7a03.7.azurestaticapps.net",
     "https://hustlershub.tech",
     "https://www.hustlershub.tech",
+
+    // Azure API (optional but safe)
     "https://hustlerhub-cea4bhbjdrgfdefb.southafricanorth-01.azurewebsites.net",
+
+    // Angular Local Development
+    "http://localhost:4200",
     "https://localhost:4200",
-    "http://localhost:4200"
+
+    // Capacitor Android/iOS WebView
+    "https://localhost",
+    "http://localhost"
 };
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins(allowedOrigins)
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+        policy
+            .WithOrigins(allowedOrigins)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -79,20 +91,25 @@ Directory.CreateDirectory(uploadsPath);
 // PIPELINE ORDER (IMPORTANT)
 // =====================================================
 
-// Swagger (dev only recommended, but kept as-is)
+// Swagger
 app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-// IMPORTANT: CORS early
+// =====================================================
+// CORS MUST COME BEFORE AUTH
+// =====================================================
 app.UseCors("AllowFrontend");
 
 // =====================================================
-// STATIC FILES (FIX FOR LOGOS)
+// STATIC FILES
 // =====================================================
-app.UseStaticFiles(); // serves wwwroot
 
+// Serve wwwroot
+app.UseStaticFiles();
+
+// Serve uploads folder
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(uploadsPath),
