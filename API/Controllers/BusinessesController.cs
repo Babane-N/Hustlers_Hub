@@ -26,28 +26,108 @@ namespace API.Controllers
         }
 
         // =====================================================
-        // 🌍 PUBLIC — Approved businesses (LISTINGS)
+        // 🌍 PUBLIC — Approved businesses (Smart LISTINGS)
         // =====================================================
         [HttpGet("public")]
-        public async Task<IActionResult> GetApprovedBusinesses()
+        public async Task<IActionResult> GetApprovedBusinesses(
+       [FromQuery] double? lat,
+       [FromQuery] double? lng)
         {
+            var random = new Random();
+
             var businesses = await _context.Businesses
                 .Where(b => b.IsApproved)
-                .Select(b => new
-                {
-                    b.Id,
-                    b.BusinessName,
-                    b.Category,
-                    b.Description,
-                    b.Location,
-                    b.Latitude,
-                    b.Longitude,
-                    logoUrl = b.LogoUrl,
-                    b.IsVerified
-                })
                 .ToListAsync();
 
-            return Ok(businesses);
+            var rankedBusinesses = businesses
+                .Select(b =>
+                {
+                    double distance = 9999;
+
+                    // Calculate distance if coordinates exist
+                    if (
+                        lat.HasValue &&
+                        lng.HasValue &&
+                        b.Latitude.HasValue &&
+                        b.Longitude.HasValue
+                    )
+                    {
+                        distance = CalculateDistance(
+                            lat.Value,
+                            lng.Value,
+                            b.Latitude.Value,
+                            b.Longitude.Value
+                        );
+                    }
+
+                    // Nearby businesses score higher
+                    double locationScore = 1 / (distance + 1);
+
+                    // Random rotation
+                    double randomScore = random.NextDouble();
+
+                    // Verified businesses get slight boost
+                    double verifiedBoost = b.IsVerified ? 0.1 : 0;
+
+                    // Final ranking score
+                    double finalScore =
+                        (locationScore * 0.7) +
+                        (randomScore * 0.3) +
+                        verifiedBoost;
+
+                    return new
+                    {
+                        b.Id,
+                        b.BusinessName,
+                        b.Category,
+                        b.Description,
+                        b.Location,
+                        b.Latitude,
+                        b.Longitude,
+                        logoUrl = b.LogoUrl,
+                        b.IsVerified,
+                        Distance = Math.Round(distance, 1),
+                        Score = finalScore
+                    };
+                })
+                .OrderByDescending(x => x.Score)
+                .ToList();
+
+            return Ok(rankedBusinesses);
+        }
+
+        // =====================================================
+        // 📍 Distance Calculator (Haversine Formula)
+        // =====================================================
+        private double CalculateDistance(
+            double lat1,
+            double lon1,
+            double lat2,
+            double lon2)
+        {
+            const double R = 6371; // Earth radius in KM
+
+            var dLat = DegreesToRadians(lat2 - lat1);
+            var dLon = DegreesToRadians(lon2 - lon1);
+
+            var a =
+                Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                Math.Cos(DegreesToRadians(lat1)) *
+                Math.Cos(DegreesToRadians(lat2)) *
+                Math.Sin(dLon / 2) *
+                Math.Sin(dLon / 2);
+
+            var c = 2 * Math.Atan2(
+                Math.Sqrt(a),
+                Math.Sqrt(1 - a)
+            );
+
+            return R * c;
+        }
+
+        private double DegreesToRadians(double degrees)
+        {
+            return degrees * (Math.PI / 180);
         }
 
         // =====================================================

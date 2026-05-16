@@ -1,32 +1,60 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+
 import { Observable } from 'rxjs';
+
 import { environment } from '../../../environments/environment';
 
 export interface ServiceProvider {
+
   id: string;
+
   title: string;
+
   category: string;
+
   description?: string;
+
   price: number;
+
   durationMinutes: number;
+
   businessId?: string;
+
   businessName: string;
-  businessLocation?: string;
+
+  location?: string;
+
   latitude?: number;
+
   longitude?: number;
+
+  // ✅ Smart ranking fields
+  distance?: number;
+
+  score?: number;
+
   logoUrl?: string | null;
-  imageUrl?: string | null;   // ✅ consistent with find-service
-  hiddenImage?: boolean;      // ✅ for broken image handling
+
+  imageUrl?: string | null;
+
+  hiddenImage?: boolean;
+
   isVerified?: boolean;
 }
 
 export interface Review {
+
   id: string;
+
   businessId: string;
+
   rating: number;
+
   comment: string;
+
   createdAt: string;
+
   customerName: string;
 }
 
@@ -34,24 +62,62 @@ export interface Review {
   providedIn: 'root'
 })
 export class ServiceProviderService {
-  private baseUrl = `${environment.apiUrl}/Businesses/public`;
 
-  constructor(private http: HttpClient) { }
+  private baseUrl =
+    `${environment.apiUrl}/Businesses`;
 
-  // ✅ Fetch all providers (used in FindServiceComponent)
-  getProviders(): Observable<ServiceProvider[]> {
-    return this.http.get<ServiceProvider[]>(this.baseUrl);
+  constructor(
+    private http: HttpClient
+  ) { }
+
+  // =====================================================
+  // ✅ FETCH PROVIDERS WITH LOCATION
+  // =====================================================
+  getProviders(
+    latitude?: number,
+    longitude?: number
+  ): Observable<ServiceProvider[]> {
+
+    let params = new HttpParams();
+
+    // Send user coordinates if available
+    if (
+      latitude !== undefined &&
+      longitude !== undefined
+    ) {
+
+      params = params
+        .set('lat', latitude.toString())
+        .set('lng', longitude.toString());
+    }
+
+    return this.http.get<ServiceProvider[]>(
+      `${this.baseUrl}/public`,
+      { params }
+    );
   }
 
-  // ✅ Fetch service details by ID (used in ServiceDetailComponent)
-  getServiceDetails(serviceId: string): Observable<ServiceProvider> {
-    return this.http.get<ServiceProvider>(`${this.baseUrl}/detail/${serviceId}`);
+  // =====================================================
+  // ✅ FETCH SINGLE BUSINESS DETAILS
+  // =====================================================
+  getServiceDetails(
+    serviceId: string
+  ): Observable<ServiceProvider> {
+
+    return this.http.get<ServiceProvider>(
+      `${this.baseUrl}/${serviceId}`
+    );
   }
 
-  // ✅ Fetch business reviews by businessId (used in ServiceDetailComponent)
-  getBusinessReviews(businessId: string): Observable<Review[]> {
-    return this.http.get<Review[]>(`${this.baseUrl}/reviews/business/${businessId}`);
-  }
+  // =====================================================
+  // ✅ FETCH BUSINESS REVIEWS
+  // =====================================================
+  getBusinessReviews(
+    businessId: string
+  ): Observable<Review[]> {
 
+    return this.http.get<Review[]>(
+      `${environment.apiUrl}/Reviews/business/${businessId}`
+    );
+  }
 }
-
