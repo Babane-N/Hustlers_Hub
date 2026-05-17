@@ -3,50 +3,119 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
-// ✅ Interface for Business model
-export interface Business {
+// =====================================================
+// BUSINESS IMAGE MODEL
+// =====================================================
+export interface BusinessImage {
   id: string;
-  businessName: string;
-  category: string;
-  description: string;
   imageUrl: string;
-  location: string;
-  userId: string;
-  businessType?: string;   // optional, e.g., "verified" / "unverified"
-  isApproved?: boolean;    // optional
 }
 
-// ✅ Business Service for HTTP API calls
+// =====================================================
+// BUSINESS MODEL
+// =====================================================
+export interface Business {
+
+  id: string;
+
+  businessName: string;
+
+  category: string;
+
+  description: string;
+
+  // Logo
+  logoUrl?: string;
+
+  location: string;
+
+  userId: string;
+
+  businessType?: string;
+
+  isApproved?: boolean;
+
+  isVerified?: boolean;
+
+  latitude?: number;
+
+  longitude?: number;
+
+  // Gallery Images
+  images?: BusinessImage[];
+}
+
+// =====================================================
+// BUSINESS SERVICE
+// =====================================================
 @Injectable({
   providedIn: 'root'
 })
 export class BusinessService {
 
-  private businessUrl = `${environment.apiUrl}/Businesses`;
+  private businessUrl =
+    `${environment.apiUrl}/Businesses`;
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient
+  ) { }
 
-  // =========================
-  // BUSINESS APIs
-  // =========================
+  // =====================================================
+  // GET USER BUSINESSES
+  // =====================================================
+  getUserBusinesses(
+    userId: string
+  ): Observable<Business[]> {
 
-  // Get all businesses for a specific user
-  getUserBusinesses(userId: string): Observable<Business[]> {
-    return this.http.get<Business[]>(`${this.businessUrl}/user/${userId}`);
+    return this.http.get<Business[]>(
+      `${this.businessUrl}/user/${userId}`
+    );
   }
 
-  // Create a new business (submit for approval)
-  createBusiness(business: Business): Observable<Business> {
-    return this.http.post<Business>(this.businessUrl, business);
+  // =====================================================
+  // CREATE BUSINESS
+  // =====================================================
+  createBusiness(
+    business: Business
+  ): Observable<Business> {
+
+    return this.http.post<Business>(
+      this.businessUrl,
+      business
+    );
   }
 
-  // Optional: get a single business by ID
-  getBusinessById(id: string): Observable<Business> {
-    return this.http.get<Business>(`${this.businessUrl}/${id}`);
+  // =====================================================
+  // GET SINGLE BUSINESS
+  // =====================================================
+  getBusinessById(
+    id: string
+  ): Observable<Business> {
+
+    return this.http.get<Business>(
+      `${this.businessUrl}/${id}`
+    );
   }
 
-  // Optional: get all public (approved) businesses
+  // =====================================================
+  // GET PUBLIC BUSINESSES
+  // =====================================================
   getApprovedBusinesses(): Observable<Business[]> {
-    return this.http.get<Business[]>(`${this.businessUrl}/public`);
+
+    return this.http.get<Business[]>(
+      `${this.businessUrl}/public`
+    );
+  }
+
+  // =====================================================
+  // DELETE BUSINESS IMAGE
+  // =====================================================
+  deleteBusinessImage(
+    imageId: string
+  ): Observable<any> {
+
+    return this.http.delete(
+      `${this.businessUrl}/images/${imageId}`
+    );
   }
 }

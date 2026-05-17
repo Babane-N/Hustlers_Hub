@@ -180,7 +180,11 @@ namespace API.Controllers
                 business.Category,
                 business.LogoUrl,
                 business.IsVerified,
-                images = business.Images.Select(i => i.ImageUrl)
+                images = business.Images.Select(i => new
+                {
+                    i.Id,
+                    i.ImageUrl
+                })
             });
         }
 
@@ -257,18 +261,39 @@ namespace API.Controllers
         // =====================================================
         [HttpPost("{id}/Images")]
         public async Task<IActionResult> UploadBusinessImages(
-            Guid id,
-            IFormFile[] images)
+    Guid id,
+    IFormFile[] images)
         {
-            var business = await _context.Businesses.FindAsync(id);
+            var business = await _context.Businesses
+                .Include(b => b.Images)
+                .FirstOrDefaultAsync(b => b.Id == id);
 
             if (business == null)
                 return NotFound();
+
+            // =====================================================
+            // IMAGE LIMIT
+            // =====================================================
+            const int maxImages = 8;
+
+            var currentImageCount = business.Images.Count;
+
+            if (currentImageCount + images.Length > maxImages)
+            {
+                return BadRequest(new
+                {
+                    message = $"Maximum of {maxImages} images allowed."
+                });
+            }
 
             var uploadsFolder = GetUploadsFolder();
 
             foreach (var file in images)
             {
+                // Skip empty files
+                if (file.Length == 0)
+                    continue;
+
                 var fileName =
                     $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
 
@@ -304,25 +329,52 @@ namespace API.Controllers
         // =====================================================
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBusiness(
-            Guid id,
-            [FromForm] UpdateBusinessDto dto)
+     Guid id,
+     [FromForm] UpdateBusinessDto dto)
         {
-            var business = await _context.Businesses.FindAsync(id);
+            var business = await _context.Businesses
+                .FindAsync(id);
 
             if (business == null)
                 return NotFound();
 
+            // =====================================================
+            // UPDATE BASIC INFO
+            // =====================================================
             business.Description = dto.Description;
             business.Category = dto.Category;
             business.Location = dto.Location;
 
-            // =========================
-            // Upload New Logo
-            // =========================
-            if (dto.Logo != null)
+            // =====================================================
+            // UPDATE LOGO
+            // =====================================================
+            if (dto.Logo != null && dto.Logo.Length > 0)
             {
                 var uploadsFolder = GetUploadsFolder();
 
+                // =========================================
+                // DELETE OLD LOGO FILE
+                // =========================================
+                if (!string.IsNullOrEmpty(business.LogoUrl))
+                {
+                    var oldFileName = Path.GetFileName(
+                        business.LogoUrl
+                    );
+
+                    var oldFilePath = Path.Combine(
+                        uploadsFolder,
+                        oldFileName
+                    );
+
+                    if (System.IO.File.Exists(oldFilePath))
+                    {
+                        System.IO.File.Delete(oldFilePath);
+                    }
+                }
+
+                // =========================================
+                // SAVE NEW LOGO
+                // =========================================
                 var fileName =
                     $"{Guid.NewGuid()}{Path.GetExtension(dto.Logo.FileName)}";
 
@@ -338,6 +390,7 @@ namespace API.Controllers
 
                 await dto.Logo.CopyToAsync(stream);
 
+                // Save new URL
                 business.LogoUrl = $"/uploads/{fileName}";
             }
 
@@ -345,7 +398,8 @@ namespace API.Controllers
 
             return Ok(new
             {
-                message = "Business updated successfully"
+                message = "Business updated successfully",
+                logoUrl = business.LogoUrl
             });
         }
 
@@ -399,6 +453,45 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
 
             return Ok("Business rejected");
+        }
+
+        // =====================================================
+        // 🗑️ DELETE BUSINESS IMAGE
+        // =====================================================
+        [HttpDelete("images/{imageId}")]
+        public async Task<IActionResult> DeleteBusinessImage(Guid imageId)
+        {
+            var image = await _context.BusinessImages
+                .FindAsync(imageId);
+
+            if (image == null)
+                return NotFound();
+
+            // Extract filename from URL
+            var fileName = Path.GetFileName(image.ImageUrl);
+
+            var uploadsFolder = GetUploadsFolder();
+
+            var filePath = Path.Combine(
+                uploadsFolder,
+                fileName
+            );
+
+            // Delete physical file
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+            }
+
+            // Delete database record
+            _context.BusinessImages.Remove(image);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Image deleted successfully"
+            });
         }
     }
 

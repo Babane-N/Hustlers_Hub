@@ -1,9 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { ServiceProvider, BusinessDetail, Review } from './service.detail';
-import { BookingDialogComponent } from '../booking-dialog/booking-dialog.component';
-import { environment } from '../../../environments/environment';
+
+import {
+  ServiceProvider,
+  BusinessDetail,
+  Review
+} from './service.detail';
+
+import { BookingDialogComponent }
+  from '../booking-dialog/booking-dialog.component';
+
+import { environment }
+  from '../../../environments/environment';
 
 @Component({
   selector: 'app-service-detail',
@@ -13,9 +22,13 @@ import { environment } from '../../../environments/environment';
 export class ServiceDetailComponent implements OnInit {
 
   business: BusinessDetail | null = null;
+
   reviews: Review[] = [];
+
   isLoading = true;
+
   uploadsUrl = environment.uploadsUrl;
+
   businessId!: string;
 
   constructor(
@@ -25,70 +38,181 @@ export class ServiceDetailComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
+
+    const id =
+      this.route.snapshot.paramMap.get('id');
 
     if (!id) {
+
       console.error('Missing service ID');
+
       this.isLoading = false;
+
       return;
     }
 
-    this.businessId = id;     
+    this.businessId = id;
+
     this.loadService(id);
   }
 
-  private loadService(businessId: string): void {
-    this.serviceProvider.getServiceDetails(businessId).subscribe({
-      next: service => {
-        // Normalize gallery images and logo
-        service.logoUrl = this.normalizeUrl(service.logoUrl);
-        service.images = this.normalizeImages(service.images);
+  // =====================================================
+  // LOAD BUSINESS
+  // =====================================================
+  private loadService(
+    businessId: string
+  ): void {
 
-        this.business = service;
-        this.isLoading = false;
+    this.serviceProvider
+      .getServiceDetails(businessId)
+      .subscribe({
 
-        this.loadReviews(service.businessId);
-      },
-      error: err => {
-        console.error('Failed to load Business', err);
-        this.isLoading = false;
-      }
-    });
+        next: service => {
+
+          // =========================================
+          // NORMALIZE LOGO
+          // =========================================
+          service.logoUrl =
+            this.normalizeUrl(service.logoUrl);
+
+          // =========================================
+          // NORMALIZE GALLERY IMAGES
+          // =========================================
+          service.images =
+            this.normalizeImages(service.images);
+
+          this.business = service;
+
+          this.isLoading = false;
+
+          this.loadReviews(service.businessId);
+        },
+
+        error: err => {
+
+          console.error(
+            'Failed to load Business',
+            err
+          );
+
+          this.isLoading = false;
+        }
+      });
   }
 
-  private loadReviews(businessId: string): void {
-    this.serviceProvider.getBusinessReviews(businessId).subscribe({
-      next: reviews => this.reviews = reviews,
-      error: err => console.error('Failed to load reviews', err)
-    });
+  // =====================================================
+  // LOAD REVIEWS
+  // =====================================================
+  private loadReviews(
+    businessId: string
+  ): void {
+
+    this.serviceProvider
+      .getBusinessReviews(businessId)
+      .subscribe({
+
+        next: reviews => {
+          this.reviews = reviews;
+        },
+
+        error: err => {
+          console.error(
+            'Failed to load reviews',
+            err
+          );
+        }
+      });
   }
 
+  // =====================================================
+  // HIDE BROKEN IMAGE
+  // =====================================================
   hideImage(imgUrl: string): void {
-    if (this.business && this.business.images) {
-      this.business.images = this.business.images.filter(i => i !== imgUrl);
+
+    if (
+      this.business &&
+      this.business.images
+    ) {
+      this.business.images =
+        this.business.images.filter(
+          i => i !== imgUrl
+        );
     }
   }
 
+  // =====================================================
+  // OPEN BOOKING DIALOG
+  // =====================================================
   openBookingDialog(): void {
-    if (!this.business?.id) return;
 
-    this.dialog.open(BookingDialogComponent, {
-      width: '480px',
-      data: { businessId: this.business.id } // ✅ match what dialog expects
-    });
+    if (!this.business?.id) {
+      return;
+    }
+
+    this.dialog.open(
+      BookingDialogComponent,
+      {
+        width: '480px',
+
+        data: {
+          businessId: this.business.id
+        }
+      }
+    );
   }
 
-  // 🔹 Make this public so template can access it
-  public normalizeUrl(url?: string | null): string | null {
-    if (!url) return null;
-    if (url.startsWith('http')) return url;
+  // =====================================================
+  // NORMALIZE URL
+  // =====================================================
+  public normalizeUrl(
+    url?: string | null
+  ): string | null {
+
+    if (!url) {
+      return null;
+    }
+
+    // Already absolute URL
+    if (url.startsWith('http')) {
+      return url;
+    }
+
     return `${this.uploadsUrl.replace(/\/+$/, '')}/${url.replace(/^\/+|uploads\/?/g, '')}`;
   }
 
-  private normalizeImages(images?: string[]): string[] {
-    if (!images || !images.length) return [];
+  // =====================================================
+  // NORMALIZE IMAGES
+  // Supports BOTH:
+  // 1. Old string[] format
+  // 2. New { id, imageUrl }[] format
+  // =====================================================
+  private normalizeImages(
+    images?: any[]
+  ): string[] {
+
+    if (
+      !images ||
+      !Array.isArray(images) ||
+      !images.length
+    ) {
+      return [];
+    }
+
     return images
-      .map(img => this.normalizeUrl(img))
-      .filter((img): img is string => !!img);
+      .map(image => {
+
+        // Old format
+        if (typeof image === 'string') {
+          return this.normalizeUrl(image);
+        }
+
+        // New format
+        return this.normalizeUrl(
+          image?.imageUrl
+        );
+      })
+      .filter(
+        (img): img is string => !!img
+      );
   }
 }
