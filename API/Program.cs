@@ -9,7 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 // =====================================================
 // DATABASE
 // =====================================================
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString =
+    builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<HustlersHubDbContext>(options =>
 {
@@ -28,7 +29,8 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.JsonSerializerOptions.Converters
+            .Add(new JsonStringEnumConverter());
     });
 
 // =====================================================
@@ -49,7 +51,7 @@ var allowedOrigins = new[]
     "https://hustlershub.tech",
     "https://www.hustlershub.tech",
 
-    // Azure API (optional but safe)
+    // Azure API
     "https://hustlerhub-cea4bhbjdrgfdefb.southafricanorth-01.azurewebsites.net",
 
     // Angular Local Development
@@ -76,19 +78,32 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // =====================================================
-// SAFE WWWROOT + UPLOADS (AZURE FIX)
+// AZURE PERSISTENT UPLOADS STORAGE
 // =====================================================
-var webRootPath = app.Environment.WebRootPath
-                  ?? Path.Combine(app.Environment.ContentRootPath, "wwwroot");
 
-var uploadsPath = Path.Combine(webRootPath, "uploads");
+// Ensure wwwroot exists
+var webRootPath =
+    app.Environment.WebRootPath
+    ?? Path.Combine(
+        app.Environment.ContentRootPath,
+        "wwwroot"
+    );
 
-// Ensure folders exist
 Directory.CreateDirectory(webRootPath);
+
+// Persistent uploads path (survives deployments)
+var uploadsPath = Path.Combine(
+    Environment.GetEnvironmentVariable("HOME")
+        ?? "D:\\home",
+    "site",
+    "uploads"
+);
+
+// Ensure uploads folder exists
 Directory.CreateDirectory(uploadsPath);
 
 // =====================================================
-// PIPELINE ORDER (IMPORTANT)
+// PIPELINE ORDER
 // =====================================================
 
 // Swagger
@@ -98,7 +113,7 @@ app.UseSwaggerUI();
 app.UseHttpsRedirection();
 
 // =====================================================
-// CORS MUST COME BEFORE AUTH
+// CORS
 // =====================================================
 app.UseCors("AllowFrontend");
 
@@ -106,13 +121,15 @@ app.UseCors("AllowFrontend");
 // STATIC FILES
 // =====================================================
 
-// Serve wwwroot
+// Serve normal wwwroot files
 app.UseStaticFiles();
 
-// Serve uploads folder
+// Serve persistent uploads folder
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider(uploadsPath),
+    FileProvider = new PhysicalFileProvider(
+        uploadsPath
+    ),
     RequestPath = "/uploads"
 });
 

@@ -19,19 +19,40 @@ namespace API.Controllers
         private readonly HustlersHubDbContext _context;
         private readonly IWebHostEnvironment _env;
 
-        public BusinessesController(HustlersHubDbContext context, IWebHostEnvironment env)
+        public BusinessesController(
+            HustlersHubDbContext context,
+            IWebHostEnvironment env)
         {
             _context = context;
             _env = env;
         }
 
         // =====================================================
-        // 🌍 PUBLIC — Approved businesses (Smart LISTINGS)
+        // 📁 Persistent Upload Folder
+        // =====================================================
+        private string GetUploadsFolder()
+        {
+            var uploadsFolder = Path.Combine(
+                Environment.GetEnvironmentVariable("HOME") ?? "D:\\home",
+                "site",
+                "uploads"
+            );
+
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            return uploadsFolder;
+        }
+
+        // =====================================================
+        // 🌍 PUBLIC — Approved businesses
         // =====================================================
         [HttpGet("public")]
         public async Task<IActionResult> GetApprovedBusinesses(
-       [FromQuery] double? lat,
-       [FromQuery] double? lng)
+            [FromQuery] double? lat,
+            [FromQuery] double? lng)
         {
             var random = new Random();
 
@@ -44,7 +65,6 @@ namespace API.Controllers
                 {
                     double distance = 9999;
 
-                    // Calculate distance if coordinates exist
                     if (
                         lat.HasValue &&
                         lng.HasValue &&
@@ -60,16 +80,10 @@ namespace API.Controllers
                         );
                     }
 
-                    // Nearby businesses score higher
                     double locationScore = 1 / (distance + 1);
-
-                    // Random rotation
                     double randomScore = random.NextDouble();
-
-                    // Verified businesses get slight boost
                     double verifiedBoost = b.IsVerified ? 0.1 : 0;
 
-                    // Final ranking score
                     double finalScore =
                         (locationScore * 0.7) +
                         (randomScore * 0.3) +
@@ -97,7 +111,7 @@ namespace API.Controllers
         }
 
         // =====================================================
-        // 📍 Distance Calculator (Haversine Formula)
+        // 📍 Distance Calculator
         // =====================================================
         private double CalculateDistance(
             double lat1,
@@ -105,7 +119,7 @@ namespace API.Controllers
             double lat2,
             double lon2)
         {
-            const double R = 6371; // Earth radius in KM
+            const double R = 6371;
 
             var dLat = DegreesToRadians(lat2 - lat1);
             var dLon = DegreesToRadians(lon2 - lon1);
@@ -131,7 +145,7 @@ namespace API.Controllers
         }
 
         // =====================================================
-        // 👤 BUSINESS OWNER — My businesses
+        // 👤 USER BUSINESSES
         // =====================================================
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetUserBusinesses(Guid userId)
@@ -144,7 +158,7 @@ namespace API.Controllers
         }
 
         // =====================================================
-        // 🔎 SINGLE BUSINESS (details page)
+        // 🔎 SINGLE BUSINESS
         // =====================================================
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBusiness(Guid id)
@@ -171,12 +185,14 @@ namespace API.Controllers
         }
 
         // =====================================================
-        // 📝 CREATE — Submit for approval
+        // 📝 CREATE BUSINESS
         // =====================================================
         [HttpPost]
-        public async Task<IActionResult> CreateBusiness([FromForm] BusinessCreateDto dto)
+        public async Task<IActionResult> CreateBusiness(
+            [FromForm] BusinessCreateDto dto)
         {
             var user = await _context.Users.FindAsync(dto.UserId);
+
             if (user == null)
                 return NotFound("User not found");
 
@@ -194,16 +210,26 @@ namespace API.Controllers
                 IsVerified = dto.BusinessType == "verified"
             };
 
-            // Logo upload
+            // =========================
+            // Upload Logo
+            // =========================
             if (dto.Logo != null)
             {
-                var uploads = Path.Combine(_env.WebRootPath ?? "wwwroot", "uploads");
-                Directory.CreateDirectory(uploads);
+                var uploadsFolder = GetUploadsFolder();
 
-                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(dto.Logo.FileName)}";
-                var path = Path.Combine(uploads, fileName);
+                var fileName =
+                    $"{Guid.NewGuid()}{Path.GetExtension(dto.Logo.FileName)}";
 
-                using var stream = new FileStream(path, FileMode.Create);
+                var filePath = Path.Combine(
+                    uploadsFolder,
+                    fileName
+                );
+
+                using var stream = new FileStream(
+                    filePath,
+                    FileMode.Create
+                );
+
                 await dto.Logo.CopyToAsync(stream);
 
                 business.LogoUrl = $"/uploads/{fileName}";
@@ -213,7 +239,9 @@ namespace API.Controllers
 
             // Promote user
             if (user.UserType == UserType.Customer)
+            {
                 user.UserType = UserType.Business;
+            }
 
             await _context.SaveChangesAsync();
 
@@ -224,21 +252,36 @@ namespace API.Controllers
             });
         }
 
+        // =====================================================
+        // 🖼️ Upload Business Images
+        // =====================================================
         [HttpPost("{id}/Images")]
-        public async Task<IActionResult> UploadBusinessImages(Guid id, IFormFile[] images)
+        public async Task<IActionResult> UploadBusinessImages(
+            Guid id,
+            IFormFile[] images)
         {
             var business = await _context.Businesses.FindAsync(id);
-            if (business == null) return NotFound();
 
-            var uploadsFolder = Path.Combine(_env.WebRootPath ?? "wwwroot", "uploads");
-            Directory.CreateDirectory(uploadsFolder);
+            if (business == null)
+                return NotFound();
+
+            var uploadsFolder = GetUploadsFolder();
 
             foreach (var file in images)
             {
-                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-                var filePath = Path.Combine(uploadsFolder, fileName);
+                var fileName =
+                    $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
 
-                using var stream = new FileStream(filePath, FileMode.Create);
+                var filePath = Path.Combine(
+                    uploadsFolder,
+                    fileName
+                );
+
+                using var stream = new FileStream(
+                    filePath,
+                    FileMode.Create
+                );
+
                 await file.CopyToAsync(stream);
 
                 _context.BusinessImages.Add(new BusinessImage
@@ -249,13 +292,20 @@ namespace API.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return Ok(new { message = "Images uploaded successfully" });
+
+            return Ok(new
+            {
+                message = "Images uploaded successfully"
+            });
         }
 
+        // =====================================================
+        // ✏️ UPDATE BUSINESS
+        // =====================================================
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBusiness(
-     Guid id,
-     [FromForm] UpdateBusinessDto dto)
+            Guid id,
+            [FromForm] UpdateBusinessDto dto)
         {
             var business = await _context.Businesses.FindAsync(id);
 
@@ -266,23 +316,25 @@ namespace API.Controllers
             business.Category = dto.Category;
             business.Location = dto.Location;
 
-            // Upload new logo
+            // =========================
+            // Upload New Logo
+            // =========================
             if (dto.Logo != null)
             {
-                var uploadsFolder = Path.Combine(
-                    _env.ContentRootPath,
-                    "wwwroot",
-                    "uploads"
-                );
-
-                Directory.CreateDirectory(uploadsFolder);
+                var uploadsFolder = GetUploadsFolder();
 
                 var fileName =
                     $"{Guid.NewGuid()}{Path.GetExtension(dto.Logo.FileName)}";
 
-                var filePath = Path.Combine(uploadsFolder, fileName);
+                var filePath = Path.Combine(
+                    uploadsFolder,
+                    fileName
+                );
 
-                using var stream = new FileStream(filePath, FileMode.Create);
+                using var stream = new FileStream(
+                    filePath,
+                    FileMode.Create
+                );
 
                 await dto.Logo.CopyToAsync(stream);
 
@@ -297,47 +349,53 @@ namespace API.Controllers
             });
         }
 
-
         // =====================================================
-        // 🛂 ADMIN — Pending approvals
+        // 🛂 PENDING BUSINESSES
         // =====================================================
         [HttpGet("pending")]
         public async Task<IActionResult> GetPending()
         {
-            return Ok(await _context.Businesses
-                .Where(b => !b.IsApproved)
-                .ToListAsync());
+            return Ok(
+                await _context.Businesses
+                    .Where(b => !b.IsApproved)
+                    .ToListAsync()
+            );
         }
 
         // =====================================================
-        // ✅ ADMIN — Approve business
+        // ✅ APPROVE BUSINESS
         // =====================================================
         [HttpPost("approve/{id}")]
         public async Task<IActionResult> ApproveBusiness(
-        Guid id,
-    [FromBody] ApproveBusinessRequest request)
+            Guid id,
+            [FromBody] ApproveBusinessRequest request)
         {
             var business = await _context.Businesses.FindAsync(id);
-            if (business == null) return NotFound();
+
+            if (business == null)
+                return NotFound();
 
             business.IsApproved = true;
             business.IsVerified = request?.VerifyBusiness ?? false;
 
             await _context.SaveChangesAsync();
+
             return Ok();
         }
 
         // =====================================================
-        // ❌ ADMIN — Reject business
+        // ❌ REJECT BUSINESS
         // =====================================================
         [HttpDelete("reject/{id}")]
         public async Task<IActionResult> Reject(Guid id)
         {
             var business = await _context.Businesses.FindAsync(id);
+
             if (business == null)
                 return NotFound();
 
             _context.Businesses.Remove(business);
+
             await _context.SaveChangesAsync();
 
             return Ok("Business rejected");
@@ -345,33 +403,48 @@ namespace API.Controllers
     }
 
     // =====================================================
-    // DTO
+    // DTOs
     // =====================================================
     public class BusinessCreateDto
     {
         public string BusinessName { get; set; } = string.Empty;
+
         public string Category { get; set; } = string.Empty;
+
         public string Description { get; set; } = string.Empty;
+
         public string Location { get; set; } = string.Empty;
+
         public Guid UserId { get; set; }
+
         public IFormFile? Logo { get; set; }
+
         public double? Latitude { get; set; }
+
         public double? Longitude { get; set; }
+
         public string BusinessType { get; set; } = "unverified";
+
         public string? RegistrationNumber { get; set; }
     }
 
     public class PendingBusinessDto
     {
         public int Id { get; set; }
+
         public string BusinessName { get; set; }
+
         public string Description { get; set; }
+
         public string LogoUrl { get; set; }
+
         public string OwnerName { get; set; }
 
         public bool IsCipcRegistered { get; set; }
+
         public string? CipcNumber { get; set; }
     }
+
     public class ApproveBusinessRequest
     {
         public bool VerifyBusiness { get; set; }
@@ -388,4 +461,3 @@ namespace API.Controllers
         public IFormFile? Logo { get; set; }
     }
 }
-
