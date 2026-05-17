@@ -151,7 +151,25 @@ namespace API.Controllers
         public async Task<IActionResult> GetUserBusinesses(Guid userId)
         {
             var businesses = await _context.Businesses
+                .Include(b => b.Images)
                 .Where(b => b.UserId == userId)
+                .Select(b => new
+                {
+                    b.Id,
+                    b.BusinessName,
+                    b.Category,
+                    b.Description,
+                    b.Location,
+                    b.LogoUrl,
+                    b.IsApproved,
+                    b.IsVerified,
+
+                    images = b.Images.Select(i => new
+                    {
+                        i.Id,
+                        i.ImageUrl
+                    })
+                })
                 .ToListAsync();
 
             return Ok(businesses);
