@@ -8,11 +8,13 @@ import {
   Review
 } from './service.detail';
 
-import { BookingDialogComponent }
-  from '../booking-dialog/booking-dialog.component';
+import {
+  BookingDialogComponent
+} from '../booking-dialog/booking-dialog.component';
 
-import { environment }
-  from '../../../environments/environment';
+import {
+  environment
+} from '../../../environments/environment';
 
 @Component({
   selector: 'app-service-detail',
@@ -70,22 +72,43 @@ export class ServiceDetailComponent implements OnInit {
         next: service => {
 
           // =========================================
-          // NORMALIZE LOGO
+          // Ensure businessId exists
+          // =========================================
+          service.businessId =
+            service.businessId || service.id;
+
+          // =========================================
+          // Normalize logo
           // =========================================
           service.logoUrl =
-            this.normalizeUrl(service.logoUrl);
+            this.normalizeUrl(
+              service.logoUrl
+            );
 
           // =========================================
-          // NORMALIZE GALLERY IMAGES
+          // Normalize gallery images
           // =========================================
           service.images =
-            this.normalizeImages(service.images);
+            this.normalizeImages(
+              service.images as any[]
+            );
 
+          // =========================================
+          // Assign business
+          // =========================================
           this.business = service;
 
+          // =========================================
+          // Stop loading
+          // =========================================
           this.isLoading = false;
 
-          this.loadReviews(service.businessId);
+          // =========================================
+          // Load reviews safely
+          // =========================================
+          this.loadReviews(
+            service.businessId
+          );
         },
 
         error: err => {
@@ -107,15 +130,21 @@ export class ServiceDetailComponent implements OnInit {
     businessId: string
   ): void {
 
+    if (!businessId) {
+      return;
+    }
+
     this.serviceProvider
       .getBusinessReviews(businessId)
       .subscribe({
 
         next: reviews => {
+
           this.reviews = reviews;
         },
 
         error: err => {
+
           console.error(
             'Failed to load reviews',
             err
@@ -127,12 +156,15 @@ export class ServiceDetailComponent implements OnInit {
   // =====================================================
   // HIDE BROKEN IMAGE
   // =====================================================
-  hideImage(imgUrl: string): void {
+  hideImage(
+    imgUrl: string
+  ): void {
 
     if (
       this.business &&
       this.business.images
     ) {
+
       this.business.images =
         this.business.images.filter(
           i => i !== imgUrl
@@ -172,7 +204,7 @@ export class ServiceDetailComponent implements OnInit {
       return null;
     }
 
-    // Already absolute URL
+    // Already full URL
     if (url.startsWith('http')) {
       return url;
     }
@@ -182,9 +214,9 @@ export class ServiceDetailComponent implements OnInit {
 
   // =====================================================
   // NORMALIZE IMAGES
-  // Supports BOTH:
-  // 1. Old string[] format
-  // 2. New { id, imageUrl }[] format
+  // Supports:
+  // 1. string[]
+  // 2. { id, imageUrl }[]
   // =====================================================
   private normalizeImages(
     images?: any[]
@@ -201,18 +233,16 @@ export class ServiceDetailComponent implements OnInit {
     return images
       .map(image => {
 
-        // Old format
-        if (typeof image === 'string') {
-          return this.normalizeUrl(image);
-        }
+        const imageUrl =
+          typeof image === 'string'
+            ? image
+            : image?.imageUrl;
 
-        // New format
-        return this.normalizeUrl(
-          image?.imageUrl
-        );
+        return this.normalizeUrl(imageUrl);
       })
       .filter(
-        (img): img is string => !!img
+        (img): img is string =>
+          typeof img === 'string'
       );
   }
 }
