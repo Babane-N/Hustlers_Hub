@@ -34,6 +34,20 @@ export class EditBusinessComponent implements OnInit {
     });
   }
 
+  normalizeUrl(url?: string | null): string | null {
+
+    if (!url) {
+      return null;
+    }
+
+    // Already full URL
+    if (url.startsWith('http')) {
+      return url;
+    }
+
+    return `${environment.uploadsUrl.replace(/\/+$/, '')}/${url.replace(/^\/+|uploads\/?/g, '')}`;
+  }
+
   ngOnInit(): void {
 
     this.authService.user$.subscribe(user => {
@@ -72,7 +86,7 @@ export class EditBusinessComponent implements OnInit {
               });
 
               this.logoPreview = business.logoUrl
-                ? `${environment.apiUrl}/${business.logoUrl}`
+                ? this.normalizeUrl(business.logoUrl)
                 : null;
 
             } else {
