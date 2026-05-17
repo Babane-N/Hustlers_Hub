@@ -262,12 +262,17 @@ export class BusinessImageUploadComponent implements OnInit {
   // =====================================================
   // GET FULL IMAGE URL
   // =====================================================
-  getImageUrl(path: string): string {
+  getImageUrl(path?: string | null): string {
 
     if (!path) {
       return '';
     }
 
-    return `${environment.apiUrl}${path}`;
+    // Already absolute URL
+    if (path.startsWith('http')) {
+      return path;
+    }
+
+    return `${environment.uploadsUrl.replace(/\/+$/, '')}/${path.replace(/^\/+|uploads\/?/g, '')}`;
   }
 }
