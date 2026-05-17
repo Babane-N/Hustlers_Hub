@@ -2,18 +2,120 @@
   padding: 1rem;
   border-radius: 12px;
   background: transparent;
+
+  h3,
+  h4 {
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
 }
 
+.full-width {
+  width: 100%;
+}
+
+// =====================================================
+// IMAGE LIMIT INFO
+// =====================================================
+.image-limit-info {
+  margin: 1rem 0;
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+
+  p {
+    margin: 0.2rem 0;
+    font-size: 0.95rem;
+  }
+
+  strong {
+    font-weight: 700;
+  }
+}
+
+// =====================================================
+// LIMIT REACHED
+// =====================================================
+.limit-reached {
+  margin-top: 0.8rem;
+  color: #ff5252;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+// =====================================================
+// FILE INPUT
+// =====================================================
+input[type="file"] {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+// =====================================================
+// IMAGE GRID
+// =====================================================
 .preview-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat( auto-fill, minmax(120px, 1fr) );
+  gap: 12px;
   margin: 1rem 0;
+}
+
+// =====================================================
+// IMAGE CARD
+// =====================================================
+.preview-item {
+  position: relative;
 
   img {
     width: 100%;
-    height: 100px;
+    height: 120px;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: transform 0.2s ease;
   }
+
+  img:hover {
+    transform: scale(1.03);
+  }
+}
+
+// =====================================================
+// REMOVE / DELETE BUTTON
+// =====================================================
+.remove-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+// =====================================================
+// CURRENT IMAGES SECTION
+// =====================================================
+.current-images {
+  margin-top: 2rem;
+
+  h4 {
+    margin-bottom: 1rem;
+  }
+}
+
+// =====================================================
+// UPLOAD BUTTON
+// =====================================================
+button[mat-raised-button] {
+  margin-top: 1rem;
+  width: 100%;
+  height: 45px;
+  font-weight: 600;
+  border-radius: 10px;
 }

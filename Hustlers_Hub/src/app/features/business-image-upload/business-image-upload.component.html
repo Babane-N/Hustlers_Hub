@@ -2,38 +2,150 @@
 
   <h3>Upload Business Images</h3>
 
-  <!-- Service selector -->
-  <mat-form-field appearance="outline" class="full-width">
+  <!-- =====================================================
+       BUSINESS SELECTOR
+  ====================================================== -->
+  <mat-form-field
+    appearance="outline"
+    class="full-width">
+
     <mat-label>Select Business</mat-label>
 
-    <mat-select [(ngModel)]="selectedBusinessId"
-                name="business"
-                [disabled]="loadingBusinesses || businesses.length === 0">
+    <mat-select
+      [(ngModel)]="selectedBusinessId"
+      name="business"
+      (selectionChange)="onBusinessChange()"
+      [disabled]="loadingBusinesses || businesses.length === 0">
 
-      <mat-option *ngFor="let business of businesses" [value]="business.id">
+      <mat-option
+        *ngFor="let business of businesses"
+        [value]="business.id">
+
         {{ business.businessName }}
+
       </mat-option>
 
     </mat-select>
+
   </mat-form-field>
 
-  <!-- File input -->
-  <input type="file"
-         multiple
-         accept="image/*"
-         (change)="onFileSelect($event)" />
+  <!-- =====================================================
+       IMAGE LIMIT INFO
+  ====================================================== -->
+  <div
+    class="image-limit-info"
+    *ngIf="selectedBusinessId">
 
-  <!-- Preview -->
-  <div class="preview-grid" *ngIf="previewUrls.length">
-    <img *ngFor="let img of previewUrls" [src]="img" />
+    <p>
+      Maximum Images:
+      <strong>{{ maxImages }}</strong>
+    </p>
+
+    <p>
+      Remaining Slots:
+      <strong>{{ remainingSlots }}</strong>
+    </p>
+
   </div>
 
-  <!-- Upload button -->
-  <button mat-raised-button
-          color="primary"
-          (click)="uploadImages()"
-          [disabled]="uploading || !selectedBusinessId || selectedFiles.length === 0">
+  <!-- =====================================================
+       FILE INPUT
+  ====================================================== -->
+  <input
+    type="file"
+    multiple
+    accept="image/*"
+    (change)="onFileSelect($event)"
+    [disabled]="remainingSlots <= 0" />
+
+  <!-- =====================================================
+       LIMIT REACHED MESSAGE
+  ====================================================== -->
+  <div
+    class="limit-reached"
+    *ngIf="remainingSlots <= 0">
+
+    Maximum image limit reached.
+    Delete some images to upload new ones.
+
+  </div>
+
+  <!-- =====================================================
+       PREVIEW SELECTED IMAGES
+  ====================================================== -->
+  <div
+    class="preview-grid"
+    *ngIf="previewUrls.length">
+
+    <div
+      class="preview-item"
+      *ngFor="let img of previewUrls; let i = index">
+
+      <img [src]="img" />
+
+      <button
+        mat-mini-fab
+        color="warn"
+        class="remove-btn"
+        (click)="removeSelectedImage(i)">
+
+        ✕
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- =====================================================
+       UPLOAD BUTTON
+  ====================================================== -->
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="uploadImages()"
+    [disabled]="
+      uploading ||
+      !selectedBusinessId ||
+      selectedFiles.length === 0
+    ">
+
     {{ uploading ? 'Uploading...' : 'Upload Images' }}
+
   </button>
+
+  <!-- =====================================================
+       CURRENT BUSINESS IMAGES
+  ====================================================== -->
+  <div
+    class="current-images"
+    *ngIf="selectedBusinessId">
+
+    <h4>Current Images</h4>
+
+    <div class="preview-grid">
+
+      <div
+        class="preview-item"
+        *ngFor="let image of selectedBusiness?.images || []">
+
+        <img
+          [src]="getImageUrl(image.imageUrl)" />
+
+        <button
+          mat-mini-fab
+          color="warn"
+          class="remove-btn"
+          (click)="deleteImage(image.id)">
+
+          🗑
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
 
 </div>
