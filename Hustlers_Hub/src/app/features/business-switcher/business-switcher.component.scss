@@ -1,64 +1,101 @@
-.business-switcher {
-  h3 {
-    margin-bottom: 1rem;
+.service-switcher {
+  padding: 1rem;
+
+  .title {
     font-size: 1.4rem;
-    color: #333;
+    margin-bottom: 1rem;
+    color: #2c2c2c;
+    font-weight: 600;
   }
 
-  .business-cards {
-    display: flex;
-    flex-wrap: wrap;
+  .business-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 1rem;
   }
 
   .business-card {
-    width: 200px;
+    display: flex;
+    gap: 0.75rem;
     padding: 1rem;
-    border: 2px solid transparent;
-    border-radius: 12px;
-    background-color: #fff8f0;
+    border-radius: 14px;
+    background: #ffffff;
     cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    transition: all 0.2s ease;
+    border: 1px solid #eee;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: all 0.25s ease;
 
     &:hover {
-      border-color: #ffa94d;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+      border-color: #ffb26b;
     }
 
     &.selected {
-      border-color: #ff6f00;
-      background-color: #ffe3c4;
+      border: 2px solid #ff7a00;
+      background: #fff3e6;
     }
 
-    img {
-      width: 100%;
-      height: 100px;
-      object-fit: cover;
-      border-radius: 8px;
+    .logo {
+      width: 55px;
+      height: 55px;
+      flex-shrink: 0;
+
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+        object-fit: cover;
+      }
+
+      .placeholder {
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+        background: #f3f3f3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+      }
     }
 
     .info {
-      margin-top: 0.5rem;
+      flex: 1;
 
       h4 {
         margin: 0;
-        font-size: 1.1rem;
+        font-size: 1rem;
         font-weight: 600;
-        color: #5d2c15;
-      }
-
-      p {
-        font-size: 0.9rem;
-        color: #666;
-        margin: 0.25rem 0;
+        color: #333;
       }
 
       .category {
-        font-size: 0.8rem;
-        color: #ff8c00;
-        background: #fff3e6;
-        padding: 2px 6px;
-        border-radius: 4px;
+        font-size: 0.85rem;
+        color: #777;
+        margin: 0.25rem 0;
+      }
+
+      .badges {
+        display: flex;
+        gap: 6px;
+        margin-top: 0.3rem;
+
+        .badge {
+          font-size: 0.7rem;
+          padding: 3px 6px;
+          border-radius: 6px;
+        }
+
+        .verified {
+          background: #e6f7ee;
+          color: #1a7f4b;
+        }
+
+        .approved {
+          background: #fff3cd;
+          color: #a36b00;
+        }
       }
     }
   }
