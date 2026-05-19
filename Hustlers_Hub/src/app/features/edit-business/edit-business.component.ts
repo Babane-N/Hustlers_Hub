@@ -12,13 +12,23 @@ import { AuthService } from '../auth/auth.service';
 export class EditBusinessComponent implements OnInit {
 
   businessForm: FormGroup;
+
   isLoading = true;
   errorMessage = '';
   successMessage = '';
+
   logoPreview: string | null = null;
+
   businessId: string = '';
+
   user: any = null;
+
   selectedLogoFile: File | null = null;
+
+  // ADD THIS
+  businesses: any[] = [];
+  selectedBusiness: any = null;
+
   constructor(
     private fb: FormBuilder,
     private http: HttpClient,
@@ -63,46 +73,78 @@ export class EditBusinessComponent implements OnInit {
       const userId = user.id;
 
       console.log('Logged in User:', user);
-      console.log('User ID:', userId);
 
-      // Fetch business for logged-in user
-      this.http.get<any[]>(`${environment.apiUrl}/Businesses/user/${userId}`)
-        .subscribe({
-          next: (data) => {
+      this.http.get<any[]>(
+        `${environment.apiUrl}/Businesses/user/${userId}`
+      ).subscribe({
 
-            console.log('Business Data:', data);
+        next: (data) => {
 
-            if (data && data.length > 0) {
+          console.log('Businesses:', data);
 
-              const business = data[0];
+          this.businesses = data || [];
 
-              this.businessId = business.id;
+          if (this.businesses.length > 0) {
 
-              this.businessForm.patchValue({
-                name: business.businessName,
-                description: business.description,
-                category: business.category,
-                address: business.location
-              });
+            // Load first business initially
+            this.selectBusiness(this.businesses[0]);
 
-              this.logoPreview = business.logoUrl
-                ? this.normalizeUrl(business.logoUrl)
-                : null;
+          } else {
 
-            } else {
-              this.errorMessage = 'No business found';
-            }
-
-            this.isLoading = false;
-          },
-
-          error: (err) => {
-            console.error(err);
-            this.errorMessage = 'Failed to load business';
-            this.isLoading = false;
+            this.errorMessage = 'No business found';
           }
-        });
+
+          this.isLoading = false;
+        },
+
+        error: (err) => {
+
+          console.error(err);
+
+          this.errorMessage = 'Failed to load businesses';
+
+          this.isLoading = false;
+        }
+      });
     });
+  }
+
+  // ADD THIS METHOD
+  selectBusiness(business: any): void {
+
+    this.selectedBusiness = business;
+
+    this.businessId = business.id;
+
+    this.businessForm.patchValue({
+      name: business.businessName,
+      description: business.description,
+      category: business.category,
+      phoneNumber: business.phoneNumber,
+      address: business.location
+    });
+
+    this.logoPreview = business.logoUrl
+      ? this.normalizeUrl(business.logoUrl)
+      : null;
+
+    this.selectedLogoFile = null;
+  }
+
+  // ADD THIS METHOD
+  onBusinessChange(event: Event): void {
+
+    const target = event.target as HTMLSelectElement;
+
+    const businessId = target.value;
+
+    const business = this.businesses.find(
+      b => b.id === businessId
+    );
+
+    if (business) {
+      this.selectBusiness(business);
+    }
   }
 
   onLogoSelected(event: any) {
@@ -140,6 +182,11 @@ export class EditBusinessComponent implements OnInit {
     );
 
     formData.append(
+      'phoneNumber',
+      this.businessForm.get('phoneNumber')?.value || ''
+    );
+
+    formData.append(
       'location',
       this.businessForm.get('address')?.value || ''
     );
@@ -153,14 +200,20 @@ export class EditBusinessComponent implements OnInit {
       `${environment.apiUrl}/Businesses/${this.businessId}`,
       formData
     ).subscribe({
+
       next: () => {
+
         this.successMessage = 'Business updated successfully';
+
         this.errorMessage = '';
       },
 
       error: (err) => {
+
         console.error(err);
+
         this.errorMessage = 'Failed to update business';
+
         this.successMessage = '';
       }
     });

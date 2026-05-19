@@ -21,6 +21,18 @@
       </label>
     </div>
 
+    <div class="business-selector">
+      <label>Select Business</label>
+
+      <select class="form-control"
+              (change)="onBusinessChange($event)">
+        <option *ngFor="let business of businesses"
+                [value]="business.id">
+          {{ business.businessName }}
+        </option>
+      </select>
+    </div>
+
     <!-- Locked Name -->
     <label>Business Name (Locked)</label>
     <input type="text" formControlName="name" class="locked-input" readonly />
