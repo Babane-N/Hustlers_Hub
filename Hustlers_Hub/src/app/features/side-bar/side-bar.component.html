@@ -54,10 +54,6 @@
         <mat-icon>sync_alt</mat-icon>
         <span class="nav-text">Select Business</span>
       </a>
-      <a mat-list-item (click)="navigateTo('/dashboard'); isMobile && toggleSidebar()">
-        <mat-icon>dashboard_customize</mat-icon>
-        <span class="nav-text">Manage Business</span>
-      </a>
     </mat-nav-list>
 
     <!-- ===================== ADMIN MENU ===================== -->
@@ -82,9 +78,13 @@
         <mat-icon>event</mat-icon>
         <span class="nav-text">My Bookings</span>
       </a>
+      <a mat-list-item (click)="navigateTo('/home'); isMobile && toggleSidebar()">
+        <mat-icon>home</mat-icon>
+        <span class="nav-text">Business Dashboard</span>
+      </a>
       <a mat-list-item (click)="navigateTo('/pending-businesses'); isMobile && toggleSidebar()">
         <mat-icon>storefront</mat-icon>
-        <span class="nav-text">Manage Businesses</span>
+        <span class="nav-text">Pending Businesses</span>
       </a>
     </mat-nav-list>
 

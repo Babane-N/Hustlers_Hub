@@ -64,7 +64,7 @@ export class RegisterComponent {
             this.router.navigate(['/switch-service']);
             break;
           case 'customer':
-            this.router.navigate(['/home-page']);
+            this.router.navigate(['/login']);
             break;
           case 'admin':
             this.router.navigate(['/admin']);
