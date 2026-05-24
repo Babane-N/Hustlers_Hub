@@ -24,6 +24,7 @@ import { PendingBusinessesComponent } from './Admin/pending-businesses/pending-b
 import { BookingDetailComponent } from './features/booking-detail/booking-detail.component';
 import { EditBusinessComponent } from './features/edit-business/edit-business.component';
 import { BusinessImageUploadComponent } from './features/business-image-upload/business-image-upload.component';
+import { BookingHistoryComponent } from './features/booking-history/booking-history.component';
 
 const routes: Routes = [
 
@@ -80,6 +81,16 @@ const routes: Routes = [
     canActivate: [RoleGuard],
     data: {
       roles: ['Customer', 'Business', 'Admin'],
+      requiresService: false
+    }
+  },
+
+  {
+    path: 'booking-history',
+    component: BookingHistoryComponent,
+    canActivate: [RoleGuard],
+    data: {
+      roles: ['Business', 'Admin'],
       requiresService: false
     }
   },

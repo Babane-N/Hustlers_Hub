@@ -209,6 +209,8 @@ namespace API.Controllers
             });
         }
 
+
+
         // =====================================================
         // DELETE: api/Bookings/{id}
         // =====================================================
@@ -235,6 +237,8 @@ namespace API.Controllers
                 .Include(b => b.Business)
                 .AsNoTracking();
         }
+
+
 
         // =====================================================
         // Helper: Map to DTO

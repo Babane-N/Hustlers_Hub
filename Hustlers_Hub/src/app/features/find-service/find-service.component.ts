@@ -137,26 +137,26 @@ export class FindServiceComponent
       )
       .subscribe({
 
-        next: (providers) => {
+        next: (response) => {
 
-          this.serviceProviders = providers.map(p => ({
+          this.serviceProviders =
+            response.data.map(p => ({
 
-            ...p,
+              ...p,
 
-            // Normalize images
-            logoUrl: this.normalizeUrl(
-              p.logoUrl
-            ),
+              logoUrl: this.normalizeUrl(
+                p.logoUrl
+              ),
 
-            imageUrl: this.normalizeUrl(
-              p.imageUrl
-            ),
+              imageUrl: this.normalizeUrl(
+                p.imageUrl
+              ),
 
-            hiddenImage: false,
+              hiddenImage: false,
 
-            isVerified:
-              p.isVerified ?? false
-          }));
+              isVerified:
+                p.isVerified ?? false
+            }));
 
           console.log(
             'Providers loaded:',

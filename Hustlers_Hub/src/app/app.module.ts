@@ -31,6 +31,7 @@ import { ForgetPasswordComponent } from './features/auth/forget-password/forget-
 import { ResetPasswordComponent } from './features/auth/reset-password/reset-password.component';
 import { BusinessFeeModalComponent } from './features/business-fee-modal/business-fee-modal.component';
 import { VerificationInfoModalComponent } from './features/verification-info-modal/verification-info-modal.component';
+import { BookingHistoryComponent } from './features/booking-history/booking-history.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -53,6 +54,7 @@ import { GoogleMapsModule } from '@angular/google-maps';
 import { SocialLoginModule, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
 import { GoogleLoginProvider, FacebookLoginProvider } from '@abacritt/angularx-social-login';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -85,6 +87,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     ResetPasswordComponent,
     BusinessFeeModalComponent,
     VerificationInfoModalComponent,
+    BookingHistoryComponent,
   ],
   imports: [
     BrowserModule,

@@ -43,6 +43,13 @@ export interface ServiceProvider {
   isVerified?: boolean;
 }
 
+export interface ProvidersResponse {
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+  data: ServiceProvider[];
+}
 export interface Review {
 
   id: string;
@@ -76,22 +83,20 @@ export class ServiceProviderService {
   getProviders(
     latitude?: number,
     longitude?: number
-  ): Observable<ServiceProvider[]> {
+  ): Observable<ProvidersResponse> {
 
     let params = new HttpParams();
 
-    // Send user coordinates if available
     if (
       latitude !== undefined &&
       longitude !== undefined
     ) {
-
       params = params
         .set('lat', latitude.toString())
         .set('lng', longitude.toString());
     }
 
-    return this.http.get<ServiceProvider[]>(
+    return this.http.get<ProvidersResponse>(
       `${this.baseUrl}/public`,
       { params }
     );

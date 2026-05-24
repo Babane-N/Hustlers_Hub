@@ -74,6 +74,14 @@ export class BookingService {
     );
   }
 
+  getBusinessBookings(businessId: string): Observable<Booking[]> {
+    return this.http.get<Booking[]>(`${this.baseUrl}/business/${businessId}`);
+  }
+
+  getBookingHistory(businessId: string): Observable<Booking[]> {
+    return this.http.get<Booking[]>(`${this.baseUrl}/history/${businessId}`);
+  }
+
   updateBooking(
     id: string,
     payload: Partial<Booking>
