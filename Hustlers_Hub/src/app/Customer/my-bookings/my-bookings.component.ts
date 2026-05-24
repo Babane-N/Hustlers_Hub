@@ -144,12 +144,6 @@ export class MyBookingsComponent implements OnInit {
       case 'confirmed':
         return 'status-confirmed';
 
-      case 'completed':
-        return 'status-completed';
-
-      case 'cancelled':
-        return 'status-cancelled';
-
       default:
         return '';
     }

@@ -1,0 +1,56 @@
+<div class="history-container">
+</div>
+
+<div *ngIf="!isLoading && filteredHistory.length === 0" class="empty-state">
+  No booking history found.
+</div>
+
+<div class="history-grid" *ngIf="filteredHistory.length > 0">
+
+  <div class="history-card" *ngFor="let booking of filteredHistory">
+
+    <div class="card-header">
+      <h3>{{ booking.serviceName }}</h3>
+
+      <span class="status-badge"
+            [ngClass]="{
+            'completed': booking.status === 'Completed',
+            'cancelled': booking.status === 'Cancelled'
+          }">
+        {{ booking.status }}
+      </span>
+    </div>
+
+    <div class="card-body">
+
+      <div class="info-row">
+        <span class="label">Customer</span>
+        <span>{{ booking.customerName }}</span>
+      </div>
+
+      <div class="info-row">
+        <span class="label">Email</span>
+        <span>{{ booking.customerEmail }}</span>
+      </div>
+
+      <div class="info-row">
+        <span class="label">Booking Date</span>
+        <span>{{ booking.bookingDate | date:'mediumDate' }}</span>
+      </div>
+
+      <div class="info-row" *ngIf="booking.location">
+        <span class="label">Location</span>
+        <span>{{ booking.location }}</span>
+      </div>
+
+      <div class="info-row" *ngIf="booking.price">
+        <span class="label">Price</span>
+        <span>R{{ booking.price }}</span>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+

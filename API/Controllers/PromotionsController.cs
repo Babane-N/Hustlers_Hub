@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Data;
+using API.Data.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using API.Data;
-using API.Data.Models;
 
 namespace API.Controllers
 {
@@ -18,18 +19,67 @@ namespace API.Controllers
         private readonly HustlersHubDbContext _context;
         private readonly IWebHostEnvironment _env;
 
-        public PromotionsController(HustlersHubDbContext context, IWebHostEnvironment env)
+        public PromotionsController(
+            HustlersHubDbContext context,
+            IWebHostEnvironment env)
         {
             _context = context;
             _env = env;
         }
 
-        // ✅ GET all promotions including images
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<object>>> GetPromotions()
+        // =====================================================
+        // 📁 Upload Folder
+        // =====================================================
+        private string GetUploadsFolder()
         {
-            var promotions = await _context.Promotions
-                .Include(p => p.Images)
+            var uploadsFolder = Path.Combine(
+                Environment.GetEnvironmentVariable("HOME") ?? "D:\\home",
+                "site",
+                "uploads",
+                "promotions"
+            );
+
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            return uploadsFolder;
+        }
+
+        // =====================================================
+        // ✅ GET ALL PROMOTIONS
+        // =====================================================
+        [HttpGet]
+        [ResponseCache(Duration = 60)]
+        public async Task<ActionResult<object>> GetPromotions(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 20,
+            [FromQuery] string? category = null)
+        {
+            page = page < 1 ? 1 : page;
+            pageSize = pageSize > 50 ? 50 : pageSize;
+
+            var query = _context.Promotions
+                .AsNoTracking()
+                .Where(p => p.ExpiresAt > DateTime.UtcNow);
+
+            // =====================================================
+            // CATEGORY FILTER
+            // =====================================================
+            if (!string.IsNullOrWhiteSpace(category))
+            {
+                query = query.Where(p =>
+                    p.Category.ToLower() == category.ToLower());
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var promotions = await query
+                .OrderByDescending(p => p.IsBoosted)
+                .ThenByDescending(p => p.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(p => new
                 {
                     p.Id,
@@ -40,20 +90,37 @@ namespace API.Controllers
                     p.IsBoosted,
                     p.CreatedAt,
                     p.ExpiresAt,
-                    Images = p.Images.Select(img => img.ImageUrl).ToList()
+
+                    Images = p.Images
+                        .Select(img => img.ImageUrl)
+                        .ToList()
                 })
                 .ToListAsync();
 
-            return Ok(promotions);
+            return Ok(new
+            {
+                page,
+                pageSize,
+                totalCount,
+                totalPages = (int)Math.Ceiling(
+                    totalCount / (double)pageSize
+                ),
+                data = promotions
+            });
         }
 
-        // ✅ GET promotion by ID including images
+        // =====================================================
+        // ✅ GET SINGLE PROMOTION
+        // =====================================================
         [HttpGet("{id}")]
+        [ResponseCache(Duration = 60)]
         public async Task<ActionResult<object>> GetPromotion(Guid id)
         {
             var promotion = await _context.Promotions
-                .Include(p => p.Images)
-                .Where(p => p.Id == id)
+                .AsNoTracking()
+                .Where(p =>
+                    p.Id == id &&
+                    p.ExpiresAt > DateTime.UtcNow)
                 .Select(p => new
                 {
                     p.Id,
@@ -64,7 +131,10 @@ namespace API.Controllers
                     p.IsBoosted,
                     p.CreatedAt,
                     p.ExpiresAt,
-                    Images = p.Images.Select(img => img.ImageUrl).ToList()
+
+                    Images = p.Images
+                        .Select(img => img.ImageUrl)
+                        .ToList()
                 })
                 .FirstOrDefaultAsync();
 
@@ -74,48 +144,63 @@ namespace API.Controllers
             return Ok(promotion);
         }
 
-        // ✅ PUT: Update promotion by ID (basic, no image update here)
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutPromotion(Guid id, Promotion promotion)
-        {
-            if (id != promotion.Id)
-                return BadRequest("Mismatched promotion ID.");
-
-            _context.Entry(promotion).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PromotionExists(id))
-                    return NotFound();
-                else
-                    throw;
-            }
-
-            return NoContent();
-        }
-
-        // ✅ POST: Add a new promotion with multiple images upload
+        // =====================================================
+        // ✅ CREATE PROMOTION
+        // =====================================================
         [HttpPost]
-        public async Task<ActionResult<object>> PostPromotion([FromForm] PromotionCreateDto dto)
+        public async Task<ActionResult<object>> PostPromotion(
+            [FromForm] PromotionCreateDto dto)
         {
-            // Validate required fields
-            if (string.IsNullOrWhiteSpace(dto.Title) ||
+            // =====================================================
+            // VALIDATION
+            // =====================================================
+            if (
+                string.IsNullOrWhiteSpace(dto.Title) ||
                 string.IsNullOrWhiteSpace(dto.Description) ||
                 string.IsNullOrWhiteSpace(dto.Category) ||
-                dto.PostedById == Guid.Empty)
+                dto.PostedById == Guid.Empty
+            )
             {
-                return BadRequest("Missing required fields.");
+                return BadRequest(
+                    "Missing required fields.");
             }
 
-            // Validate PostedById exists
-            var userExists = await _context.Users.AnyAsync(u => u.Id == dto.PostedById);
-            if (!userExists)
-                return BadRequest("Invalid PostedById: user does not exist.");
+            // =====================================================
+            // VERIFY USER EXISTS
+            // =====================================================
+            var userExists = await _context.Users
+                .AnyAsync(u => u.Id == dto.PostedById);
 
+            if (!userExists)
+            {
+                return BadRequest(
+                    "Invalid PostedById.");
+            }
+
+            // =====================================================
+            // IMAGE LIMITS
+            // =====================================================
+            const int maxImages = 5;
+            const long maxSize = 5 * 1024 * 1024;
+
+            if (dto.Images != null)
+            {
+                if (dto.Images.Count > maxImages)
+                {
+                    return BadRequest(
+                        $"Maximum {maxImages} images allowed.");
+                }
+
+                if (dto.Images.Any(i => i.Length > maxSize))
+                {
+                    return BadRequest(
+                        "Each image must be smaller than 5MB.");
+                }
+            }
+
+            // =====================================================
+            // CREATE PROMOTION
+            // =====================================================
             var promotion = new Promotion
             {
                 Id = Guid.NewGuid(),
@@ -125,45 +210,67 @@ namespace API.Controllers
                 PostedById = dto.PostedById,
                 IsBoosted = dto.IsBoosted,
                 CreatedAt = DateTime.UtcNow,
-                ExpiresAt = dto.ExpiresAt == default ? DateTime.UtcNow.AddDays(7) : dto.ExpiresAt,
+                ExpiresAt =
+                    dto.ExpiresAt == default
+                        ? DateTime.UtcNow.AddDays(7)
+                        : dto.ExpiresAt
             };
 
-            _context.Promotions.Add(promotion);
+            await _context.Promotions
+                .AddAsync(promotion);
+
             await _context.SaveChangesAsync();
 
+            // =====================================================
+            // UPLOAD IMAGES
+            // =====================================================
             if (dto.Images != null && dto.Images.Count > 0)
             {
-                var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "promotions");
-                Directory.CreateDirectory(uploadsFolder);
+                var uploadsFolder = GetUploadsFolder();
 
-                foreach (var image in dto.Images)
-                {
-                    if (image.Length > 0)
+                var uploadTasks = dto.Images
+                    .Where(image => image.Length > 0)
+                    .Select(async image =>
                     {
-                        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
-                        var filePath = Path.Combine(uploadsFolder, fileName);
+                        var fileName =
+                            $"{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
 
-                        using (var stream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await image.CopyToAsync(stream);
-                        }
+                        var filePath = Path.Combine(
+                            uploadsFolder,
+                            fileName
+                        );
 
-                        var promotionImage = new PromotionImage
+                        await using var stream =
+                            new FileStream(
+                                filePath,
+                                FileMode.Create
+                            );
+
+                        await image.CopyToAsync(stream);
+
+                        return new PromotionImage
                         {
                             Id = Guid.NewGuid(),
-                            ImageUrl = $"/uploads/promotions/{fileName}",
+                            ImageUrl =
+                                $"/uploads/promotions/{fileName}",
                             PromotionId = promotion.Id
                         };
+                    });
 
-                        _context.PromotionImages.Add(promotionImage);
-                    }
-                }
+                var uploadedImages =
+                    await Task.WhenAll(uploadTasks);
+
+                await _context.PromotionImages
+                    .AddRangeAsync(uploadedImages);
+
                 await _context.SaveChangesAsync();
             }
 
-            // Return promotion with images included
+            // =====================================================
+            // RETURN RESULT
+            // =====================================================
             var result = await _context.Promotions
-                .Include(p => p.Images)
+                .AsNoTracking()
                 .Where(p => p.Id == promotion.Id)
                 .Select(p => new
                 {
@@ -175,16 +282,27 @@ namespace API.Controllers
                     p.IsBoosted,
                     p.CreatedAt,
                     p.ExpiresAt,
-                    Images = p.Images.Select(img => img.ImageUrl).ToList()
+
+                    Images = p.Images
+                        .Select(img => img.ImageUrl)
+                        .ToList()
                 })
                 .FirstOrDefaultAsync();
 
-            return CreatedAtAction(nameof(GetPromotion), new { id = promotion.Id }, result);
+            return CreatedAtAction(
+                nameof(GetPromotion),
+                new { id = promotion.Id },
+                result
+            );
         }
 
-        // ✅ DELETE promotion by ID (including images)
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePromotion(Guid id)
+        // =====================================================
+        // ✅ UPDATE PROMOTION
+        // =====================================================
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutPromotion(
+            Guid id,
+            [FromForm] UpdatePromotionDto dto)
         {
             var promotion = await _context.Promotions
                 .Include(p => p.Images)
@@ -193,34 +311,218 @@ namespace API.Controllers
             if (promotion == null)
                 return NotFound();
 
-            // Optionally delete image files from disk (add code here if needed)
+            // =====================================================
+            // UPDATE FIELDS
+            // =====================================================
+            promotion.Title = dto.Title;
+            promotion.Description = dto.Description;
+            promotion.Category = dto.Category;
+            promotion.IsBoosted = dto.IsBoosted;
 
-            // Remove images from DB
-            _context.PromotionImages.RemoveRange(promotion.Images);
+            if (dto.ExpiresAt.HasValue)
+            {
+                promotion.ExpiresAt = dto.ExpiresAt.Value;
+            }
 
-            _context.Promotions.Remove(promotion);
+            // =====================================================
+            // ADD NEW IMAGES
+            // =====================================================
+            if (dto.Images != null && dto.Images.Count > 0)
+            {
+                const int maxImages = 5;
+
+                var currentImageCount =
+                    promotion.Images.Count;
+
+                if (
+                    currentImageCount + dto.Images.Count >
+                    maxImages
+                )
+                {
+                    return BadRequest(
+                        $"Maximum of {maxImages} images allowed.");
+                }
+
+                var uploadsFolder = GetUploadsFolder();
+
+                var uploadTasks = dto.Images
+                    .Where(image => image.Length > 0)
+                    .Select(async image =>
+                    {
+                        var fileName =
+                            $"{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
+
+                        var filePath = Path.Combine(
+                            uploadsFolder,
+                            fileName
+                        );
+
+                        await using var stream =
+                            new FileStream(
+                                filePath,
+                                FileMode.Create
+                            );
+
+                        await image.CopyToAsync(stream);
+
+                        return new PromotionImage
+                        {
+                            Id = Guid.NewGuid(),
+                            ImageUrl =
+                                $"/uploads/promotions/{fileName}",
+                            PromotionId = promotion.Id
+                        };
+                    });
+
+                var uploadedImages =
+                    await Task.WhenAll(uploadTasks);
+
+                await _context.PromotionImages
+                    .AddRangeAsync(uploadedImages);
+            }
+
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok(new
+            {
+                message = "Promotion updated successfully"
+            });
         }
 
-        private bool PromotionExists(Guid id)
+        // =====================================================
+        // ✅ DELETE PROMOTION
+        // =====================================================
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePromotion(
+            Guid id)
         {
-            return _context.Promotions.Any(e => e.Id == id);
+            var promotion = await _context.Promotions
+                .Include(p => p.Images)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (promotion == null)
+                return NotFound();
+
+            var uploadsFolder = GetUploadsFolder();
+
+            // =====================================================
+            // DELETE PHYSICAL FILES
+            // =====================================================
+            foreach (var image in promotion.Images)
+            {
+                var fileName = Path.GetFileName(
+                    image.ImageUrl
+                );
+
+                var filePath = Path.Combine(
+                    uploadsFolder,
+                    fileName
+                );
+
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+            }
+
+            // =====================================================
+            // DELETE DATABASE RECORDS
+            // =====================================================
+            _context.PromotionImages
+                .RemoveRange(promotion.Images);
+
+            _context.Promotions.Remove(promotion);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Promotion deleted successfully"
+            });
+        }
+
+        // =====================================================
+        // ✅ DELETE SINGLE PROMOTION IMAGE
+        // =====================================================
+        [HttpDelete("images/{imageId}")]
+        public async Task<IActionResult> DeletePromotionImage(
+            Guid imageId)
+        {
+            var image = await _context.PromotionImages
+                .FirstOrDefaultAsync(i => i.Id == imageId);
+
+            if (image == null)
+                return NotFound();
+
+            var uploadsFolder = GetUploadsFolder();
+
+            var fileName = Path.GetFileName(
+                image.ImageUrl
+            );
+
+            var filePath = Path.Combine(
+                uploadsFolder,
+                fileName
+            );
+
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+            }
+
+            _context.PromotionImages.Remove(image);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Image deleted successfully"
+            });
+        }
+
+        // =====================================================
+        // ✅ CHECK EXISTS
+        // =====================================================
+        private async Task<bool> PromotionExists(Guid id)
+        {
+            return await _context.Promotions
+                .AnyAsync(e => e.Id == id);
         }
     }
 
-    // DTO for promotion creation with multiple images
+    // =====================================================
+    // DTOs
+    // =====================================================
+
     public class PromotionCreateDto
     {
         public string Title { get; set; } = string.Empty;
+
         public string Description { get; set; } = string.Empty;
+
         public string Category { get; set; } = string.Empty;
+
         public Guid PostedById { get; set; }
+
         public bool IsBoosted { get; set; } = false;
+
         public DateTime ExpiresAt { get; set; }
 
-        // Multiple images support
+        public List<IFormFile>? Images { get; set; }
+    }
+
+    public class UpdatePromotionDto
+    {
+        public string Title { get; set; } = string.Empty;
+
+        public string Description { get; set; } = string.Empty;
+
+        public string Category { get; set; } = string.Empty;
+
+        public bool IsBoosted { get; set; }
+
+        public DateTime? ExpiresAt { get; set; }
+
         public List<IFormFile>? Images { get; set; }
     }
 }
