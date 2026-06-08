@@ -32,17 +32,48 @@ export class PromotionComponent implements OnInit {
   }
 
   loadPromotions(): void {
+
     this.isLoading = true;
-    this.http.get<Promotion[]>(this.apiUrl).subscribe({
-      next: (data) => {
-        this.promotions = data.map(p => ({
-          ...p,
-          images: (p.images ?? []).map(img => this.getPromotionImageUrl(img))
-        }));
+
+    this.http.get<any>(this.apiUrl).subscribe({
+
+      next: (response) => {
+
+        console.log(
+          'Promotions Response:',
+          response
+        );
+
+        const promotions =
+          response?.data ?? [];
+
+        this.promotions = promotions.map(
+          (p: Promotion) => ({
+
+            ...p,
+
+            images: (p.images ?? []).map(
+              img =>
+                this.getPromotionImageUrl(img)
+            )
+          })
+        );
+
+        console.log(
+          'Promotions loaded:',
+          this.promotions
+        );
+
         this.isLoading = false;
       },
+
       error: (err) => {
-        console.error('❌ Error loading promotions:', err);
+
+        console.error(
+          '❌ Error loading promotions:',
+          err
+        );
+
         this.isLoading = false;
       }
     });

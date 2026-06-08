@@ -12,6 +12,13 @@ export interface Promotion {
   category: string;
   images: string[]; // Multiple image URLs
 }
+interface PromotionsResponse {
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+  data: Promotion[];
+}
 
 @Injectable({ providedIn: 'root' })
 export class PromotionProvider {
@@ -19,8 +26,8 @@ export class PromotionProvider {
 
   constructor(private http: HttpClient) { }
 
-  getPromotions(): Observable<Promotion[]> {
-    return this.http.get<Promotion[]>(this.baseUrl);
+  getPromotions(): Observable<PromotionsResponse> {
+    return this.http.get<PromotionsResponse>(this.baseUrl);
   }
 
   postPromotion(formData: FormData): Observable<Promotion> {
