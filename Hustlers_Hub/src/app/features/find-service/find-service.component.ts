@@ -57,7 +57,7 @@ export class FindServiceComponent
 
   selectedService = '';
 
-  sortBy: 'name' | 'location' = 'name';
+  sortBy: 'rank' | 'name' | 'location' = 'rank';
 
   viewMode: 'list' | 'map' = 'list';
 
@@ -137,10 +137,13 @@ export class FindServiceComponent
       )
       .subscribe({
 
-        next: (response) => {
+        next: (response: any) => {
+
+          const providers =
+            response?.data ?? [];
 
           this.serviceProviders =
-            response.data.map(p => ({
+            providers.map((p: ServiceProvider) => ({
 
               ...p,
 
@@ -161,6 +164,14 @@ export class FindServiceComponent
           console.log(
             'Providers loaded:',
             this.serviceProviders
+          );
+
+          console.table(
+            this.serviceProviders.map(p => ({
+              business: p.businessName,
+              score: p.score,
+              distance: p.distance
+            }))
           );
         },
 
@@ -313,8 +324,18 @@ export class FindServiceComponent
       );
     }
 
-    // Sorting
-    if (this.sortBy === 'name') {
+    // Ranking (default)
+    if (this.sortBy === 'rank') {
+
+      result.sort((a, b) =>
+
+        (b.score ?? 0) -
+        (a.score ?? 0)
+      );
+    }
+
+    // Alphabetical
+    else if (this.sortBy === 'name') {
 
       result.sort((a, b) =>
 
@@ -323,6 +344,8 @@ export class FindServiceComponent
         )
       );
     }
+
+    // Location
     else {
 
       result.sort((a, b) =>
@@ -335,6 +358,17 @@ export class FindServiceComponent
     }
 
     return result;
+  }
+
+  getTopRankedProviders(): ServiceProvider[] {
+
+    return [...this.serviceProviders]
+      .sort(
+        (a, b) =>
+          (b.score ?? 0) -
+          (a.score ?? 0)
+      )
+      .slice(0, 10);
   }
 
   // =====================================================
