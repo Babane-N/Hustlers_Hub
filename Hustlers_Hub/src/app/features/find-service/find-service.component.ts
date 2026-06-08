@@ -360,16 +360,6 @@ export class FindServiceComponent
     return result;
   }
 
-  getTopRankedProviders(): ServiceProvider[] {
-
-    return [...this.serviceProviders]
-      .sort(
-        (a, b) =>
-          (b.score ?? 0) -
-          (a.score ?? 0)
-      )
-      .slice(0, 10);
-  }
 
   // =====================================================
   // MAP MARKERS
