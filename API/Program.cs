@@ -47,12 +47,12 @@ builder.Services.AddSwaggerGen();
 var allowedOrigins = new[]
 {
     // Production Web
-    "https://agreeable-grass-0e90e7a03.7.azurestaticapps.net",
-    "https://hustlershub.tech",
-    "https://www.hustlershub.tech",
+    "https://orange-island-06039b303.7.azurestaticapps.net",
+    //"https://hustlershub.tech",
+   // "https://www.hustlershub.tech",
 
     // Azure API
-    "https://hustlerhub-cea4bhbjdrgfdefb.southafricanorth-01.azurewebsites.net",
+    "https://hustlershub-b4gsheczcebvgbew.southafricanorth-01.azurewebsites.net",
 
     // Angular Local Development
     "http://localhost:4200",
