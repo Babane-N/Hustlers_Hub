@@ -42,14 +42,14 @@ builder.Services.AddSwaggerGen();
 // =====================================================
 // CORS
 // =====================================================
-
-// Web + Angular + Capacitor Mobile Origins
 var allowedOrigins = new[]
 {
-    // Production Web
+    // Production Frontend
     "https://orange-island-06039b303.7.azurestaticapps.net",
+
+    // Custom domains (uncomment when active)
     //"https://hustlershub.tech",
-   // "https://www.hustlershub.tech",
+    //"https://www.hustlershub.tech",
 
     // Azure API
     "https://hustlershub-b4gsheczcebvgbew.southafricanorth-01.azurewebsites.net",
@@ -58,9 +58,9 @@ var allowedOrigins = new[]
     "http://localhost:4200",
     "https://localhost:4200",
 
-    // Capacitor Android/iOS WebView
-    "https://localhost",
-    "http://localhost"
+    // Capacitor Mobile
+    "http://localhost",
+    "https://localhost"
 };
 
 builder.Services.AddCors(options =>
@@ -78,37 +78,57 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // =====================================================
-// AZURE PERSISTENT UPLOADS STORAGE
+// FILE STORAGE (LOCAL + AZURE)
 // =====================================================
 
 // Ensure wwwroot exists
 var webRootPath =
-    app.Environment.WebRootPath
-    ?? Path.Combine(
+    app.Environment.WebRootPath ??
+    Path.Combine(
         app.Environment.ContentRootPath,
         "wwwroot"
     );
 
 Directory.CreateDirectory(webRootPath);
 
-// Persistent uploads path (survives deployments)
-var uploadsPath = Path.Combine(
-    Environment.GetEnvironmentVariable("HOME")
-        ?? "D:\\home",
-    "site",
-    "uploads"
-);
+// Azure App Service provides HOME.
+// Local development falls back to a local uploads folder.
+var homePath = Environment.GetEnvironmentVariable("HOME");
 
-// Ensure uploads folder exists
+string uploadsPath;
+
+if (!string.IsNullOrWhiteSpace(homePath))
+{
+    // Azure persistent storage
+    uploadsPath = Path.Combine(
+        homePath,
+        "site",
+        "uploads"
+    );
+}
+else
+{
+    // Local development storage
+    uploadsPath = Path.Combine(
+        app.Environment.ContentRootPath,
+        "uploads"
+    );
+}
+
 Directory.CreateDirectory(uploadsPath);
 
+Console.WriteLine($"Uploads path: {uploadsPath}");
+
 // =====================================================
-// PIPELINE ORDER
+// PIPELINE
 // =====================================================
 
 // Swagger
-app.UseSwagger();
-app.UseSwaggerUI();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseHttpsRedirection();
 
@@ -121,20 +141,18 @@ app.UseCors("AllowFrontend");
 // STATIC FILES
 // =====================================================
 
-// Serve normal wwwroot files
+// wwwroot
 app.UseStaticFiles();
 
-// Serve persistent uploads folder
+// uploads folder
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider(
-        uploadsPath
-    ),
+    FileProvider = new PhysicalFileProvider(uploadsPath),
     RequestPath = "/uploads"
 });
 
 // =====================================================
-// AUTH
+// AUTHENTICATION / AUTHORIZATION
 // =====================================================
 app.UseAuthentication();
 app.UseAuthorization();
