@@ -46,10 +46,8 @@ var allowedOrigins = new[]
 {
     // Production Frontend
     "https://orange-island-06039b303.7.azurestaticapps.net",
-
-    // Custom domains (uncomment when active)
-    //"https://hustlershub.tech",
-    //"https://www.hustlershub.tech",
+    "https://hustlershub.co.za",
+    "https://www.hustlershub.co.za",
 
     // Azure API
     "https://hustlershub-b4gsheczcebvgbew.southafricanorth-01.azurewebsites.net",
