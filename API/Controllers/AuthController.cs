@@ -153,7 +153,7 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
 
             var resetLink =
-                $"{_config["FrontendUrl"]}/reset-password" +
+                $"{_config["https://orange-island-06039b303.7.azurestaticapps.net"]}/reset-password" +
                 $"?token={Uri.EscapeDataString(rawToken)}" +
                 $"&email={Uri.EscapeDataString(dto.Email)}";
 
