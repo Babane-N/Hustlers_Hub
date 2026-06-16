@@ -152,12 +152,12 @@ const routes: Routes = [
   },
 
   {
-    path: 'adcreator',
+    path: 'ad-creator',
     component: AdCreatorComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: ['Business', 'Customer', 'Admin'],
-      requiresService: true
+      roles: ['Customer', 'Business', 'Admin'],
+      requiresService: false
     }
   },
 

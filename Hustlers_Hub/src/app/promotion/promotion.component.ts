@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 interface Promotion {
   id: string;
@@ -25,7 +26,10 @@ export class PromotionComponent implements OnInit {
   sortOrder: string = '';
   isLoading: boolean = false;
   readonly apiUrl = 'https://hustlershub-b4gsheczcebvgbew.southafricanorth-01.azurewebsites.net/api/promotions';
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.loadPromotions();
@@ -83,7 +87,7 @@ export class PromotionComponent implements OnInit {
     if (!imagePath) return '';
     return imagePath.startsWith('http')
       ? imagePath
-      : `https://hustlershub-g3cjffaea3axckg3.southafricanorth-01.azurewebsites.net${imagePath}`;
+      : `https://hustlershub-b4gsheczcebvgbew.southafricanorth-01.azurewebsites.net${imagePath}`;
   }
 
   handleImageError(promo: Promotion, imgUrl: string) {
@@ -120,6 +124,10 @@ export class PromotionComponent implements OnInit {
     }
 
     return filtered;
+  }
+
+  createPromotion(): void {
+    this.router.navigate(['/ad-creator']);
   }
 }
 
