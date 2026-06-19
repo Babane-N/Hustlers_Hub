@@ -25,6 +25,7 @@ import { BookingDetailComponent } from './features/booking-detail/booking-detail
 import { EditBusinessComponent } from './features/edit-business/edit-business.component';
 import { BusinessImageUploadComponent } from './features/business-image-upload/business-image-upload.component';
 import { BookingHistoryComponent } from './features/booking-history/booking-history.component';
+import { MyPromotionsComponent } from './Customer/my-promotions/my-promotions.component';
 
 const routes: Routes = [
 
@@ -157,7 +158,17 @@ const routes: Routes = [
     canActivate: [RoleGuard],
     data: {
       roles: ['Customer', 'Business', 'Admin'],
-      requiresService: false
+      requiresService: true
+    }
+  },
+
+  {
+    path: 'my-promotions',
+    component: MyPromotionsComponent,
+    canActivate: [RoleGuard],
+    data: {
+      roles: ['Customer', 'Business', 'Admin'],
+      requiresService: true
     }
   },
 

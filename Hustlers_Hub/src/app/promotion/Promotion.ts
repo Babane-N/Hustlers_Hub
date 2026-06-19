@@ -1,17 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface Promotion {
-  id?: string; // Assuming your backend returns an Id
+  id: string;
   title: string;
   description: string;
-  postedBy: string;
-  expiresAt: Date;
   category: string;
-  images: string[]; // Multiple image URLs
+  postedById: string;
+  postedByName?: string;
+  businessName?: string;
+  isBoosted: boolean;
+  createdAt: string;
+  expiresAt: string;
+  images?: string[];
 }
+
 interface PromotionsResponse {
   page: number;
   pageSize: number;
@@ -20,17 +25,101 @@ interface PromotionsResponse {
   data: Promotion[];
 }
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class PromotionProvider {
-  private baseUrl = `${environment.apiUrl}/Promotions`
 
-  constructor(private http: HttpClient) { }
+  private baseUrl = `${environment.apiUrl}/Promotions`;
 
-  getPromotions(): Observable<PromotionsResponse> {
-    return this.http.get<PromotionsResponse>(this.baseUrl);
+  constructor(
+    private http: HttpClient
+  ) { }
+
+  private getImageUrl(imagePath: string): string {
+
+    if (!imagePath) {
+      return '';
+    }
+
+    return imagePath.startsWith('http')
+      ? imagePath
+      : `https://hustlershub-b4gsheczcebvgbew.southafricanorth-01.azurewebsites.net${imagePath}`;
   }
 
-  postPromotion(formData: FormData): Observable<Promotion> {
-    return this.http.post<Promotion>(this.baseUrl, formData);
+  private mapPromotionImages(
+    promotion: Promotion
+  ): Promotion {
+
+    return {
+      ...promotion,
+
+      images: (promotion.images ?? []).map(img =>
+        this.getImageUrl(img)
+      )
+    };
+  }
+
+  getPromotions(): Observable<PromotionsResponse> {
+
+    return this.http
+      .get<PromotionsResponse>(this.baseUrl)
+      .pipe(
+        map(response => ({
+
+          ...response,
+
+          data: response.data.map(p =>
+            this.mapPromotionImages(p)
+          )
+        }))
+      );
+  }
+
+  postPromotion(
+    formData: FormData
+  ): Observable<Promotion> {
+
+    return this.http.post<Promotion>(
+      this.baseUrl,
+      formData
+    );
+  }
+
+  getMyPromotions(
+    userId: string
+  ): Observable<Promotion[]> {
+
+    return this.http
+      .get<Promotion[]>(
+        `${this.baseUrl}/user/${userId}`
+      )
+      .pipe(
+        map(promotions =>
+          promotions.map(p =>
+            this.mapPromotionImages(p)
+          )
+        )
+      );
+  }
+
+  updatePromotion(
+    id: string,
+    data: any
+  ): Observable<any> {
+
+    return this.http.put(
+      `${this.baseUrl}/${id}`,
+      data
+    );
+  }
+
+  deletePromotion(
+    id: string
+  ): Observable<any> {
+
+    return this.http.delete(
+      `${this.baseUrl}/${id}`
+    );
   }
 }

@@ -32,13 +32,34 @@
 
   <div class="promo-list" *ngIf="!isLoading && filteredPromotions().length > 0">
     <div class="promo-card" *ngFor="let promo of filteredPromotions()">
-      <!-- main image -->
-      <ng-container *ngIf="(promo.images ?? []).length > 0; else noImage">
-        <img [src]="promo.images![0]"
-             alt="{{ promo.title }} Image"
-             class="promo-main-img"
-             (error)="handleImageError(promo, promo.images![0])" />
-      </ng-container>
+
+      <!-- Images -->
+      <div class="promo-gallery" *ngIf="(promo.images ?? []).length > 0; else noImage">
+
+        <!-- First Image -->
+        <div class="gallery-item main">
+          <img [src]="promo.images![0]"
+               [alt]="promo.title"
+               (error)="handleImageError(promo, promo.images![0])" />
+        </div>
+
+        <!-- Second Image / More Count -->
+        <div class="gallery-item secondary"
+             *ngIf="promo.images!.length > 1">
+
+          <img [src]="promo.images![1]"
+               [alt]="promo.title"
+               (error)="handleImageError(promo, promo.images![1])" />
+
+          <!-- Overlay when more than 2 images -->
+          <div class="more-overlay"
+               *ngIf="promo.images!.length > 2">
+            +{{ promo.images!.length - 2 }}
+          </div>
+
+        </div>
+
+      </div>
 
       <ng-template #noImage>
         <div class="promo-placeholder">
@@ -46,26 +67,40 @@
         </div>
       </ng-template>
 
-      <h3>{{ promo.title }}</h3>
-      <p>{{ promo.description }}</p>
+      <!-- Promotion Content -->
+      <div class="promo-content">
 
-      <div class="promo-meta">
-        <span>{{ promo.category }}</span>
-        <span>{{ promo.createdAt | date: 'mediumDate' }}</span>
-      </div>
+        <h3 class="promo-title">
+          {{ promo.title }}
+        </h3>
 
-      <div class="promo-images" *ngIf="(promo.images ?? []).length > 1">
-        <img *ngFor="let img of promo.images!.slice(1)"
-             [src]="img"
-             alt="{{ promo.title }} Image"
-             class="promo-img"
-             (error)="handleImageError(promo, img)" />
+        <!-- Business/User -->
+        <div class="promo-author">
+          <span *ngIf="promo.businessName; else userPoster">
+            🏢 {{ promo.businessName }}
+          </span>
+
+          <ng-template #userPoster>
+            <span *ngIf="promo.postedByName">
+              👤 {{ promo.postedByName }}
+            </span>
+          </ng-template>
+        </div>
+
+        <p class="promo-description">
+          {{ promo.description }}
+        </p>
+
+        <!-- Meta -->
+        <div class="promo-meta">
+          <span class="category">
+            {{ promo.category }}
+          </span>
+
+          <span class="date">
+            {{ promo.createdAt | date:'mediumDate' }}
+          </span>
+        </div>
       </div>
     </div>
   </div>
-
-  <div *ngIf="!isLoading && filteredPromotions().length === 0" class="text-center">
-    No promotions found.
-  </div>
-</div>
-
