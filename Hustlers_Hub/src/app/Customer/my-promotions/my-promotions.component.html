@@ -1,0 +1,68 @@
+<div class="my-promotions-container">
+
+  <div class="page-header">
+    <h2>📢 My Promotions</h2>
+    <p>Manage your active and expired promotions</p>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    Loading promotions...
+  </div>
+
+  <div *ngIf="!loading && promotions.length === 0" class="empty-state">
+    <h3>No Promotions Found</h3>
+    <p>You haven't created any promotions yet.</p>
+  </div>
+
+  <div class="promotion-grid">
+
+    <div class="promotion-card"
+         *ngFor="let promotion of promotions">
+
+      <img *ngIf="promotion.images?.length"
+           [src]="promotion.images![0]"
+           class="promotion-image">
+
+      <div class="card-content">
+
+        <div class="card-header">
+          <h3>{{ promotion.title }}</h3>
+
+          <span class="boosted-badge"
+                *ngIf="promotion.isBoosted">
+            BOOSTED
+          </span>
+        </div>
+
+        <p class="description">
+          {{ promotion.description }}
+        </p>
+
+        <div class="details">
+          <span>
+            Expires:
+            {{ promotion.expiresAt | date }}
+          </span>
+        </div>
+
+        <div class="actions">
+
+          <button class="edit-btn"
+                  (click)="editPromotion(promotion)">
+            Edit
+          </button>
+
+          <button class="delete-btn"
+                  (click)="deletePromotion(promotion.id)">
+            Delete
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

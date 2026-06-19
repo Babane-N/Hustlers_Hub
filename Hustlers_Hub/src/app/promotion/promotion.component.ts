@@ -8,10 +8,12 @@ interface Promotion {
   description: string;
   category: string;
   postedById: string;
+  postedByName?: string;
+  businessName?: string;
   isBoosted: boolean;
   createdAt: string;
   expiresAt: string;
-  images?: string[]; // make optional
+  images?: string[];
 }
 
 @Component({
@@ -124,6 +126,32 @@ export class PromotionComponent implements OnInit {
     }
 
     return filtered;
+  }
+
+  galleryOpen = false;
+  selectedImages: string[] = [];
+  currentImageIndex = 0;
+
+  openGallery(images: string[], index: number): void {
+    this.selectedImages = images;
+    this.currentImageIndex = index;
+    this.galleryOpen = true;
+  }
+
+  closeGallery(): void {
+    this.galleryOpen = false;
+  }
+
+  nextImage(): void {
+    if (this.currentImageIndex < this.selectedImages.length - 1) {
+      this.currentImageIndex++;
+    }
+  }
+
+  previousImage(): void {
+    if (this.currentImageIndex > 0) {
+      this.currentImageIndex--;
+    }
   }
 
   createPromotion(): void {

@@ -4,13 +4,17 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface Promotion {
-  id?: string; // Assuming your backend returns an Id
+  id: string;
   title: string;
   description: string;
-  postedBy: string;
-  expiresAt: Date;
   category: string;
-  images: string[]; // Multiple image URLs
+  postedById: string;
+  postedByName?: string;
+  businessName?: string;
+  isBoosted: boolean;
+  createdAt: string;
+  expiresAt: string;
+  images?: string[];
 }
 interface PromotionsResponse {
   page: number;
@@ -32,5 +36,24 @@ export class PromotionProvider {
 
   postPromotion(formData: FormData): Observable<Promotion> {
     return this.http.post<Promotion>(this.baseUrl, formData);
+  }
+
+  getMyPromotions(userId: string): Observable<Promotion[]> {
+    return this.http.get<Promotion[]>(
+      `${this.baseUrl}/user/${userId}`
+    );
+  }
+
+  updatePromotion(id: string, data: any): Observable<any> {
+    return this.http.put(
+      `${this.baseUrl}/${id}`,
+      data
+    );
+  }
+
+  deletePromotion(id: string): Observable<any> {
+    return this.http.delete(
+      `${this.baseUrl}/${id}`
+    );
   }
 }

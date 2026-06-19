@@ -127,14 +127,17 @@ namespace API.Controllers
                     p.Title,
                     p.Description,
                     p.Category,
+
                     p.PostedById,
+
+                    PostedByName = p.PostedBy.FullName,
                     p.IsBoosted,
                     p.CreatedAt,
                     p.ExpiresAt,
 
                     Images = p.Images
-                        .Select(img => img.ImageUrl)
-                        .ToList()
+        .Select(i => i.ImageUrl)
+        .ToList()
                 })
                 .FirstOrDefaultAsync();
 
@@ -142,6 +145,33 @@ namespace API.Controllers
                 return NotFound();
 
             return Ok(promotion);
+        }
+
+        [HttpGet("user/{userId}")]
+        public async Task<ActionResult<object>> GetMyPromotions(Guid userId)
+        {
+            var promotions = await _context.Promotions
+                .AsNoTracking()
+                .Where(p => p.PostedById == userId)
+                .OrderByDescending(p => p.CreatedAt)
+                .Select(p => new
+                {
+                    p.Id,
+                    p.Title,
+                    p.Description,
+                    p.Category,
+                    p.PostedById,
+                    p.IsBoosted,
+                    p.CreatedAt,
+                    p.ExpiresAt,
+
+                    Images = p.Images
+                        .Select(i => i.ImageUrl)
+                        .ToList()
+                })
+                .ToListAsync();
+
+            return Ok(promotions);
         }
 
         // =====================================================
