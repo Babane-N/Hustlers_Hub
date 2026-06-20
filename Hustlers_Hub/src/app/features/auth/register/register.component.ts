@@ -48,45 +48,56 @@ export class RegisterComponent {
       return;
     }
 
-    if (this.registerForm.invalid) return;
     this.isLoading = true;
     this.registrationError = '';
 
-    const { fullName, email, phoneNumber, password } = this.registerForm.value;
-    const userPayload = { fullName, email, password, phoneNumber, userType: 0 }; // Customer
+    const {
+      fullName,
+      email,
+      phoneNumber,
+      password,
+      acceptTerms
+    } = this.registerForm.value;
 
-    this.http.post(`${environment.apiUrl}/auth/register`, userPayload).subscribe({
-      next: (res: any) => {
-        // Use AuthService to store token + role
-        this.authService.setSession(res.token, res.role);
-        this.authService.setUser(res.user);
+    const userPayload = {
+      fullName,
+      email,
+      phoneNumber,
+      password,
+      userType: 0, // Customer
+      acceptTerms
+    };
 
-        // Clear any previous active service
-        this.activeServiceContext.clear();
+    console.log('Registration Payload:', userPayload);
 
-        // Navigate based on role
-        switch (res.role.toLowerCase()) {
-          case 'business':
-            this.router.navigate(['/switch-service']);
-            break;
-          case 'customer':
-            this.router.navigate(['/login']);
-            break;
-          case 'admin':
-            this.router.navigate(['/admin']);
-            break;
-          default:
-            this.router.navigate(['/home-page']);
+    this.http.post(`${environment.apiUrl}/auth/register`, userPayload)
+      .subscribe({
+        next: (res: any) => {
+
+          console.log('Registration Success:', res);
+
+          this.isLoading = false;
+
+          // Registration successful
+          // User must login afterwards
+          this.router.navigate(['/login'], {
+            queryParams: {
+              registered: true
+            }
+          });
+        },
+
+        error: (err) => {
+
+          console.error('Registration Error:', err);
+
+          this.registrationError =
+            err?.error?.message ||
+            'Registration failed. Please try again.';
+
+          this.isLoading = false;
         }
-
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error(err);
-        this.registrationError = err?.error?.message || 'Registration failed.';
-        this.isLoading = false;
-      }
-    });
+      });
   }
 
   // Google login

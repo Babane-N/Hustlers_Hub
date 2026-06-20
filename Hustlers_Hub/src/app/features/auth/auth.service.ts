@@ -8,7 +8,8 @@ export interface RegisterRequest {
   email: string;
   phoneNumber: string;
   password: string;
-  userType?: number; 
+  userType?: number;
+  acceptTerms: boolean;
 }
 
 export interface LoginRequest {
