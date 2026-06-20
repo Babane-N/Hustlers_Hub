@@ -31,7 +31,8 @@ export class RegisterComponent {
       email: ['', [Validators.required, Validators.email]],
       phoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10,}$')]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', Validators.required]
+      confirmPassword: ['', Validators.required],
+      acceptTerms: [false, Validators.requiredTrue]
     }, { validators: this.matchPasswords });
   }
 
@@ -42,6 +43,11 @@ export class RegisterComponent {
   }
 
   onSubmit() {
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      return;
+    }
+
     if (this.registerForm.invalid) return;
     this.isLoading = true;
     this.registrationError = '';

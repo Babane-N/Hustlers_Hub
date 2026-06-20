@@ -36,34 +36,57 @@ namespace API.Controllers
         }
 
 
-        [HttpPost("register")]
-        [AllowAnonymous]
-        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+       [HttpPost("register")]
+[AllowAnonymous]
+public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+{
+    if (!ModelState.IsValid)
+        return BadRequest(ModelState);
+
+    if (!dto.AcceptTerms)
+    {
+        return BadRequest(new
         {
-            if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
-                return BadRequest(new { message = "Email already exists." });
+            message = "You must accept the Terms & Conditions and Privacy Policy."
+        });
+    }
 
-            var user = new User
-            {
-                Id = Guid.NewGuid(),
-                FullName = dto.FullName,
-                Email = dto.Email,
-                PhoneNumber = dto.PhoneNumber,
-                UserType = (UserType)dto.UserType // ✅ cast int -> enum
-            };
+    if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
+    {
+        return BadRequest(new
+        {
+            message = "Email already exists."
+        });
+    }
 
-            user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
+    var user = new User
+    {
+        Id = Guid.NewGuid(),
+        FullName = dto.FullName,
+        Email = dto.Email.Trim().ToLower(),
+        PhoneNumber = dto.PhoneNumber,
+        UserType = (UserType)dto.UserType,
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+        AcceptedTerms = true,
+        AcceptedTermsDate = DateTime.UtcNow,
+        TermsVersion = "1.0"
+    };
 
-            return Ok(new
-            {
-                userId = user.Id,
-                user.Email,
-                role = user.UserType.ToString()
-            });
-        }
+    user.PasswordHash = _passwordHasher.HashPassword(
+        user,
+        dto.Password
+    );
+
+    _context.Users.Add(user);
+    await _context.SaveChangesAsync();
+
+    return Ok(new
+    {
+        userId = user.Id,
+        email = user.Email,
+        role = user.UserType.ToString()
+    });
+}
 
         [HttpPost("login")]
         [AllowAnonymous]
@@ -152,8 +175,10 @@ namespace API.Controllers
             _context.PasswordResetTokens.Add(resetToken);
             await _context.SaveChangesAsync();
 
+            var frontendUrl = _config["FrontendUrl"];
+
             var resetLink =
-                $"{_config["https://orange-island-06039b303.7.azurestaticapps.net"]}/reset-password" +
+                $"{frontendUrl}/reset-password" +
                 $"?token={Uri.EscapeDataString(rawToken)}" +
                 $"&email={Uri.EscapeDataString(dto.Email)}";
 
@@ -226,7 +251,10 @@ namespace API.Controllers
         public string Email { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-        public int UserType { get; set; } // 0=Customer,1=Business
+        public int UserType { get; set; }
+
+        // Required for registration
+        public bool AcceptTerms { get; set; }
     }
 
     public class LoginDto

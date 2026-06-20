@@ -123,20 +123,20 @@ export class PromotionProvider {
     );
   }
 
-  getMyPromotions(userId: string): Observable<Promotion[]> {
+  getMyPromotion(userId: string): Observable<Promotion[]> {
     return this.http.get<Promotion[]>(
       `${this.baseUrl}/user/${userId}`
     );
   }
 
-  updatePromotion(id: string, data: any): Observable<any> {
+  updatedPromotion(id: string, data: any): Observable<any> {
     return this.http.put(
       `${this.baseUrl}/${id}`,
       data
     );
   }
 
-  deletePromotion(id: string): Observable<any> {
+  deletedPromotion(id: string): Observable<any> {
     return this.http.delete(
       `${this.baseUrl}/${id}`
     );

@@ -26,6 +26,8 @@ import { EditBusinessComponent } from './features/edit-business/edit-business.co
 import { BusinessImageUploadComponent } from './features/business-image-upload/business-image-upload.component';
 import { BookingHistoryComponent } from './features/booking-history/booking-history.component';
 import { MyPromotionsComponent } from './Customer/my-promotions/my-promotions.component';
+import { TermsAndConditionsComponent } from './Customer/Shared/terms-and-conditions/terms-and-conditions.component';
+import { PrivacyPolicyComponent } from './Customer/Shared/privacy-policy/privacy-policy.component';
 
 const routes: Routes = [
 
@@ -39,6 +41,8 @@ const routes: Routes = [
   { path: 'service-detail/:id', component: ServiceDetailComponent },
 
   { path: 'register', component: RegisterComponent },
+  { path: 'terms-and-conditions', component: TermsAndConditionsComponent},
+  { path: 'privacy-policy', component: PrivacyPolicyComponent},
   { path: 'login', component: LoginComponent },
   { path: 'forgot-password', component: ForgetPasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent },

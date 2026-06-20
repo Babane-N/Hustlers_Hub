@@ -50,6 +50,29 @@
     <!-- Error Message -->
     <div *ngIf="registrationError" class="error">{{ registrationError }}</div>
 
+    <!-- Terms & Privacy Agreement -->
+    <div class="form-group terms-group">
+      <label class="checkbox-label">
+        <input type="checkbox" formControlName="acceptTerms">
+
+        <span>
+          I agree to the
+          <a routerLink="/terms-and-conditions" target="_blank">
+            Terms & Conditions
+          </a>
+          and
+          <a routerLink="/privacy-policy" target="_blank">
+            Privacy Policy
+          </a>.
+        </span>
+      </label>
+
+      <small *ngIf="registerForm.get('acceptTerms')?.touched &&
+           registerForm.get('acceptTerms')?.invalid">
+        You must accept the Terms & Conditions and Privacy Policy.
+      </small>
+    </div>
+
     <!-- Register Button -->
     <button type="submit" [disabled]="isLoading" class="btn btn-primary">
       {{ isLoading ? 'Registering...' : 'Register' }}

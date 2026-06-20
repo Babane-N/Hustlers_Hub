@@ -27,6 +27,11 @@ namespace API.Data.Models
         public DateTime? CreatedAt { get; set; }
         public string? AuthProvider { get; set; }  // Google, Facebook, etc.
         public string? ProviderUserId { get; set; }
+        public bool AcceptedTerms { get; set; } = false;
+
+        public DateTime? AcceptedTermsDate { get; set; }
+
+        public string? TermsVersion { get; set; }
 
         //Nevigation
         public ICollection<Business> Businesses { get; set; }

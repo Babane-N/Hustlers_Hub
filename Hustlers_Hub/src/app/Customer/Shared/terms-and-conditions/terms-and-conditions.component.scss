@@ -1,0 +1,39 @@
+.legal-container {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  background: #f5f7fb;
+  min-height: 100vh;
+}
+
+.legal-card {
+  width: 100%;
+  max-width: 1000px;
+  background: #fff;
+  padding: 2.5rem;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+}
+
+h1 {
+  margin-bottom: .5rem;
+}
+
+.updated {
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+section {
+  margin-bottom: 1.8rem;
+}
+
+h2 {
+  margin-bottom: .6rem;
+  color: #1f2937;
+}
+
+p, li {
+  line-height: 1.8;
+  color: #444;
+}

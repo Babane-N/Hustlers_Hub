@@ -34,6 +34,8 @@ import { VerificationInfoModalComponent } from './features/verification-info-mod
 import { BookingHistoryComponent } from './features/booking-history/booking-history.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MyPromotionsComponent } from './Customer/my-promotions/my-promotions.component';
+import { TermsAndConditionsComponent } from './Customer/Shared/terms-and-conditions/terms-and-conditions.component';
+import { PrivacyPolicyComponent } from './Customer/Shared/privacy-policy/privacy-policy.component';
 
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
@@ -55,6 +57,7 @@ import { GoogleMapsModule } from '@angular/google-maps';
 import { SocialLoginModule, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
 import { GoogleLoginProvider, FacebookLoginProvider } from '@abacritt/angularx-social-login';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 
 
 
@@ -91,6 +94,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     VerificationInfoModalComponent,
     BookingHistoryComponent,
     MyPromotionsComponent,
+    TermsAndConditionsComponent,
+    PrivacyPolicyComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,24 +1,12 @@
-<div class="promotion-card"
-     *ngFor="let promotion of promotions">
+<div class="my-promotions-container">
 
-  <!-- Gallery -->
-  <div class="promo-gallery"
-       *ngIf="(promotion.images ?? []).length > 0; else noImage">
-
-    <div class="gallery-item main">
-      <img [src]="promotion.images![0]"
-           [alt]="promotion.title">
+  <div class="page-header">
+    <h2>📢 My Promotions</h2>
+    <p>Manage your active and expired promotions</p>
   </div>
 
-    <div class="gallery-item secondary"
-         *ngIf="promotion.images!.length > 1">
-
-      <img [src]="promotion.images![1]"
-           [alt]="promotion.title">
-
-      <div class="more-overlay"
-           *ngIf="promotion.images!.length > 2">
-        +{{ promotion.images!.length - 2 }}
+  <div *ngIf="loading" class="loading">
+    Loading promotions...
   </div>
 
   <div *ngIf="!loading && promotions.length === 0" class="empty-state">
@@ -26,14 +14,42 @@
     <p>You haven't created any promotions yet.</p>
   </div>
 
-  </div>
+  <div class="promotion-grid" *ngIf="!loading && promotions.length > 0">
 
-  <ng-template #noImage>
-    <div class="promo-placeholder">
-      No Image Available
-    </div>
-  </ng-template>
+    <div class="promotion-card"
+         *ngFor="let promotion of promotions">
 
+      <!-- Gallery -->
+      <div class="promo-gallery"
+           *ngIf="(promotion.images ?? []).length > 0; else noImage">
+
+        <div class="gallery-item main">
+          <img [src]="promotion.images![0]"
+               [alt]="promotion.title">
+        </div>
+
+        <div class="gallery-item secondary"
+             *ngIf="promotion.images!.length > 1">
+
+          <img [src]="promotion.images![1]"
+               [alt]="promotion.title">
+
+          <div class="more-overlay"
+               *ngIf="promotion.images!.length > 2">
+            +{{ promotion.images!.length - 2 }}
+          </div>
+
+        </div>
+
+      </div>
+
+      <ng-template #noImage>
+        <div class="promo-placeholder">
+          No Image Available
+        </div>
+      </ng-template>
+
+      <!-- Content -->
       <div class="card-content">
 
         <div class="card-header">
