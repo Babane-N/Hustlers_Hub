@@ -8,7 +8,7 @@
     <div class="gallery-item main">
       <img [src]="promotion.images![0]"
            [alt]="promotion.title">
-    </div>
+  </div>
 
     <div class="gallery-item secondary"
          *ngIf="promotion.images!.length > 1">
@@ -19,9 +19,12 @@
       <div class="more-overlay"
            *ngIf="promotion.images!.length > 2">
         +{{ promotion.images!.length - 2 }}
-      </div>
+  </div>
 
-    </div>
+  <div *ngIf="!loading && promotions.length === 0" class="empty-state">
+    <h3>No Promotions Found</h3>
+    <p>You haven't created any promotions yet.</p>
+  </div>
 
   </div>
 
@@ -31,41 +34,45 @@
     </div>
   </ng-template>
 
-  <div class="card-content">
+      <div class="card-content">
 
-    <div class="card-header">
+        <div class="card-header">
 
-      <h3>{{ promotion.title }}</h3>
+          <h3>{{ promotion.title }}</h3>
 
-      <span class="boosted-badge"
-            *ngIf="promotion.isBoosted">
-        BOOSTED
-      </span>
+          <span class="boosted-badge"
+                *ngIf="promotion.isBoosted">
+            BOOSTED
+          </span>
 
-    </div>
+        </div>
 
-    <p class="description">
-      {{ promotion.description }}
-    </p>
+        <p class="description">
+          {{ promotion.description }}
+        </p>
 
-    <div class="details">
-      <span>
-        Expires:
-        {{ promotion.expiresAt | date }}
-      </span>
-    </div>
+        <div class="details">
+          <span>
+            Expires:
+            {{ promotion.expiresAt | date }}
+          </span>
+        </div>
 
-    <div class="actions">
+        <div class="actions">
 
-      <button class="edit-btn"
-              (click)="editPromotion(promotion)">
-        Edit
-      </button>
+          <button class="edit-btn"
+                  (click)="editPromotion(promotion)">
+            Edit
+          </button>
 
-      <button class="delete-btn"
-              (click)="deletePromotion(promotion.id)">
-        Delete
-      </button>
+          <button class="delete-btn"
+                  (click)="deletePromotion(promotion.id)">
+            Delete
+          </button>
+
+        </div>
+
+      </div>
 
     </div>
 

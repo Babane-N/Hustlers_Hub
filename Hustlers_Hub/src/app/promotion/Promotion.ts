@@ -122,4 +122,23 @@ export class PromotionProvider {
       `${this.baseUrl}/${id}`
     );
   }
+
+  getMyPromotions(userId: string): Observable<Promotion[]> {
+    return this.http.get<Promotion[]>(
+      `${this.baseUrl}/user/${userId}`
+    );
+  }
+
+  updatePromotion(id: string, data: any): Observable<any> {
+    return this.http.put(
+      `${this.baseUrl}/${id}`,
+      data
+    );
+  }
+
+  deletePromotion(id: string): Observable<any> {
+    return this.http.delete(
+      `${this.baseUrl}/${id}`
+    );
+  }
 }
