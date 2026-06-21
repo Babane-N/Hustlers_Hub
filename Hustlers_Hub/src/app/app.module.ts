@@ -129,7 +129,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
         providers: [
           {
             id: GoogleLoginProvider.PROVIDER_ID,
-            provider: new GoogleLoginProvider('839640505539-n3m49mpd2jttrb9uiga4f0uvlrpqf0di.apps.googleusercontent.com')
+            provider: new GoogleLoginProvider('1036036877418-dap5b16ephmnaev2ti0074m897m7baum.apps.googleusercontent.com')
           },
           {
             id: FacebookLoginProvider.PROVIDER_ID,
