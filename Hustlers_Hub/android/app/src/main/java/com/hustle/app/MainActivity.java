@@ -1,4 +1,4 @@
-package com.example.app;
+package com.hustle.app;
 
 import android.os.Bundle;
 import androidx.core.splashscreen.SplashScreen;
