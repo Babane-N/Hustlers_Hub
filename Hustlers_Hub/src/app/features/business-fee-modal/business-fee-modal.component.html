@@ -1,47 +1,70 @@
 <div class="modal-backdrop">
   <div class="modal">
 
-    <h2>Before You Register Your Business</h2>
+    <h2>Register Your Business</h2>
+
+    <!-- 🎉 Launch Offer -->
+    <div class="launch-offer">
+      <span class="launch-badge">🎉 LAUNCH OFFER</span>
+
+      <h3>First 100 Businesses — FREE</h3>
+
+      <p>
+        Register now and get your business listing and verification
+        free during our launch.
+      </p>
+
+      <strong>✓ Valid CIPC registration required for verification</strong>
+    </div>
+
+    <!-- Standard Pricing -->
+    <h3 class="section-title">Standard Pricing</h3>
 
     <div class="cards">
+
       <div class="card">
         <h3>Non-Verified</h3>
+
+        <strong class="price">R40 once-off</strong>
+
         <ul>
-          <li><strong>Once-off admin fee: R40</strong></li>
           <li>No verification badge</li>
           <li>Standard listing visibility</li>
         </ul>
-        <small class="hint">
-          Covers basic review and platform setup.
-        </small>
       </div>
 
       <div class="card verified">
         <h3>Verified ✔</h3>
+
+        <strong class="price">R80 once-off</strong>
+
         <ul>
-          <li><strong>Once-off admin fee: R80</strong></li>
-          <li>Only CIPC-registered businesses qualify</li>
-          <li>Higher trust & credibility</li>
+          <li>CIPC registration verification</li>
+          <li>Verified badge</li>
         </ul>
-        <small class="hint">
-          Includes manual verification and badge approval.
-        </small>
       </div>
+
     </div>
 
+    <p class="trust-message">
+      <strong>Why the admin fee?</strong>
+      It supports business screening and verification to help keep
+      Hustlers Hub safer and reduce fake listings and scams.
+    </p>
+
     <p class="note">
-      Verification is optional but recommended for building customer trust.
+      After the first 100 businesses, standard pricing will apply.
     </p>
 
     <div class="actions">
       <button class="secondary" (click)="openLearnMore()">
-        Learn about verification
+        Learn About Verification
       </button>
+
       <button class="primary" (click)="continue()">
-        Continue registration
+        Register for FREE
       </button>
     </div>
 
   </div>
 </div>
-
