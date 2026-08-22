@@ -1,47 +1,101 @@
 <div class="modal-backdrop">
   <div class="modal">
 
-    <h2>Before You Register Your Business</h2>
+    <h2>Register Your Business on Hustlers Hub</h2>
+
+    <!-- 🎉 Launch Offer -->
+    <div class="launch-offer">
+      <span class="launch-badge">🎉 LAUNCH OFFER</span>
+
+      <h3>First 100 Businesses Register FREE</h3>
+
+      <p>
+        We're waiving our registration and verification fees for the
+        first 100 businesses joining Hustlers Hub.
+      </p>
+
+      <ul>
+        <li>✓ Free business registration</li>
+        <li>✓ Free verification with a valid CIPC registration number</li>
+        <li>✓ Standard listing visibility</li>
+      </ul>
+
+      <strong>Join early and secure your free registration.</strong>
+    </div>
+
+    <!-- 💰 Standard Pricing -->
+    <h3 class="section-title">Standard Fees After the Launch Offer</h3>
 
     <div class="cards">
+
+      <!-- Non-Verified -->
       <div class="card">
         <h3>Non-Verified</h3>
+
+        <div class="price">
+          R40 <span>once-off</span>
+        </div>
+
         <ul>
-          <li><strong>Once-off admin fee: R40</strong></li>
           <li>No verification badge</li>
           <li>Standard listing visibility</li>
+          <li>Business screening</li>
         </ul>
+
         <small class="hint">
-          Covers basic review and platform setup.
+          The admin fee helps us review businesses and maintain
+          a safer marketplace for customers and service providers.
         </small>
       </div>
 
+      <!-- Verified -->
       <div class="card verified">
         <h3>Verified ✔</h3>
+
+        <div class="price">
+          R80 <span>once-off</span>
+        </div>
+
         <ul>
-          <li><strong>Once-off admin fee: R80</strong></li>
-          <li>Only CIPC-registered businesses qualify</li>
-          <li>Higher trust & credibility</li>
+          <li>Verified badge</li>
+          <li>CIPC registration verification</li>
+          <li>Higher customer trust</li>
+          <li>Standard listing visibility</li>
         </ul>
+
         <small class="hint">
-          Includes manual verification and badge approval.
+          Includes business screening and verification of your
+          CIPC registration details.
         </small>
       </div>
+
+    </div>
+
+    <!-- 🛡️ Why the fee exists -->
+    <div class="trust-message">
+      <strong>Why do we charge an admin fee?</strong>
+
+      <p>
+        Hustlers Hub is built to be a trusted marketplace. The fee helps
+        support the screening, review and verification processes we use
+        to reduce fake businesses, misleading listings and scams.
+      </p>
     </div>
 
     <p class="note">
-      Verification is optional but recommended for building customer trust.
+      Verification is optional. A Verified badge helps customers identify
+      businesses whose CIPC registration has been verified.
     </p>
 
     <div class="actions">
       <button class="secondary" (click)="openLearnMore()">
         Learn about verification
       </button>
+
       <button class="primary" (click)="continue()">
-        Continue registration
+        Continue Registration
       </button>
     </div>
 
   </div>
 </div>
-

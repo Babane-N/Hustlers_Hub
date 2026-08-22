@@ -7,39 +7,25 @@ import {
 } from '@angular/core';
 
 import { Router } from '@angular/router';
-
 import { ServiceProviderService } from './ServiceProvider';
-
+import { finalize } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export interface ServiceProvider {
 
   id: string;
-
   title: string;
-
   category: string;
-
   description?: string;
-
   businessName: string;
-
   location?: string;
-
   latitude?: number;
-
   longitude?: number;
-
   distance?: number;
-
   score?: number;
-
   logoUrl?: string | null;
-
   imageUrl?: string | null;
-
   hiddenImage?: boolean;
-
   isVerified?: boolean;
 }
 
@@ -50,16 +36,12 @@ export interface ServiceProvider {
 })
 export class FindServiceComponent
   implements OnInit, AfterViewInit {
-
   serviceProviders: ServiceProvider[] = [];
-
   searchTerm = '';
-
   selectedService = '';
-
   sortBy: 'rank' | 'name' | 'location' = 'rank';
-
   viewMode: 'list' | 'map' = 'list';
+  isLoading = true;
 
   center: google.maps.LatLngLiteral = {
     lat: -26.2041,
@@ -72,7 +54,6 @@ export class FindServiceComponent
 
   // ✅ FIXED
   userLatitude: number = 0;
-
   userLongitude: number = 0;
 
   @ViewChild('locationInput')
@@ -128,12 +109,25 @@ export class FindServiceComponent
   // =====================================================
   // LOAD PROVIDERS
   // =====================================================
+  // =====================================================
+  // LOAD PROVIDERS
+  // =====================================================
   private loadProviders(): void {
+
+    // Show loading message
+    this.isLoading = true;
 
     this.providerService
       .getProviders(
         this.userLatitude,
         this.userLongitude
+      )
+      .pipe(
+        finalize(() => {
+          // Hide loading message when request completes
+          // whether successful or failed
+          this.isLoading = false;
+        })
       )
       .subscribe({
 

@@ -45,6 +45,73 @@
   </div>
 </div>
 
+<!-- Loading State -->
+<div *ngIf="isLoading" class="loading-container">
+  <mat-spinner diameter="40"></mat-spinner>
+  <p>Searching for Services near you...</p>
+</div>
+
+<!-- ===================== -->
+<!-- 📋 LIST VIEW -->
+<!-- ===================== -->
+<div *ngIf="!isLoading && viewMode === 'list'" class="results-grid">
+
+  <div class="service-card"
+       *ngFor="let provider of filteredProviders"
+       (click)="goFindServiceDetail(provider)"
+       style="cursor: pointer;">
+
+    <!-- 🏢 Business Logo -->
+    <div class="service-img-container" *ngIf="provider.logoUrl">
+      <img [src]="provider.logoUrl"
+           alt="{{ provider.businessName }} Logo"
+           class="service-img"
+           loading="lazy"
+           (error)="provider.logoUrl = null" />
+    </div>
+
+    <!-- ℹ️ Service Info -->
+    <div class="service-info">
+      <h3>{{ provider.businessName }}</h3>
+
+      <!-- ✅ Verified Badge -->
+      <p *ngIf="provider.isVerified" class="verified-text">
+        <mat-icon class="verified-icon">check_circle</mat-icon>
+        Verified
+      </p>
+
+      <p class="service">{{ provider.category }}</p>
+
+      <p class="location">
+        <mat-icon>location_on</mat-icon>
+        {{ provider.location }}
+      </p>
+
+      <p class="bio">
+        {{ provider.description }}
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== -->
+<!-- 🗺️ MAP VIEW -->
+<!-- ===================== -->
+<div *ngIf="!isLoading && viewMode === 'map'" class="map-container">
+  <google-map height="500px"
+              width="100%"
+              [center]="center"
+              [zoom]="zoom">
+
+    <map-marker *ngFor="let marker of mapMarkers"
+                [position]="marker.position"
+                [title]="marker.title"
+                (mapClick)="goFindServiceDetail(marker.provider)">
+    </map-marker>
+
+  </google-map>
+</div>
+
 <!-- ===================== -->
 <!-- 📋 LIST VIEW -->
 <!-- ===================== -->
