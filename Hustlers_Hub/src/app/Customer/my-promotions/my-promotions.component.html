@@ -76,9 +76,9 @@
 
         <div class="actions">
 
-          <button class="edit-btn"
-                  (click)="editPromotion(promotion)">
-            Edit
+          <button (click)="repostPromotion(promotion)"
+                  [disabled]="repostingId === promotion.id">
+            {{ repostingId === promotion.id ? 'Reposting...' : 'Repost' }}
           </button>
 
           <button class="delete-btn"

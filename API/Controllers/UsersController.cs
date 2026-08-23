@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -109,24 +110,26 @@ namespace API.Controllers
 
         // UPDATE
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(Guid id, User user)
+        public async Task<IActionResult> PutUser(
+     Guid id,
+     [FromForm] string fullName,
+     [FromForm] string phoneNumber,
+     [FromForm] IFormFile? profileImage)
         {
-            if (id != user.Id)
-                return BadRequest();
+            var user = await _context.Users.FindAsync(id);
 
-            _context.Entry(user).State = EntityState.Modified;
+            if (user == null)
+                return NotFound();
 
-            try
+            user.FullName = fullName;
+            user.PhoneNumber = phoneNumber;
+
+            if (profileImage != null && profileImage.Length > 0)
             {
-                await _context.SaveChangesAsync();
+                // Handle profile image upload here
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                    return NotFound();
-                else
-                    throw;
-            }
+
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }

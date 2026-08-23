@@ -66,9 +66,7 @@ export class PromotionProvider {
       .get<PromotionsResponse>(this.baseUrl)
       .pipe(
         map(response => ({
-
           ...response,
-
           data: response.data.map(p =>
             this.mapPromotionImages(p)
           )
@@ -123,20 +121,44 @@ export class PromotionProvider {
     );
   }
 
-  getMyPromotion(userId: string): Observable<Promotion[]> {
+  /**
+   * Creates a new promotion using the supplied FormData.
+   * The original promotion remains unchanged.
+   */
+  repostPromotion(
+    formData: FormData
+  ): Observable<Promotion> {
+
+    return this.http.post<Promotion>(
+      this.baseUrl,
+      formData
+    );
+  }
+
+  getMyPromotion(
+    userId: string
+  ): Observable<Promotion[]> {
+
     return this.http.get<Promotion[]>(
       `${this.baseUrl}/user/${userId}`
     );
   }
 
-  updatedPromotion(id: string, data: any): Observable<any> {
+  updatedPromotion(
+    id: string,
+    data: any
+  ): Observable<any> {
+
     return this.http.put(
       `${this.baseUrl}/${id}`,
       data
     );
   }
 
-  deletedPromotion(id: string): Observable<any> {
+  deletedPromotion(
+    id: string
+  ): Observable<any> {
+
     return this.http.delete(
       `${this.baseUrl}/${id}`
     );

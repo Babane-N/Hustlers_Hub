@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Business, BusinessService } from './BusinessModel';
 import { ActiveServiceContextService } from '../../core/active-service-context.service';
 import { AuthService } from '../auth/auth.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-business-switcher',
@@ -29,23 +30,57 @@ export class BusinessSwitcherComponent implements OnInit {
       return;
     }
 
-    // ✅ Load businesses instead of services
     this.businessService.getUserBusinesses(user.id).subscribe({
-      next: businesses => this.businesses = businesses,
-      error: err => console.error('Failed to load businesses', err)
+      next: (businesses) => {
+        this.businesses = businesses.map(business => ({
+          ...business,
+          imageUrl: business.logoUrl
+            ? this.getImageUrl(business.logoUrl)
+            : business.logoUrl
+        }));
+      },
+      error: (err) => {
+        console.error('Failed to load businesses', err);
+      }
     });
   }
 
+  /**
+   * Converts a stored image path into the correct production image URL.
+   *
+   * Handles values such as:
+   * /uploads/image.png
+   * uploads/image.png
+   * /image.png
+   * image.png
+   */
+  private getImageUrl(url: string): string {
+    if (!url) {
+      return '';
+    }
+
+    // Already an absolute URL
+    if (/^https?:\/\//i.test(url)) {
+      return url;
+    }
+
+    const baseUrl = environment.uploadsUrl.replace(/\/+$/, '');
+
+    const cleanUrl = url
+      .replace(/^\/+/, '')
+      .replace(/^uploads\/?/i, '');
+
+    return `${baseUrl}/${cleanUrl}`;
+  }
+
   onSwitchBusiness(business: Business): void {
-    // ✅ Set active business context
     this.activeServiceContext.setActiveBusiness({
       id: business.id,
       businessName: business.businessName,
-      businessType: business.businessType, // optional, if you track verified/unverified
-      isApproved: business.isApproved      // optional
+      businessType: business.businessType,
+      isApproved: business.isApproved
     });
 
-    // Navigate to dashboard
     this.router.navigate(['/dashboard']);
   }
 }
