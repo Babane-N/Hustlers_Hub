@@ -483,7 +483,13 @@ namespace API.Controllers
                     b.Description,
                     b.LogoUrl,
                     b.BusinessType,
-                    b.IsVerified
+                    b.Category,
+                    b.Location,
+                    b.IsVerified,
+                    b.RegistrationNumber,
+
+                    ApplicantName = b.User.FullName,
+                    ApplicantEmail = b.User.Email
                 })
                 .ToListAsync();
 

@@ -1,74 +1,232 @@
 <div class="approval-container">
 
-  <!-- Header -->
+  <!-- =====================================================
+       HEADER
+  ====================================================== -->
   <div class="header">
+
     <h2>🕒 Pending Business Approvals</h2>
+
     <p class="subtitle">
-      Review new business registrations before they go live on Hustlers Hub
+      Review new business registrations before they go live on Hustlers Hub.
     </p>
+
   </div>
 
-  <!-- States -->
-  <div *ngIf="loading" class="state loading">
+
+  <!-- =====================================================
+       LOADING
+  ====================================================== -->
+  <div *ngIf="loading"
+       class="state loading">
+
     ⏳ Loading pending businesses...
+
   </div>
 
-  <div *ngIf="errorMsg" class="state error">
+
+  <!-- =====================================================
+       ERROR
+  ====================================================== -->
+  <div *ngIf="!loading && errorMsg"
+       class="state error">
+
     {{ errorMsg }}
+
   </div>
 
-  <div *ngIf="!loading && pendingBusinesses.length === 0" class="state empty">
+
+  <!-- =====================================================
+       EMPTY
+  ====================================================== -->
+  <div *ngIf="!loading && !errorMsg && pendingBusinesses.length === 0"
+       class="state empty">
+
     ✅ No pending business approvals at the moment.
+
   </div>
 
-  <!-- List -->
-  <div class="business-grid" *ngIf="!loading && pendingBusinesses.length > 0">
 
-    <div class="business-card" *ngFor="let item of pendingBusinesses">
+  <!-- =====================================================
+       BUSINESS LIST
+  ====================================================== -->
+  <div class="business-grid"
+       *ngIf="!loading && pendingBusinesses.length > 0">
 
-      <!-- Logo -->
+    <div class="business-card"
+         *ngFor="let item of pendingBusinesses">
+
+
+      <!-- =================================================
+           BUSINESS LOGO
+      ================================================== -->
       <div class="logo-wrapper">
+
         <img [src]="item.logoUrl || 'assets/default-logo.png'"
-             alt="Business Logo" />
+             alt="Business Logo"
+             loading="lazy" />
+
       </div>
 
-      <!-- Info -->
+
+      <!-- =================================================
+           BUSINESS CONTENT
+      ================================================== -->
       <div class="content">
 
-        <h3 class="name">{{ item.businessName }}</h3>
 
-        <p class="description">
-          {{ item.description || 'No description provided.' }}
-        </p>
+        <!-- Business Name -->
+        <h3 class="name">
+          {{ item.businessName }}
+        </h3>
 
-        <div class="meta">
-          <span class="tag">{{ item.category }}</span>
-          <span class="location">📍 {{ item.location }}</span>
+
+        <!-- =================================================
+       APPLICANT INFORMATION
+  ================================================== -->
+        <div class="applicant-info">
+
+          <div class="applicant-field">
+
+            <small>
+              Applicant
+            </small>
+
+            <strong>
+              {{ item.applicantName || 'Not provided' }}
+            </strong>
+
+          </div>
+
+
+          <div class="applicant-field">
+
+            <small>
+              Email
+            </small>
+
+            <strong class="email">
+              {{ item.applicantEmail || 'Not provided' }}
+            </strong>
+
+          </div>
+
         </div>
 
-        <!-- Verification -->
-        <div class="verification" *ngIf="item.isCipcRegistered">
 
-          <label>
-            <input type="checkbox" [(ngModel)]="item.isVerified" />
-            Grant Verification Badge
-          </label>
+        <!-- =================================================
+       DESCRIPTION
+  ================================================== -->
+        <p class="description">
 
-          <small class="cipc">
-            CIPC No: {{ item.cipcNumber }}
+          {{ item.description || 'No description provided.' }}
+
+        </p>
+
+
+        <!-- =================================================
+       BUSINESS DETAILS
+  ================================================== -->
+        <div class="meta">
+
+          <span class="tag"
+                *ngIf="item.category">
+
+            {{ item.category }}
+
+          </span>
+
+
+          <span class="location"
+                *ngIf="item.location">
+
+            📍 {{ item.location }}
+
+          </span>
+
+        </div>
+
+
+        <!-- =================================================
+       BUSINESS TYPE
+  ================================================== -->
+        <div class="business-type"
+             *ngIf="item.businessType">
+
+          <span class="label">
+            Business Type:
+          </span>
+
+          <span>
+            {{ item.businessType }}
+          </span>
+
+        </div>
+
+        <!-- =================================================
+       VERIFICATION
+  ================================================== -->
+        <div class="verification">
+
+          <div class="verification-option">
+
+            <label>
+
+              <input type="checkbox"
+                     [(ngModel)]="item.isVerified" />
+
+              <span>
+                Grant Verification Badge
+              </span>
+
+            </label>
+
+          </div>
+
+
+          <!-- CIPC Registration Number -->
+          <small class="cipc"
+                 *ngIf="item.registrationNumber">
+
+            CIPC No:
+            <strong>
+              {{ item.registrationNumber }}
+            </strong>
+
+          </small>
+
+
+          <!-- No CIPC number -->
+          <small class="cipc not-registered"
+                 *ngIf="!item.registrationNumber">
+
+            No CIPC registration number provided.
+
           </small>
 
         </div>
 
-        <!-- ACTIONS -->
+
+        <!-- =================================================
+       ACTIONS
+  ================================================== -->
         <div class="actions">
 
-          <button class="btn approve" (click)="approve(item)">
+          <button type="button"
+                  class="btn approve"
+                  (click)="approve(item)">
+
             ✔ Approve
+
           </button>
 
-          <button class="btn reject" (click)="reject(item.id)">
+
+          <button type="button"
+                  class="btn reject"
+                  (click)="reject(item.id)">
+
             ✖ Reject
+
           </button>
 
         </div>
@@ -78,4 +236,5 @@
     </div>
 
   </div>
+
 </div>

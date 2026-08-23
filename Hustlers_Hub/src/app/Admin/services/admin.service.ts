@@ -8,12 +8,15 @@ export interface PendingBusiness {
   id: string;
   businessName: string;
   description: string;
-  category: string;
-  location: string;
-  logoUrl?: string | null;
+  logoUrl?: string;
+  businessType: string;
+  category?: string;
+  location?: string;
   isVerified: boolean;
-  isCipcRegistered: boolean;
-  cipcNumber: number;
+  registrationNumber?: string;
+
+  applicantName: string;
+  applicantEmail: string;
 }
 
 @Injectable({
