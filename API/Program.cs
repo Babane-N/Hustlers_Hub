@@ -1,7 +1,10 @@
 ﻿using API.Data;
 using API.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +25,38 @@ builder.Services.AddDbContext<HustlersHubDbContext>(options =>
 // =====================================================
 builder.Services.AddSingleton<JwtService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+
+// =====================================================
+// AUTHENTICATION
+// =====================================================
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme =
+        JwtBearerDefaults.AuthenticationScheme;
+
+    options.DefaultChallengeScheme =
+        JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(
+                builder.Configuration["Jwt:Key"]!
+            )
+        ),
+
+        ValidateIssuer = false,
+        ValidateAudience = false,
+
+        ValidateLifetime = true,
+
+        ClockSkew = TimeSpan.Zero
+    };
+});
 
 // =====================================================
 // CONTROLLERS
