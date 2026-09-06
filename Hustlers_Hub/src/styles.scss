@@ -1,15 +1,56 @@
-html, body {
+/* =========================================================
+   GLOBAL RESET & MOBILE OVERFLOW PROTECTION
+   ========================================================= */
+
+html,
+body {
   margin: 0;
   padding: 0;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   height: 100%;
-  background-color: #fff3e6; // Dark orange
-  color: #fff3e6; // Vanilla cream
+  background-color: #fff3e6;
+  color: #5d2c15;
   font-family: 'Segoe UI', sans-serif;
   scroll-behavior: smooth;
+  /*
+   * IMPORTANT:
+   * Prevent components positioned/transformed outside the
+   * viewport from making the whole page horizontally scroll.
+   */
+  overflow-x: hidden;
 }
 
+/*
+ * Angular root element
+ */
+app-root {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+
+/* =========================================================
+   BOX SIZING
+   ========================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   LINKS
+   ========================================================= */
+
 a {
-  color: #ffe0b2; // Light gold
+  color: #ffe0b2;
   text-decoration: none;
 
   &:hover {
@@ -18,15 +59,25 @@ a {
   }
 }
 
-button, .btn {
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+button,
+.btn {
   background-color: #fff3e6;
-  color: #8B4000;
+  color: #8b4000;
   border: none;
   padding: 0.6rem 1.2rem;
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
-  transition: all 0.3s ease;
+  /*
+   * Prevent buttons from creating unexpected width.
+   */
+  max-width: 100%;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
 
   &:hover {
     background-color: #ffe0b2;
@@ -34,20 +85,42 @@ button, .btn {
   }
 }
 
+
+/* =========================================================
+   ANGULAR MATERIAL CARDS
+   ========================================================= */
+
 mat-card {
-  background-color: #fff3e6 !important; // Creamy card
-  color: #5d2c15 !important; // Cocoa text
+  background-color: #fff3e6 !important;
+  color: #5d2c15 !important;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  /*
+   * Important when cards are inside flex/grid layouts.
+   */
+  max-width: 100%;
+  min-width: 0;
 }
 
-input, textarea, select {
+
+/* =========================================================
+   FORM ELEMENTS
+   ========================================================= */
+
+input,
+textarea,
+select {
   background-color: #fff3e6;
   color: #5d2c15;
   border: 1px solid #a87450;
   padding: 0.5rem;
   border-radius: 6px;
   font-size: 1rem;
+  /*
+   * Prevent form controls from exceeding their parent.
+   */
+  max-width: 100%;
+  min-width: 0;
 
   &::placeholder {
     color: #a57c5b;
@@ -57,5 +130,157 @@ input, textarea, select {
     outline: none;
     border-color: #ffe0b2;
     background-color: #fff8f0;
+  }
+}
+
+
+/* =========================================================
+   IMAGES
+   ========================================================= */
+
+img {
+  /*
+   * Images should never make a page wider than its container.
+   */
+  max-width: 100%;
+  height: auto;
+}
+
+
+/* =========================================================
+   FLEX / GRID SAFETY
+   ========================================================= */
+
+/*
+ * This is especially important for:
+ *
+ * .messages-layout
+ * .chat-area
+ * .conversation-sidebar
+ * .service-detail
+ * cards
+ * navigation
+ *
+ * Flex children otherwise have an automatic min-width
+ * that can force the parent wider than the viewport.
+ */
+
+[class*='container'],
+[class*='layout'],
+[class*='content'],
+[class*='card'],
+[class*='section'],
+[class*='area'],
+[class*='sidebar'] {
+  min-width: 0;
+  max-width: 100%;
+}
+
+
+/* =========================================================
+   TABLE SAFETY
+   ========================================================= */
+
+table {
+  max-width: 100%;
+  border-collapse: collapse;
+}
+
+.table-container,
+.table-responsive {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+
+/* =========================================================
+   LONG TEXT SAFETY
+   ========================================================= */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+div {
+  /*
+   * Prevent long URLs, IDs, filenames, etc. from creating
+   * horizontal overflow.
+   */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  app-root {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  /*
+   * Remove accidental viewport-width calculations.
+   */
+  .container,
+  .layout,
+  .content,
+  .page-container,
+  .page-content {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  /*
+   * Make form controls properly fit small screens.
+   */
+  input,
+  textarea,
+  select {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /*
+   * Prevent buttons from extending outside small screens.
+   */
+  button,
+  .btn {
+    max-width: 100%;
+  }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 400px) {
+
+  html,
+  body {
+    font-size: 14px;
+  }
+
+  button,
+  .btn {
+    padding: 0.55rem 0.9rem;
   }
 }

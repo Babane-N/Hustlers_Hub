@@ -1,21 +1,41 @@
+scss
+/* ============================================================
+   BASE / GLOBAL SAFETY
+============================================================ */
 :host {
   display: block;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .messages-page {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   min-height: calc(100vh - 80px);
   padding: 28px;
   background: #faf8f4;
   color: #2d241f;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
+
+  .messages-page *,
+  .messages-page *::before,
+  .messages-page *::after {
+    box-sizing: border-box;
+  }
 
 /* ============================================================
    PAGE HEADER
 ============================================================ */
 
 .messages-header {
+  width: 100%;
   max-width: 1400px;
+  min-width: 0;
   margin: 0 auto 22px;
   display: flex;
   align-items: center;
@@ -42,6 +62,7 @@ p {
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-shrink: 0;
   padding: 8px 14px;
   border-radius: 20px;
   background: #f4e6d8;
@@ -61,7 +82,9 @@ p {
 ============================================================ */
 
 .messages-layout {
+  width: 100%;
   max-width: 1400px;
+  min-width: 0;
   height: calc(100vh - 185px);
   min-height: 550px;
   margin: 0 auto;
@@ -81,12 +104,17 @@ p {
 .conversation-sidebar {
   display: flex;
   flex-direction: column;
+  width: 100%;
   min-width: 0;
+  min-height: 0;
   border-right: 1px solid #eee7e2;
   background: #fffdfa;
+  overflow: hidden;
 }
 
 .sidebar-header {
+  width: 100%;
+  min-width: 0;
   padding: 20px 18px 16px;
   border-bottom: 1px solid #eee7e2;
 }
@@ -125,6 +153,9 @@ p {
 ============================================================ */
 
 .search-box {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   height: 42px;
   display: flex;
   align-items: center;
@@ -144,6 +175,7 @@ p {
 input {
   width: 100%;
   min-width: 0;
+  max-width: 100%;
   margin-left: 9px;
   border: none;
   outline: none;
@@ -162,6 +194,7 @@ input {
 .clear-search {
   width: 24px;
   height: 24px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -187,13 +220,20 @@ input {
 
 .conversation-list {
   flex: 1;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: #d8cec6 transparent;
+  overscroll-behavior-x: none;
 }
 
 .conversation-item {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -203,6 +243,7 @@ input {
   background: transparent;
   text-align: left;
   cursor: pointer;
+  overflow: hidden;
   transition: background 0.15s ease, border-color 0.15s ease;
   &:hover
 
@@ -238,12 +279,16 @@ input {
 }
 
 .conversation-info {
-  min-width: 0;
   flex: 1;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .conversation-top,
 .conversation-bottom {
+  width: 100%;
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -252,6 +297,7 @@ input {
 
 .conversation-name {
   min-width: 0;
+  max-width: 100%;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -272,6 +318,7 @@ input {
 
 .conversation-preview {
   min-width: 0;
+  max-width: 100%;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -307,6 +354,7 @@ input {
 
 .empty-conversations {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -355,10 +403,13 @@ p {
 ============================================================ */
 
 .conversation-loading {
+  width: 100%;
   padding: 8px 0;
 }
 
 .conversation-skeleton {
+  width: 100%;
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -375,6 +426,7 @@ p {
 
 .skeleton-content {
   flex: 1;
+  min-width: 0;
 }
 
 .skeleton-line {
@@ -397,11 +449,14 @@ p {
 ============================================================ */
 
 .chat-area {
+  width: 100%;
+  max-width: 100%;
   min-width: 0;
   min-height: 0;
   display: flex;
   flex-direction: column;
   background: #fff;
+  overflow: hidden;
 }
 
 /* ============================================================
@@ -410,10 +465,12 @@ p {
 
 .chat-empty {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 30px;
   text-align: center;
   color: #847870;
 }
@@ -453,6 +510,9 @@ p {
 ============================================================ */
 
 .chat-header {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   min-height: 75px;
   display: flex;
   align-items: center;
@@ -460,12 +520,14 @@ p {
   padding: 12px 20px;
   border-bottom: 1px solid #eee7e2;
   background: #fffdfa;
+  overflow: hidden;
 }
 
 .back-button {
   display: none;
   width: 36px;
   height: 36px;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
   padding: 0;
@@ -486,14 +548,20 @@ p {
 .chat-avatar {
   width: 43px;
   height: 43px;
+  flex-shrink: 0;
   font-size: 12px;
 }
 
 .chat-participant {
+  flex: 1;
   min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
   h2
 
 {
+  width: 100%;
+  max-width: 100%;
   margin: 0;
   overflow: hidden;
   white-space: nowrap;
@@ -506,6 +574,9 @@ p {
 span {
   display: block;
   margin-top: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: #948880;
   font-size: 11px;
 }
@@ -518,15 +589,25 @@ span {
 
 .messages-container {
   flex: 1;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 24px 28px;
   background: linear-gradient( 180deg, #fffdfa 0%, #fff 100% );
   scrollbar-width: thin;
   scrollbar-color: #d8cec6 transparent;
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .message-row {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   display: flex;
   align-items: flex-end;
   gap: 8px;
@@ -546,10 +627,14 @@ span {
 }
 
 .message-content {
+  min-width: 0;
   max-width: min(68%, 600px);
 }
 
 .message-bubble {
+  width: fit-content;
+  max-width: 100%;
+  min-width: 0;
   padding: 10px 13px;
   border-radius: 15px 15px 15px 4px;
   background: #f3eee9;
@@ -557,12 +642,19 @@ span {
   font-size: 13px;
   line-height: 1.5;
   box-shadow: 0 1px 2px rgba(45, 35, 28, 0.03);
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .message-row.own {
-  .message-bubble
+  .message-content
 
 {
+  max-width: min(68%, 600px);
+}
+
+.message-bubble {
+  margin-left: auto;
   border-radius: 15px 15px 4px 15px;
   background: #a65324;
   color: white;
@@ -575,8 +667,10 @@ span {
 }
 
 .message-text {
+  max-width: 100%;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .message-meta {
@@ -603,11 +697,14 @@ span {
 ============================================================ */
 
 .chat-start {
+  width: 100%;
   height: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 25px;
   text-align: center;
 }
 
@@ -640,6 +737,7 @@ span {
   margin: 0;
   color: #958a82;
   font-size: 12px;
+  overflow-wrap: anywhere;
 }
 
 .chat-start strong {
@@ -651,13 +749,14 @@ span {
 ============================================================ */
 
 .messages-loading {
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 18px;
 }
 
 .message-loading {
-  width: 230px;
+  width: min(230px, 70%);
   padding: 12px;
   border-radius: 15px;
   background: #f0ebe7;
@@ -665,7 +764,7 @@ span {
 
 {
   align-self: flex-end;
-  width: 280px;
+  width: min(280px, 70%);
 }
 
 div {
@@ -688,6 +787,9 @@ div {
 ============================================================ */
 
 .message-composer {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   display: flex;
   align-items: flex-end;
   gap: 10px;
@@ -698,10 +800,15 @@ div {
 
 {
   flex: 1;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   min-height: 42px;
   max-height: 130px;
   padding: 11px 13px;
   resize: none;
+  overflow-x: hidden;
+  overflow-y: auto;
   border: 1px solid #e5ddd7;
   border-radius: 12px;
   outline: none;
@@ -732,7 +839,7 @@ div {
 .send-button {
   width: 42px;
   height: 42px;
-  flex-shrink: 0;
+  flex: 0 0 42px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -771,6 +878,7 @@ div {
 }
 
 .composer-hint {
+  width: 100%;
   padding: 0 20px 10px;
   color: #aaa099;
   font-size: 9px;
@@ -788,7 +896,7 @@ div {
 }
 
 /* ============================================================
-   RESPONSIVE
+   TABLET
 ============================================================ */
 
 @media (max-width: 900px) {
@@ -810,107 +918,55 @@ div {
   }
 }
 
+/* ============================================================
+   MOBILE
+============================================================ */
+
 @media (max-width: 700px) {
 
-  .messages-page {
-    min-height: calc(100vh - 60px);
-    padding: 0;
-    background: #fff;
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
+  :host {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .messages-page {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    height: 100dvh;
+    min-height: 100dvh;
+    padding: 0;
+    background: #fff;
+    overflow: hidden;
+  }
+
+  /* ==========================================================
+     MOBILE HEADER
+  ========================================================== */
+
   .messages-header {
-    padding: 18px 16px;
+    width: 100%;
+    max-width: 100%;
+    height: 64px;
+    padding: 14px 16px;
     margin: 0;
+    gap: 10px;
+    overflow: hidden;
     h1
 
 {
+  min-width: 0;
   font-size: 23px;
-}
-
-p {
-  font-size: 12px;
-}
-
-}
-
-.messages-layout {
-  height: calc(100vh - 118px);
-  min-height: 0;
-  display: block;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-  position: relative;
-}
-
-.conversation-sidebar {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  border: none;
-  transition: transform 0.25s ease;
-}
-
-.chat-area {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  transform: translateX(100%);
-  transition: transform 0.25s ease;
-}
-
-.messages-layout.mobile-chat-open {
-  .conversation-sidebar
-
-{
-  transform: translateX(-100%);
-}
-
-.chat-area {
-  transform: translateX(0);
-}
-
-}
-
-.back-button {
-  display: flex;
-}
-
-.chat-header {
-  min-height: 67px;
-  padding: 10px 14px;
-}
-
-.messages-container {
-  padding: 18px 14px;
-}
-
-.message-content {
-  max-width: 82%;
-}
-
-.message-composer {
-  padding: 10px 10px 5px;
-}
-
-.composer-hint {
-  padding: 0 10px 8px;
-}
-
-.conversation-item {
-  padding: 13px 14px;
-}
-
-}
-
-@media (max-width: 420px) {
-
-  .messages-header {
-    padding: 15px 13px;
-    h1
-
-{
-  font-size: 21px;
+  white-space: nowrap;
 }
 
 p {
@@ -920,20 +976,594 @@ p {
 }
 
 .total-unread {
+  flex-shrink: 0;
   padding: 6px 10px;
   font-size: 11px;
 }
 
-.message-content {
-  max-width: 86%;
+/* ==========================================================
+     MOBILE LAYOUT
+
+     IMPORTANT:
+     No translateX animation.
+     Only one panel is rendered visually at a time.
+  ========================================================== */
+
+.messages-layout {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: calc(100dvh - 64px);
+  min-height: 0;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: hidden;
 }
 
-.message-bubble {
-  font-size: 12px;
+/* ==========================================================
+     CONVERSATIONS
+  ========================================================== */
+
+.conversation-sidebar {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  border: none;
+  transform: none;
+  overflow: hidden;
+  transition: none;
+}
+
+/* ==========================================================
+     CHAT
+  ========================================================== */
+
+.chat-area {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: 100%;
+  transform: none;
+  overflow: hidden;
+  display: none;
+}
+
+/* ==========================================================
+     OPEN CHAT
+
+     Instead of sliding both panels around, simply switch
+     visibility. This prevents horizontal movement/shaking.
+  ========================================================== */
+
+.messages-layout.mobile-chat-open {
+  .conversation-sidebar
+
+{
+  display: none;
+}
+
+.chat-area {
+  display: flex;
+}
+
+}
+
+/* ==========================================================
+     MOBILE SIDEBAR
+  ========================================================== */
+
+.sidebar-header {
+  padding: 16px 14px 12px;
+}
+
+.sidebar-title {
+  margin-bottom: 12px;
+  h2
+
+{
+  font-size: 16px;
+}
+
+}
+
+.search-box {
+  width: 100%;
+  max-width: 100%;
+}
+
+.conversation-list {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-x: none;
+}
+
+.conversation-item {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: 13px 14px;
+  gap: 10px;
 }
 
 .conversation-avatar {
   width: 42px;
   height: 42px;
+  font-size: 12px;
 }
+
+.conversation-info {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.conversation-name {
+  max-width: calc(100% - 5px);
+}
+
+/* ==========================================================
+     MOBILE CHAT HEADER
+  ========================================================== */
+
+.chat-header {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 62px;
+  flex-shrink: 0;
+  padding: 9px 12px;
+  gap: 9px;
+  overflow: hidden;
+}
+
+.back-button {
+  display: flex;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+}
+
+.chat-avatar {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+}
+
+.chat-participant {
+  min-width: 0;
+  max-width: 100%;
+}
+
+  .chat-participant h2 {
+    font-size: 14px;
+  }
+
+  .chat-participant span {
+    font-size: 10px;
+  }
+
+/* ==========================================================
+     MOBILE MESSAGES
+
+     Only this area scrolls.
+  ========================================================== */
+
+.messages-container {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  flex: 1 1 auto;
+  padding: 14px 10px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.message-row {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.message-avatar {
+  width: 27px;
+  height: 27px;
+  flex: 0 0 27px;
+  font-size: 8px;
+}
+
+.message-content {
+  min-width: 0;
+  max-width: calc(100% - 35px);
+}
+
+.message-row.own {
+  .message-content
+
+{
+  max-width: 86%;
+}
+
+}
+
+.message-bubble {
+  width: fit-content;
+  max-width: 100%;
+  min-width: 0;
+  padding: 9px 11px;
+  border-radius: 14px 14px 14px 4px;
+  font-size: 12px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.message-text {
+  max-width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.message-meta {
+  font-size: 8px;
+}
+
+/* ==========================================================
+     MOBILE LOADING
+  ========================================================== */
+
+.message-loading {
+  width: min(210px, 70%);
+  &.right
+
+{
+  width: min(240px, 70%);
+}
+
+}
+
+/* ==========================================================
+     MOBILE COMPOSER
+  ========================================================== */
+
+.message-composer {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  flex: 0 0 auto;
+  padding: 8px 8px 5px;
+  gap: 7px;
+}
+
+  .message-composer textarea {
+    min-width: 0;
+    max-width: 100%;
+    min-height: 42px;
+    max-height: 100px;
+    padding: 10px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+  }
+
+.send-button {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 50%;
+}
+
+.composer-hint {
+  display: none;
+}
+
+/* ==========================================================
+     MOBILE EMPTY STATES
+  ========================================================== */
+
+.chat-empty {
+  width: 100%;
+  max-width: 100%;
+  padding: 25px 20px;
+}
+
+.chat-empty-icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 14px;
+  svg
+
+{
+  width: 31px;
+  height: 31px;
+}
+
+}
+
+.chat-empty h2 {
+  font-size: 18px;
+}
+
+.chat-empty p {
+  max-width: 280px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.chat-start {
+  padding: 20px;
+}
+
+}
+
+/* ============================================================
+   SMALL PHONES
+============================================================ */
+
+@media (max-width: 420px) {
+
+  .messages-header {
+    height: 60px;
+    padding: 13px 12px;
+    h1
+
+{
+  font-size: 21px;
+}
+
+}
+
+.total-unread {
+  padding: 5px 9px;
+  font-size: 10px;
+}
+
+.messages-layout {
+  height: calc(100dvh - 60px);
+}
+
+.sidebar-header {
+  padding: 14px 12px 10px;
+}
+
+.conversation-item {
+  padding: 12px;
+}
+
+.conversation-avatar {
+  width: 40px;
+  height: 40px;
+}
+
+.conversation-name {
+  font-size: 13px;
+}
+
+.conversation-preview {
+  font-size: 11px;
+}
+
+.conversation-time {
+  font-size: 9px;
+}
+
+.chat-header {
+  min-height: 60px;
+  padding: 8px 10px;
+}
+
+.back-button {
+  width: 36px;
+  height: 36px;
+  flex-basis: 36px;
+}
+
+.chat-avatar {
+  width: 38px;
+  height: 38px;
+  flex-basis: 38px;
+}
+
+.chat-participant h2 {
+  font-size: 13px;
+}
+
+.messages-container {
+  padding: 12px 8px;
+}
+
+.message-content {
+  max-width: calc(100% - 34px);
+}
+
+.message-row.own .message-content {
+  max-width: 88%;
+}
+
+.message-bubble {
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+.message-composer {
+  padding: 7px 7px 5px;
+  gap: 6px;
+}
+
+  .message-composer textarea {
+    min-height: 40px;
+    padding: 9px 11px;
+    font-size: 12px;
+  }
+
+.send-button {
+  width: 40px;
+  height: 40px;
+  flex-basis: 40px;
+}
+
+}
+
+/* ============================================================
+   VERY SMALL PHONES
+============================================================ */
+
+@media (max-width: 360px) {
+
+  .messages-header {
+    padding-left: 10px;
+    padding-right: 10px;
+    h1
+
+{
+  font-size: 19px;
+}
+
+}
+
+.total-unread {
+  padding: 4px 8px;
+  font-size: 9px;
+}
+
+.sidebar-header {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.conversation-item {
+  gap: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.conversation-avatar {
+  width: 38px;
+  height: 38px;
+}
+
+.messages-container {
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+.message-row {
+  gap: 5px;
+}
+
+.message-avatar {
+  width: 25px;
+  height: 25px;
+  flex-basis: 25px;
+}
+
+.message-content {
+  max-width: calc(100% - 30px);
+}
+
+.message-row.own .message-content {
+  max-width: 90%;
+}
+
+.message-bubble {
+  padding: 7px 9px;
+  font-size: 11.5px;
+}
+
+.message-composer {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+  .message-composer textarea {
+    font-size: 11.5px;
+  }
+
+.send-button {
+  width: 38px;
+  height: 38px;
+  flex-basis: 38px;
+}
+
+}
+
+/* ============================================================
+   LANDSCAPE PHONES
+============================================================ */
+
+@media (max-width: 900px) and (orientation: landscape) {
+
+  .messages-page {
+    height: 100dvh;
+    min-height: 100dvh;
+  }
+
+  .messages-header {
+    height: 52px;
+    padding: 8px 14px;
+    h1
+
+{
+  font-size: 18px;
+}
+
+}
+
+.messages-layout {
+  height: calc(100dvh - 52px);
+}
+
+.chat-header {
+  min-height: 52px;
+  padding: 6px 10px;
+}
+
+.messages-container {
+  padding: 10px;
+}
+
+.message-composer {
+  padding-top: 5px;
+}
+
+.composer-hint {
+  display: none;
+}
+
+}
+
+/* ============================================================
+   TOUCH DEVICES
+============================================================ */
+
+@media (hover: none) and (pointer: coarse) {
+
+  .conversation-item:hover {
+    background: transparent;
+  }
+
+  .send-button:hover:not(:disabled) {
+    background: #a65324;
+    transform: none;
+  }
+
+  .back-button,
+  .send-button,
+  .conversation-item,
+  .clear-search {
+    -webkit-tap-highlight-color: transparent;
+  }
 }

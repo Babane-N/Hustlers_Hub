@@ -14,17 +14,17 @@
         <mat-icon>home</mat-icon>
         <span class="nav-text">Home</span>
       </a>
-      <a mat-list-item (click)="navigateTo('/my-promotions'); isMobile && toggleSidebar()">
-        <mat-icon>local_offer</mat-icon>
-        <span class="nav-text">My Promotions</span>
+      <a mat-list-item (click)="navigateTo('/messages'); isMobile && toggleSidebar()">
+        <mat-icon>storefront</mat-icon>
+        <span class="nav-text">Messages</span>
       </a>
       <a mat-list-item (click)="navigateTo('/my-bookings'); isMobile && toggleSidebar()">
         <mat-icon>event</mat-icon>
         <span class="nav-text">My Bookings</span>
       </a>
-      <a mat-list-item (click)="navigateTo('/messages'); isMobile && toggleSidebar()">
-        <mat-icon>storefront</mat-icon>
-        <span class="nav-text">Messages</span>
+      <a mat-list-item (click)="navigateTo('/my-promotions'); isMobile && toggleSidebar()">
+        <mat-icon>local_offer</mat-icon>
+        <span class="nav-text">My Promotions</span>
       </a>
       <a mat-list-item (click)="navigateTo('/profile'); isMobile && toggleSidebar()">
         <mat-icon>person</mat-icon>
@@ -46,6 +46,10 @@
         <mat-icon>local_offer</mat-icon>
         <span class="nav-text">Promotions</span>
       </a>
+      <a mat-list-item (click)="navigateTo('/messages'); isMobile && toggleSidebar()">
+        <mat-icon>storefront</mat-icon>
+        <span class="nav-text">Messages</span>
+      </a>
       <a mat-list-item (click)="navigateTo('/my-promotions'); isMobile && toggleSidebar()">
         <mat-icon>local_offer</mat-icon>
         <span class="nav-text">My Promotions</span>
@@ -61,10 +65,6 @@
       <a mat-list-item (click)="navigateTo('/business-switcher'); isMobile && toggleSidebar()">
         <mat-icon>sync_alt</mat-icon>
         <span class="nav-text">Select Business</span>
-      </a>
-      <a mat-list-item (click)="navigateTo('/messages'); isMobile && toggleSidebar()">
-        <mat-icon>storefront</mat-icon>
-        <span class="nav-text">Messages</span>
       </a>
     </mat-nav-list>
 
