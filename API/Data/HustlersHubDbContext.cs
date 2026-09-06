@@ -16,6 +16,8 @@ namespace API.Data
         public DbSet<Comment> Comments { get; set; }
         public DbSet<PromotionImage> PromotionImages { get; set; }
         public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
+        public DbSet<Conversation> Conversations { get; set; }
+        public DbSet<Message> Messages { get; set; }
 
 
 
@@ -72,6 +74,39 @@ namespace API.Data
                 .HasForeignKey(c => c.PromotionId)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Conversation -> Customer
+            modelBuilder.Entity<Conversation>()
+                .HasOne(c => c.Customer)
+                .WithMany()
+                .HasForeignKey(c => c.CustomerId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            // Conversation -> Business
+            modelBuilder.Entity<Conversation>()
+                .HasOne(c => c.Business)
+                .WithMany()
+                .HasForeignKey(c => c.BusinessId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            // Prevent duplicate customer/business conversations
+            modelBuilder.Entity<Conversation>()
+                .HasIndex(c => new { c.CustomerId, c.BusinessId })
+                .IsUnique();
+
+            // Message -> Conversation
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Conversation)
+                .WithMany(c => c.Messages)
+                .HasForeignKey(m => m.ConversationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Message -> Sender
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Sender)
+                .WithMany()
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

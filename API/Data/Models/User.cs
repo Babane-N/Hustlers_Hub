@@ -34,8 +34,8 @@ namespace API.Data.Models
         public string? TermsVersion { get; set; }
 
         //Nevigation
-        public ICollection<Business> Businesses { get; set; }
-  
+        public ICollection<Business> Businesses { get; set; } = new List<Business>();
+
     }
 
     public enum UserType

@@ -585,59 +585,8 @@ namespace API.Controllers
     // DTOs
     // =====================================================
 
-    public class BusinessCreateDto
-    {
-        public string BusinessName { get; set; } = string.Empty;
-
-        public string Category { get; set; } = string.Empty;
-
-        public string Description { get; set; } = string.Empty;
-
-        public string Location { get; set; } = string.Empty;
-
-        public Guid UserId { get; set; }
-
-        public IFormFile? Logo { get; set; }
-
-        public double? Latitude { get; set; }
-
-        public double? Longitude { get; set; }
-
-        public string BusinessType { get; set; } = "unverified";
-
-        public string? RegistrationNumber { get; set; }
-    }
-
-    public class PendingBusinessDto
-    {
-        public Guid Id { get; set; }
-
-        public string BusinessName { get; set; } = string.Empty;
-
-        public string Description { get; set; } = string.Empty;
-
-        public string LogoUrl { get; set; } = string.Empty;
-
-        public string OwnerName { get; set; } = string.Empty;
-
-        public bool IsCipcRegistered { get; set; }
-
-        public string? CipcNumber { get; set; }
-    }
-
     public class ApproveBusinessRequest
     {
         public bool VerifyBusiness { get; set; }
-    }
-
-    public class UpdateBusinessDto
-    {
-        public string Description { get; set; } = string.Empty;
-
-        public string Category { get; set; } = string.Empty;
-
-        public string Location { get; set; } = string.Empty;
-
-        public IFormFile? Logo { get; set; }
     }
 }

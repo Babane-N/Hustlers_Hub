@@ -28,6 +28,7 @@ import { BookingHistoryComponent } from './features/booking-history/booking-hist
 import { MyPromotionsComponent } from './Customer/my-promotions/my-promotions.component';
 import { TermsAndConditionsComponent } from './Customer/Shared/terms-and-conditions/terms-and-conditions.component';
 import { PrivacyPolicyComponent } from './Customer/Shared/privacy-policy/privacy-policy.component';
+import { MessagesComponent } from './features/Messaging/messages/messages.component';
 
 const routes: Routes = [
 
@@ -208,6 +209,17 @@ const routes: Routes = [
       requiresService: false
     }
   },
+
+  {
+    path: 'messages',
+    component: MessagesComponent,
+    canActivate: [RoleGuard],
+    data: {
+      roles: ['Customer', 'Business', 'Admin'],
+      requiresService: false
+    }
+  },
+
 
   // =========================
   // FALLBACK

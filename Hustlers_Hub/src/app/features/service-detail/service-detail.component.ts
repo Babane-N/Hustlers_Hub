@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
 import {
@@ -36,6 +36,7 @@ export class ServiceDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private serviceProvider: ServiceProvider,
+    private router: Router,
     private dialog: MatDialog
   ) { }
 
@@ -122,7 +123,7 @@ export class ServiceDetailComponent implements OnInit {
         }
       });
   }
-
+  // m
   // =====================================================
   // LOAD REVIEWS
   // =====================================================
@@ -187,6 +188,25 @@ export class ServiceDetailComponent implements OnInit {
         width: '480px',
 
         data: {
+          businessId: this.business.id
+        }
+      }
+    );
+  }
+
+  // =====================================================
+  // MESSAGE BUSINESS
+  // =====================================================
+  messageBusiness(): void {
+
+    if (!this.business?.id) {
+      return;
+    }
+
+    this.router.navigate(
+      ['/messages'],
+      {
+        queryParams: {
           businessId: this.business.id
         }
       }

@@ -124,6 +124,27 @@
       }
     }
   }
+
+  .message-btn {
+    background: transparent;
+    border: 2px solid #8b4000;
+    border-radius: 30px;
+    padding: 0.65rem 1.5rem;
+    color: #8b4000;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: 0.75rem;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #8b4000;
+      color: #fff;
+      transform: scale(1.05);
+    }
+  }
   /* ================= REVIEWS ================= */
   .reviews-section {
     .review-card {

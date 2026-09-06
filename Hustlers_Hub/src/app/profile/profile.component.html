@@ -4,13 +4,26 @@
   <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
     <!-- Profile Image -->
     <div class="profile-image">
-      <img *ngIf="profilePreview; else noImage"
-           [src]="profilePreview"
-           alt="Profile" />
-      <ng-template #noImage>
-        <div class="placeholder">No Image</div>
-      </ng-template>
-      <input type="file" (change)="onFileSelected($event)" />
+      <div class="profile-preview">
+        <img *ngIf="profilePreview; else noImage"
+             [src]="profilePreview"
+             alt="Profile" />
+
+        <ng-template #noImage>
+          <div class="placeholder">No Image</div>
+        </ng-template>
+      </div>
+
+      <div class="file-upload">
+        <input type="file"
+               id="profileImage"
+               accept="image/*"
+               (change)="onFileSelected($event)" />
+
+        <label for="profileImage">
+          Choose Profile Image
+        </label>
+      </div>
     </div>
 
     <!-- Full Name -->
@@ -31,15 +44,20 @@
       <input type="text" formControlName="phoneNumber" />
     </div>
 
-    <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+    <div *ngIf="errorMessage" class="error">
+      {{ errorMessage }}
+    </div>
 
     <button type="submit" [disabled]="profileForm.invalid">
       Update Profile
     </button>
+    ```
+
   </form>
 </div>
 
 <ng-template #loading>
+
   <p>Loading profile...</p>
 </ng-template>
 

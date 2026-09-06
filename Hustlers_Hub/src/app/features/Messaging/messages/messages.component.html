@@ -1,0 +1,545 @@
+<div class="messages-page">
+
+  <!-- =========================================================
+       PAGE HEADER
+  ========================================================== -->
+
+  <div class="messages-header">
+
+    <div>
+      <h1>Messages</h1>
+
+      <p>
+        Stay connected with customers and local businesses.
+      </p>
+    </div>
+
+    <div class="total-unread"
+         *ngIf="totalUnread > 0">
+      {{ totalUnread }}
+      <span>unread</span>
+    </div>
+
+  </div>
+
+
+  <!-- =========================================================
+       MESSAGES CONTAINER
+  ========================================================== -->
+
+  <div class="messages-layout"
+       [class.mobile-chat-open]="!showConversationList">
+
+
+    <!-- =======================================================
+         CONVERSATION SIDEBAR
+    ======================================================== -->
+
+    <aside class="conversation-sidebar">
+
+      <div class="sidebar-header">
+
+        <div class="sidebar-title">
+          <h2>Conversations</h2>
+
+          <span *ngIf="conversations.length"
+                class="conversation-count">
+            {{ conversations.length }}
+          </span>
+        </div>
+
+        <!-- Search -->
+
+        <div class="search-box">
+
+          <svg viewBox="0 0 24 24"
+               aria-hidden="true">
+            <path d="M21 21l-4.35-4.35m1.35-5.65a7 7 0 11-14 0 7 7 0 0114 0z"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round" />
+          </svg>
+
+          <input type="text"
+                 [(ngModel)]="searchTerm"
+                 (ngModelChange)="filterConversations()"
+                 placeholder="Search conversations..." />
+
+          <button *ngIf="searchTerm"
+                  type="button"
+                  class="clear-search"
+                  (click)="searchTerm = ''; filterConversations()"
+                  aria-label="Clear search">
+            ×
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- =====================================================
+           LOADING CONVERSATIONS
+      ====================================================== -->
+
+      <div class="conversation-loading"
+           *ngIf="loadingConversations">
+
+        <div class="conversation-skeleton"
+             *ngFor="let item of [1,2,3,4]">
+          <div class="skeleton-avatar"></div>
+
+          <div class="skeleton-content">
+            <div class="skeleton-line short"></div>
+            <div class="skeleton-line"></div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- =====================================================
+           EMPTY STATE
+      ====================================================== -->
+
+      <div class="empty-conversations"
+           *ngIf="
+          !loadingConversations &&
+          conversations.length === 0
+        ">
+
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M21 11.5a8.38 8.38 0 01-.9 3.8
+                 8.5 8.5 0 01-7.6 4.7
+                 8.38 8.38 0 01-3.8-.9
+                 L3 21l1.9-5.7
+                 A8.38 8.38 0 014 11.5
+                 8.5 8.5 0 1112.5 20"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+          </svg>
+        </div>
+
+        <h3>No messages yet</h3>
+
+        <p>
+          Your conversations with customers
+          and businesses will appear here.
+        </p>
+
+      </div>
+
+
+      <!-- =====================================================
+           NO SEARCH RESULTS
+      ====================================================== -->
+
+      <div class="empty-conversations"
+           *ngIf="
+           !loadingConversations &&
+           conversations.length>
+        0 &&
+        filteredConversations.length === 0
+        "
+        >
+
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M21 21l-4.35-4.35m1.35-5.65
+                 a7 7 0 11-14 0
+                 7 7 0 0114 0z"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round" />
+          </svg>
+        </div>
+
+        <h3>No results</h3>
+
+        <p>
+          We couldn't find a conversation
+          matching "{{ searchTerm }}".
+        </p>
+
+      </div>
+
+
+      <!-- =====================================================
+           CONVERSATION LIST
+      ====================================================== -->
+
+      <div class="conversation-list"
+           *ngIf="
+           !loadingConversations &&
+           filteredConversations.length>
+        0
+        "
+        >
+
+        <button type="button"
+                class="conversation-item"
+                *ngFor="
+            let conversation of filteredConversations;
+            trackBy: trackConversation
+          "
+                [class.active]="
+            selectedConversation?.id === conversation.id
+          "
+                (click)="selectConversation(conversation)">
+
+          <div class="conversation-avatar">
+            {{
+ getInitials(
+              getConversationName(conversation)
+            )
+            }}
+          </div>
+
+          <div class="conversation-info">
+
+            <div class="conversation-top">
+
+              <span class="conversation-name">
+                {{ getConversationName(conversation) }}
+              </span>
+
+              <span class="conversation-time">
+                {{
+ formatConversationTime(
+                  conversation.lastMessageAt
+                )
+                }}
+              </span>
+
+            </div>
+
+            <div class="conversation-bottom">
+
+              <span class="conversation-preview"
+                    [class.unread]="
+                    conversation.unreadCount>
+                0
+                "
+                >
+                {{
+                  conversation.lastMessage ||
+                  'Start a conversation'
+                }}
+              </span>
+
+              <span class="unread-badge"
+                    *ngIf="conversation.unreadCount > 0">
+                {{
+                  conversation.unreadCount > 99
+                    ? '99+'
+                    : conversation.unreadCount
+                }}
+              </span>
+
+            </div>
+
+          </div>
+
+        </button>
+
+      </div>
+
+    </aside>
+
+
+    <!-- =======================================================
+         CHAT AREA
+    ======================================================== -->
+
+    <section class="chat-area">
+
+
+      <!-- =====================================================
+           NO SELECTED CONVERSATION
+      ====================================================== -->
+
+      <div class="chat-empty"
+           *ngIf="!selectedConversation">
+
+        <div class="chat-empty-icon">
+
+          <svg viewBox="0 0 24 24">
+
+            <path d="M21 11.5a8.38 8.38 0 01-.9 3.8
+                 8.5 8.5 0 01-7.6 4.7
+                 8.38 8.38 0 01-3.8-.9
+                 L3 21l1.9-5.7
+                 A8.38 8.38 0 014 11.5
+                 8.5 8.5 0 1121 11.5z"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linejoin="round" />
+
+            <path d="M8 11h.01M12 11h.01M16 11h.01"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round" />
+
+          </svg>
+
+        </div>
+
+        <h2>Your messages</h2>
+
+        <p>
+          Select a conversation to start chatting.
+        </p>
+
+      </div>
+
+
+      <!-- =====================================================
+           SELECTED CHAT
+      ====================================================== -->
+
+      <ng-container *ngIf="selectedConversation">
+
+        <!-- Chat header -->
+
+        <header class="chat-header">
+
+          <button type="button"
+                  class="back-button"
+                  (click)="backToConversations()"
+                  aria-label="Back to conversations">
+            <svg viewBox="0 0 24 24">
+              <path d="M19 12H5m7 7l-7-7 7-7"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
+          </button>
+
+
+          <div class="chat-avatar">
+
+            {{
+ getInitials(
+              getConversationName(
+                selectedConversation
+              )
+            )
+            }}
+
+          </div>
+
+
+          <div class="chat-participant">
+
+            <h2>
+              {{
+ getConversationName(
+                selectedConversation
+              )
+              }}
+            </h2>
+
+            <span>
+              {{
+                selectedConversation.customerName
+              }}
+            </span>
+
+          </div>
+
+        </header>
+
+
+        <!-- =================================================
+             MESSAGE HISTORY
+        ================================================== -->
+
+        <div class="messages-container"
+             #messagesContainer>
+
+
+          <!-- Loading -->
+
+          <div class="messages-loading"
+               *ngIf="loadingMessages">
+
+            <div class="message-loading left">
+              <div></div>
+              <div></div>
+            </div>
+
+            <div class="message-loading right">
+              <div></div>
+              <div></div>
+            </div>
+
+            <div class="message-loading left">
+              <div></div>
+            </div>
+
+          </div>
+
+
+          <!-- Empty conversation -->
+
+          <div class="chat-start"
+               *ngIf="
+              !loadingMessages &&
+              messages.length === 0
+            ">
+
+            <div class="chat-start-icon">
+              <svg viewBox="0 0 24 24">
+                <path d="M21 11.5a8.38 8.38 0 01-.9 3.8
+                     8.5 8.5 0 01-7.6 4.7
+                     8.38 8.38 0 01-3.8-.9
+                     L3 21l1.9-5.7
+                     A8.38 8.38 0 014 11.5"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                      stroke-linejoin="round" />
+              </svg>
+            </div>
+
+            <h3>
+              Start the conversation
+            </h3>
+
+            <p>
+              Send a message to
+              <strong>
+                {{
+ getConversationName(
+                  selectedConversation
+                )
+                }}
+              </strong>
+            </p>
+
+          </div>
+
+
+          <!-- =================================================
+               MESSAGES
+          ================================================== -->
+
+          <div class="message-row"
+               *ngFor="
+              let message of messages;
+              trackBy: trackMessage
+            "
+               [class.own]="isOwnMessage(message)">
+
+            <div class="message-avatar"
+                 *ngIf="!isOwnMessage(message)">
+              {{ getInitials(message.senderName) }}
+            </div>
+
+            <div class="message-content">
+
+              <div class="message-bubble">
+
+                <div class="message-text">
+                  {{ message.messageText }}
+                </div>
+
+              </div>
+
+              <div class="message-meta">
+
+                <span>
+                  {{
+ formatMessageTime(
+                    message.sentAt
+                  )
+                  }}
+                </span>
+
+                <span class="read-status"
+                      *ngIf="isOwnMessage(message)">
+                  <span *ngIf="message.isRead"
+                        class="read">
+                    ✓✓
+                  </span>
+
+                  <span *ngIf="!message.isRead"
+                        class="sent">
+                    ✓
+                  </span>
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- =================================================
+             MESSAGE COMPOSER
+        ================================================== -->
+
+        <div class="message-composer">
+
+          <textarea [(ngModel)]="newMessage"
+                    (keydown)="handleMessageKeydown($event)"
+                    placeholder="Write a message..."
+                    rows="1"
+                    [disabled]="sendingMessage"></textarea>
+
+          <button type="button"
+                  class="send-button"
+                  [disabled]="
+              !newMessage.trim() ||
+              sendingMessage
+            "
+                  (click)="sendMessage()"
+                  aria-label="Send message">
+
+            <svg *ngIf="!sendingMessage"
+                 viewBox="0 0 24 24">
+              <path d="M22 2L11 13"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round" />
+
+              <path d="M22 2l-7 20-4-9-9-4z"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linejoin="round" />
+            </svg>
+
+            <span class="send-spinner"
+                  *ngIf="sendingMessage"></span>
+
+          </button>
+
+        </div>
+
+        <div class="composer-hint">
+          Press Enter to send · Shift + Enter for a new line
+        </div>
+
+      </ng-container>
+
+    </section>
+
+  </div>
+
+</div>
