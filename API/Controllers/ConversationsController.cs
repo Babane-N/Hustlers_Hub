@@ -33,7 +33,6 @@ namespace API.Controllers
             return null;
         }
 
-
         // ---------------------------------------------------------
         // CREATE OR GET CONVERSATION WITH BUSINESS
         // POST: api/conversations/business/{businessId}
@@ -79,9 +78,22 @@ namespace API.Controllers
 
             if (existingConversation != null)
             {
-                return Ok(new
+                return Ok(new ConversationDto
                 {
-                    conversationId = existingConversation.Id
+                    Id = existingConversation.Id,
+                    CustomerId = existingConversation.CustomerId,
+                    BusinessId = existingConversation.BusinessId,
+
+                    BusinessName = business.BusinessName,
+                    CustomerName = customer.FullName,
+
+                    LastMessage = null,
+                    LastMessageAt = existingConversation.LastMessageAt,
+
+                    UnreadCount = await _context.Messages.CountAsync(m =>
+                        m.ConversationId == existingConversation.Id &&
+                        !m.IsRead &&
+                        m.SenderId != currentUserId.Value)
                 });
             }
 
@@ -98,9 +110,20 @@ namespace API.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok(new
+            // Return the COMPLETE conversation DTO
+            return Ok(new ConversationDto
             {
-                conversationId = conversation.Id
+                Id = conversation.Id,
+                CustomerId = conversation.CustomerId,
+                BusinessId = conversation.BusinessId,
+
+                BusinessName = business.BusinessName,
+                CustomerName = customer.FullName,
+
+                LastMessage = null,
+                LastMessageAt = null,
+
+                UnreadCount = 0
             });
         }
 
